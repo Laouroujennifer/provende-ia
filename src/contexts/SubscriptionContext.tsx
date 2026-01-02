@@ -8,7 +8,7 @@ interface SubscriptionContextType {
   setCurrency: (c: Currency) => void
   upgradeSubscription: (planId: 'monthly' | 'annual') => void
   incrementAutoCount: () => void
-  incrementFormulaCount: () => void // <-- Ajout de cette ligne manquante
+  incrementFormulaCount: () => void
   canAccessMode2: boolean
   canSaveFormula: boolean
 }
@@ -21,10 +21,11 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
   const [subscription, setSubscription] = useState<UserSubscription>(() => {
     const saved = localStorage.getItem('provende_subscription')
     if (saved) {
-      try {
-        return JSON.parse(saved)
-      } catch {
-        // En cas d'erreur
+      const data = JSON.parse(saved)
+      return {
+        ...data,
+        // Sécurité : on s'assure que le compteur existe même sur une vieille version
+        autoFormulasCount: data.autoFormulasCount ?? 0 
       }
     }
     return {
@@ -52,30 +53,31 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     })
   }
 
-  // 1. Compteur pour le mode Automatique (IA)
   const incrementAutoCount = () => {
     setSubscription((prev: UserSubscription) => ({
       ...prev,
-      autoFormulasCount: prev.autoFormulasCount + 1,
+      autoFormulasCount: (prev.autoFormulasCount ?? 0) + 1,
     }))
   }
 
-  // 2. Compteur pour le mode Manuel (Sauvegarde)
   const incrementFormulaCount = () => {
     setSubscription((prev: UserSubscription) => ({
       ...prev,
-      formulasCount: prev.formulasCount + 1,
+      formulasCount: (prev.formulasCount ?? 0) + 1,
     }))
   }
 
   const isExpired = new Date(subscription.endDate) < new Date()
   
+  // LOGIQUE DE BLOCAGE STRICTE
+  // Si je suis PRO : OK
+  // Si je suis GRATUIT : autoriser SEULEMENT si mon compteur est strictement inférieur à 3
   const canAccessMode2 = !isExpired && (
     subscription.status === 'active' || 
-    subscription.autoFormulasCount < 3
+    (subscription.autoFormulasCount ?? 0) < 3
   )
 
-  const canSaveFormula = !isExpired && (subscription.status === 'active' || subscription.formulasCount < 5)
+  const canSaveFormula = !isExpired && (subscription.status === 'active' || (subscription.formulasCount ?? 0) < 5)
 
   return (
     <SubscriptionContext.Provider value={{
