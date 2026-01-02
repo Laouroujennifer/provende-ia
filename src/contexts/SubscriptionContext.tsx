@@ -7,57 +7,60 @@ interface SubscriptionContextType {
   currency: Currency
   setCurrency: (c: Currency) => void
   upgradeSubscription: (planId: 'monthly' | 'annual') => void
-  incrementFormulaCount: () => void
+  incrementAutoCount: () => void
+  incrementFormulaCount: () => void // <-- Ajout de cette ligne manquante
   canAccessMode2: boolean
   canSaveFormula: boolean
 }
 
-const SubscriptionContext = createContext<SubscriptionContextType | undefined>(
-  undefined,
-)
+const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined)
 
 export function SubscriptionProvider({ children }: { children: ReactNode }) {
-  // CORRECTION 1 : Initialisation directe de la monnaie (pas besoin de useEffect)
   const [currency, setCurrency] = useState<Currency>(() => detectCurrency())
 
-  // CORRECTION 2 : Chargement immédiat depuis le localStorage
   const [subscription, setSubscription] = useState<UserSubscription>(() => {
     const saved = localStorage.getItem('provende_subscription')
     if (saved) {
       try {
         return JSON.parse(saved)
-      } catch (e) {
-        console.error("Erreur de lecture du stockage", e)
+      } catch {
+        // En cas d'erreur
       }
     }
-    // Valeur par défaut si rien n'est sauvegardé
     return {
       status: 'trial',
       planId: 'free',
       startDate: new Date().toISOString(),
       endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       formulasCount: 0,
+      autoFormulasCount: 0, 
     }
   })
 
-  // On garde cet effect uniquement pour SAUVEGARDER quand ça change
   useEffect(() => {
     localStorage.setItem('provende_subscription', JSON.stringify(subscription))
   }, [subscription])
 
   const upgradeSubscription = (planId: 'monthly' | 'annual') => {
-    const newSub: UserSubscription = {
+    setSubscription({
       status: 'active',
       planId,
       startDate: new Date().toISOString(),
-      endDate: new Date(
-        Date.now() + (planId === 'monthly' ? 30 : 365) * 24 * 60 * 60 * 1000,
-      ).toISOString(),
+      endDate: new Date(Date.now() + (planId === 'monthly' ? 30 : 365) * 24 * 60 * 60 * 1000).toISOString(),
       formulasCount: 0,
-    }
-    setSubscription(newSub)
+      autoFormulasCount: 0,
+    })
   }
 
+  // 1. Compteur pour le mode Automatique (IA)
+  const incrementAutoCount = () => {
+    setSubscription((prev: UserSubscription) => ({
+      ...prev,
+      autoFormulasCount: prev.autoFormulasCount + 1,
+    }))
+  }
+
+  // 2. Compteur pour le mode Manuel (Sauvegarde)
   const incrementFormulaCount = () => {
     setSubscription((prev: UserSubscription) => ({
       ...prev,
@@ -66,35 +69,27 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
   }
 
   const isExpired = new Date(subscription.endDate) < new Date()
-  const canAccessMode2 = subscription.status === 'active' && !isExpired
-  const canSaveFormula =
-    !isExpired &&
-    (subscription.status === 'active' || subscription.formulasCount < 5)
+  
+  const canAccessMode2 = !isExpired && (
+    subscription.status === 'active' || 
+    subscription.autoFormulasCount < 3
+  )
+
+  const canSaveFormula = !isExpired && (subscription.status === 'active' || subscription.formulasCount < 5)
 
   return (
-    <SubscriptionContext.Provider
-      value={{
-        subscription,
-        currency,
-        setCurrency,
-        upgradeSubscription,
-        incrementFormulaCount,
-        canAccessMode2,
-        canSaveFormula,
-      }}
-    >
+    <SubscriptionContext.Provider value={{
+      subscription, currency, setCurrency, upgradeSubscription, 
+      incrementAutoCount, incrementFormulaCount, canAccessMode2, canSaveFormula
+    }}>
       {children}
     </SubscriptionContext.Provider>
   )
 }
 
-// CORRECTION 3 : Pour l'erreur react-refresh
-// ESLint préfère que les composants et les hooks soient bien séparés.
-// Si l'erreur persiste, tu peux ajouter cette ligne juste au-dessus de l'export du hook :
 // eslint-disable-next-line react-refresh/only-export-components
 export const useSubscription = () => {
   const context = useContext(SubscriptionContext)
-  if (!context)
-    throw new Error('useSubscription must be used within SubscriptionProvider')
+  if (!context) throw new Error('useSubscription must be used within SubscriptionProvider')
   return context
 }

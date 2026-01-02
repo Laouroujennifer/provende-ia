@@ -19,6 +19,7 @@ export interface UserSubscription {
   startDate: string
   endDate: string
   formulasCount: number // For free tier limit
+  autoFormulasCount: number
 }
 
 export type PaymentMethod = 'mobile_money' | 'card'

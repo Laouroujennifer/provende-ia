@@ -1,41 +1,33 @@
-import { useState } from 'react' // Correction : On retire 'React' car seul useState est utilisé
-import { Wand2, Lock, ArrowRight, CheckCircle2 } from 'lucide-react'
+import { useState } from 'react'
+import { Wand2, Lock, ArrowRight, CheckCircle2, Info } from 'lucide-react'
 import { useSubscription } from '../contexts/SubscriptionContext'
 import { Link } from 'react-router-dom'
 import { ingredientsDatabase } from '../data/ingredientsDatabase'
 import { FormulaInputs } from '../components/FormulaInputs'
 import { animalRequirements } from '../data/animalRequirements'
 import { optimizeFormula } from '../utils/optimizationAlgorithm'
-// Correction TS1484 : Utilisation de "import type"
-import type { SelectedIngredient } from '../types/ingredients'
-
+import type { SelectedIngredient, Ingredient } from '../types/ingredients'
 import { IngredientTable } from '../components/IngredientTable'
 import { NutritionalSummary } from '../components/NutritionalSummary'
 import { calculateTotals } from '../utils/nutritionCalculations'
 
 export function AutomaticGenerator() {
-  const { canAccessMode2 } = useSubscription()
+  const { canAccessMode2, subscription, incrementAutoCount } = useSubscription()
   const [formulaName, setFormulaName] = useState('')
-  const [selectedRequirementId, setSelectedRequirementId] = useState(
-    animalRequirements[0].id,
-  )
-  const [availableIngredients, setAvailableIngredients] = useState<
-    SelectedIngredient[]
-  >(
-    ingredientsDatabase.map((i) => ({
+  const [selectedRequirementId, setSelectedRequirementId] = useState(animalRequirements[0].id)
+  
+  // On utilise les prix par défaut de la base pour simplifier
+  const [availableIngredients] = useState<SelectedIngredient[]>(
+    ingredientsDatabase.map((i: Ingredient) => ({
       ...i,
       quantity: 0,
       price: i.defaultPrice || 0,
     })),
   )
-  const [optimizedResult, setOptimizedResult] = useState<
-    SelectedIngredient[] | null
-  >(null)
+  
+  const [optimizedResult, setOptimizedResult] = useState<SelectedIngredient[] | null>(null)
   const [isOptimizing, setIsOptimizing] = useState(false)
-
-  const [checkedIds, setCheckedIds] = useState<Set<string>>(
-    new Set(['mais', 'tourteau_soja', 'coquille_huitre', 'premix']),
-  )
+  const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set(['mais', 'tourteau_soja', 'coquille_huitre', 'premix']))
 
   const toggleIngredient = (id: string) => {
     const newSet = new Set(checkedIds)
@@ -44,26 +36,15 @@ export function AutomaticGenerator() {
     setCheckedIds(newSet)
   }
 
-  const updatePrice = (id: string, price: number) => {
-    setAvailableIngredients((prev) =>
-      prev.map((i) =>
-        i.id === id
-          ? { ...i, price }
-          : i,
-      ),
-    )
-  }
-
   const handleOptimize = () => {
     setIsOptimizing(true)
     setTimeout(() => {
-      const requirement = animalRequirements.find(
-        (r) => r.id === selectedRequirementId,
-      )
+      const requirement = animalRequirements.find((r) => r.id === selectedRequirementId)
       if (requirement) {
         const pool = availableIngredients.filter((i) => checkedIds.has(i.id))
         const result = optimizeFormula(pool, requirement)
         setOptimizedResult(result)
+        incrementAutoCount() // On compte un essai
       }
       setIsOptimizing(false)
     }, 1500)
@@ -72,19 +53,16 @@ export function AutomaticGenerator() {
   if (!canAccessMode2) {
     return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center max-w-2xl mx-auto mt-8">
-        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-          <Lock className="w-10 h-10 text-gray-400" />
+        <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <Lock className="w-10 h-10 text-orange-600" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Fonctionnalité Premium</h2>
-        <p className="text-gray-500 mb-8">
-          Le générateur automatique IA est réservé aux membres Pro. Optimisez
-          vos coûts de production instantanément.
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Essais Gratuits Terminés</h2>
+        <p className="text-gray-500 mb-8 text-lg">
+          Vous avez utilisé vos 3 essais gratuits de l'IA. 
+          Passez en mode **Premium** pour optimiser vos formules en illimité.
         </p>
-        <Link
-          to="/pricing"
-          className="inline-flex items-center gap-2 bg-teal-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-teal-700 transition-colors"
-        >
-          Débloquer le mode Automatique
+        <Link to="/pricing" className="inline-flex items-center gap-2 bg-teal-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-teal-700 transition-all shadow-lg">
+          Voir les abonnements
           <ArrowRight className="w-5 h-5" />
         </Link>
       </div>
@@ -93,11 +71,19 @@ export function AutomaticGenerator() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
+      {subscription.status === 'trial' && (
+        <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl flex items-center gap-3 text-blue-800 text-sm">
+          <Info className="w-5 h-5" />
+          <span>Il vous reste <strong>{3 - (subscription.autoFormulasCount || 0)} essais gratuits</strong> avec l'IA.</span>
+        </div>
+      )}
+
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-        <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+        <h2 className="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
           <Wand2 className="w-5 h-5 text-teal-600" />
-          Configuration de l'optimisation
+          Générateur Automatique IA
         </h2>
+        <p className="text-sm text-gray-500 mb-6 italic">Cochez simplement ce que vous avez, l'IA calcule les doses idéales.</p>
 
         <FormulaInputs
           name={formulaName}
@@ -107,36 +93,21 @@ export function AutomaticGenerator() {
         />
 
         <div className="mt-8">
-          <h3 className="text-sm font-medium text-gray-700 mb-4">
-            Ingrédients disponibles et prix locaux :
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto p-2 border rounded-lg">
+          <h3 className="text-sm font-bold text-gray-700 mb-4 uppercase">Cochez vos ingrédients disponibles :</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-80 overflow-y-auto p-4 border bg-gray-50 rounded-xl">
             {availableIngredients.map((ing) => (
-              <div
+              <button
                 key={ing.id}
-                className={`p-3 rounded-lg border flex items-center gap-3 ${
-                  checkedIds.has(ing.id) ? 'bg-teal-50 border-teal-200' : 'bg-white border-gray-200'
+                onClick={() => toggleIngredient(ing.id)}
+                className={`p-3 rounded-lg border text-left transition-all ${
+                  checkedIds.has(ing.id) 
+                    ? 'bg-white border-teal-500 ring-2 ring-teal-500' 
+                    : 'bg-white border-gray-200 opacity-60'
                 }`}
               >
-                <input
-                  type="checkbox"
-                  checked={checkedIds.has(ing.id)}
-                  onChange={() => toggleIngredient(ing.id)}
-                  className="w-5 h-5 text-teal-600 rounded focus:ring-teal-500"
-                />
-                <div className="flex-1">
-                  <div className="font-medium text-sm">{ing.name}</div>
-                  <div className="text-xs text-gray-500">{ing.category}</div>
-                </div>
-                <div className="w-24">
-                  <input
-                    type="number"
-                    value={ing.price}
-                    onChange={(e) => updatePrice(ing.id, parseFloat(e.target.value) || 0)}
-                    className="w-full px-2 py-1 text-right text-sm border rounded focus:ring-1 focus:ring-teal-500"
-                  />
-                </div>
-              </div>
+                <div className="font-bold text-xs text-gray-800">{ing.name}</div>
+                <div className="text-[9px] text-gray-400">{ing.category}</div>
+              </button>
             ))}
           </div>
         </div>
@@ -145,27 +116,21 @@ export function AutomaticGenerator() {
           <button
             onClick={handleOptimize}
             disabled={isOptimizing || checkedIds.size < 3}
-            className="flex items-center gap-2 bg-teal-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-teal-700 disabled:opacity-50 transition-all"
+            className="bg-teal-600 text-white px-10 py-4 rounded-xl font-bold hover:bg-teal-700 disabled:opacity-50 transition-all shadow-xl"
           >
-            {isOptimizing ? "Calcul..." : "Générer la formule optimale"}
+            {isOptimizing ? "Calcul en cours..." : "Trouver la formule idéale"}
           </button>
         </div>
       </div>
 
       {optimizedResult && (
         <div className="space-y-6 animate-in slide-in-from-bottom-8">
-          <div className="flex items-center gap-2 text-green-700 bg-green-50 p-4 rounded-lg border border-green-100">
+          <div className="flex items-center gap-3 text-green-700 bg-green-50 p-6 rounded-xl border border-green-200">
             <CheckCircle2 className="w-6 h-6" />
-            <span className="font-medium">Optimisation réussie !</span>
+            <span className="font-bold text-lg">Proportions calculées avec succès !</span>
           </div>
-          <NutritionalSummary
-            totals={calculateTotals(optimizedResult)}
-            requirement={animalRequirements.find((r) => r.id === selectedRequirementId)}
-          />
-          <IngredientTable
-            selectedIngredients={optimizedResult}
-            onUpdateIngredients={setOptimizedResult}
-          />
+          <NutritionalSummary totals={calculateTotals(optimizedResult)} requirement={animalRequirements.find((r) => r.id === selectedRequirementId)} />
+          <IngredientTable selectedIngredients={optimizedResult} onUpdateIngredients={setOptimizedResult} />
         </div>
       )}
     </div>
