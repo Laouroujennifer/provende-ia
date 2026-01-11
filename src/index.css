@@ -1,1 +1,25 @@
 @import "tailwindcss";
+
+@layer base {
+  /* On force le noir sur TOUTE la page et le conteneur React */
+  html, body, #root {
+    background-color: #020617 !important;
+    color: #f8fafc !important;
+    min-height: 100vh;
+  }
+}
+
+/* On crée des utilitaires personnalisés pour tes cartes */
+.card-pro {
+  background-color: #0f172a !important; /* Gris ardoise pro */
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 1.5rem;
+}
+
+.btn-premium {
+  background-color: #FF6800 !important;
+  color: white !important;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}

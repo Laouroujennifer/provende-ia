@@ -1,99 +1,55 @@
-// Correction : Suppression de React car inutile ici
 import type { FormulaTotals } from '../types/ingredients'
 import type { AnimalRequirement } from '../types/animalRequirements'
 import { getFinalValues } from '../utils/nutritionCalculations'
 
-interface NutritionalSummaryProps {
-  totals: FormulaTotals
-  requirement?: AnimalRequirement
-}
-
-export function NutritionalSummary({
-  totals,
-  requirement,
-}: NutritionalSummaryProps) {
+export function NutritionalSummary({ totals, requirement }: { totals: FormulaTotals, requirement?: AnimalRequirement }) {
   if (!requirement || totals.weight === 0) return null
-  
   const final = getFinalValues(totals)
-  
+
   const metrics = [
-    {
-      label: 'Énergie (kcal)',
-      value: final.em,
-      target: requirement.em,
-      unit: '',
-    },
-    {
-      label: 'Protéine (%)',
-      value: final.pb,
-      target: requirement.pb,
-      unit: '%',
-    },
-    {
-      label: 'Lysine (%)',
-      value: final.lys,
-      target: requirement.lys,
-      unit: '%',
-    },
-    {
-      label: 'Méthionine (%)',
-      value: final.met,
-      target: requirement.met,
-      unit: '%',
-    },
-    {
-      label: 'Calcium (%)',
-      value: final.ca,
-      target: requirement.ca,
-      unit: '%',
-    },
-    {
-      label: 'Phosphore (%)',
-      value: final.p,
-      target: requirement.p,
-      unit: '%',
-    },
+    { label: 'Énergie', value: final.em, target: requirement.em, unit: 'kcal', color: 'bg-orange-500' },
+    { label: 'Protéines', value: final.pb, target: requirement.pb, unit: '%', color: 'bg-blue-500' },
+    { label: 'Lysine', value: final.lys, target: requirement.lys, unit: '%', color: 'bg-purple-500' },
+    { label: 'Méthionine', value: final.met, target: requirement.met, unit: '%', color: 'bg-pink-500' },
+    { label: 'Calcium', value: final.ca, target: requirement.ca, unit: '%', color: 'bg-emerald-500' },
+    { label: 'Phosphore', value: final.p, target: requirement.p, unit: '%', color: 'bg-cyan-500' },
   ]
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
       {metrics.map((m) => {
         const isLow = m.value < m.target.min
         const isHigh = m.value > m.target.max
-        // Correction ESLint : Suppression de la variable isOk car elle n'est jamais utilisée
-        
-        let colorClass = 'bg-white border-gray-200'
-        let textClass = 'text-gray-900'
-        let statusColor = 'bg-gray-100 text-gray-600'
-
-        if (isLow) {
-          colorClass = 'bg-amber-50 border-amber-200'
-          textClass = 'text-amber-900'
-          statusColor = 'bg-amber-100 text-amber-700'
-        } else if (isHigh) {
-          colorClass = 'bg-red-50 border-red-200'
-          textClass = 'text-red-900'
-          statusColor = 'bg-red-100 text-red-700'
-        } else {
-          colorClass = 'bg-green-50 border-green-200'
-          textClass = 'text-green-900'
-          statusColor = 'bg-green-100 text-green-700'
-        }
+        const percentage = Math.min(100, (m.value / m.target.max) * 100)
 
         return (
-          <div
-            key={m.label}
-            className={`p-4 rounded-xl border ${colorClass} shadow-sm`}
-          >
-            <p className="text-xs font-medium text-gray-500 mb-1">{m.label}</p>
-            <p className={`text-xl font-bold ${textClass} mb-2`}>
-              {m.value.toFixed(2)}
-              {m.unit}
-            </p>
-            <div
-              className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${statusColor}`}
-            >
-              Cible: {m.target.min}-{m.target.max}
+          <div key={m.label} className="glass-card p-6 rounded-3xl relative overflow-hidden group hover:scale-[1.02] transition-all">
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <p className="text-xs font-black text-slate-400 uppercase tracking-widest">{m.label}</p>
+                <h3 className="text-3xl font-black text-slate-900 mt-1">
+                  {m.value.toFixed(m.unit === 'kcal' ? 0 : 2)}
+                  <span className="text-sm font-bold text-slate-400 ml-1">{m.unit}</span>
+                </h3>
+              </div>
+              <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${
+                isLow ? 'bg-amber-100 text-amber-600' : isHigh ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600'
+              }`}>
+                {isLow ? 'Trop bas' : isHigh ? 'Trop haut' : 'Optimal'}
+              </div>
+            </div>
+
+            {/* Barre de progression moderne */}
+            <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+              <div 
+                className={`h-full transition-all duration-1000 ${isLow ? 'bg-amber-400' : isHigh ? 'bg-red-400' : m.color}`} 
+                style={{ width: `${percentage}%` }}
+              />
+            </div>
+            
+            <div className="flex justify-between mt-3 text-[10px] font-bold text-slate-400 uppercase">
+              <span>Min: {m.target.min}</span>
+              <span>Max: {m.target.max}</span>
             </div>
           </div>
         )
