@@ -1,48 +1,49 @@
-import { useState } from 'react' // Suppression de "React" car seul useState est utilisé
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { Header } from './components/Header'
-import { ModeSelector } from './components/ModeSelector'
-import { ManualAnalyzer } from './pages/ManualAnalyzer'
-import { AutomaticGenerator } from './pages/AutomaticGenerator'
+// src/App.tsx
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { AuthProvider, useAuth } from './contexts/AuthContext'
+import { SubscriptionProvider } from './contexts/SubscriptionContext'
+
+import { Home } from './pages/Home'
+import { Services } from './pages/Services'
+import { About } from './pages/About'
 import { PricingPage } from './pages/PricingPage'
-import {
-  SubscriptionProvider,
-  // useSubscription supprimé ici car canAccessMode2 n'était pas utilisé dans ce composant
-} from './contexts/SubscriptionContext'
-import { SubscriptionBanner } from './components/SubscriptionBanner'
+import { Contact } from './pages/Contact'
+import { Login } from './pages/Login'
+import { Register } from './pages/Register'
+import { Dashboard } from './pages/Dashboard'
+import { Header } from './components/Header'
+import { Footer } from './components/Footer'
 
-function MainLayout() {
-  const [mode, setMode] = useState<'manual' | 'auto'>('manual')
-  
-  // Suppression de la ligne useSubscription() qui causait l'erreur
-  
+function AppContent() {
+  const { isAuthenticated } = useAuth()
+  const location = useLocation()
+  const hideLayout = ['/login', '/register', '/dashboard'].includes(location.pathname)
+
   return (
-    <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
-      <Header />
-      <SubscriptionBanner />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col items-center mb-8">
-          <ModeSelector
-            currentMode={mode}
-            onModeChange={(m) => {
-              setMode(m)
-            }}
+    <div className="flex flex-col min-h-screen">
+      {!hideLayout && <Header />}
+      <main className="flex-grow">
+        <Routes>
+          {/* VÉRIFIE QUE LES PATHS SONT BIEN CEUX-LÀ */}
+          <Route path="/" element={<Home />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/contact" element={<Contact />} />
+          
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          
+          <Route 
+            path="/dashboard" 
+            element={isAuthenticated ? <Dashboard /> : <Navigate to="/register" />} 
           />
-        </div>
 
-        {/* Le switch de mode fonctionne déjà ici */}
-        {mode === 'manual' ? <ManualAnalyzer /> : <AutomaticGenerator />}
+          {/* Cette ligne ne s'active que si aucune route ci-dessus ne correspond */}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
       </main>
-    </div>
-  )
-}
-
-function PricingLayout() {
-  return (
-    <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
-      <Header />
-      <PricingPage />
+      {!hideLayout && <Footer />}
     </div>
   )
 }
@@ -50,13 +51,11 @@ function PricingLayout() {
 export function App() {
   return (
     <SubscriptionProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<MainLayout />} />
-          <Route path="/pricing" element={<PricingLayout />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <AppContent />
+        </BrowserRouter>
+      </AuthProvider>
     </SubscriptionProvider>
   )
 }
