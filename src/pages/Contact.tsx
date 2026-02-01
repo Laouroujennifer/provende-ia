@@ -1,126 +1,131 @@
 // src/pages/Contact.tsx
 import { motion } from 'framer-motion'
-import { Mail, Phone, MapPin, Send, MessageCircle, Sparkles } from 'lucide-react'
+import { Mail, Phone, MapPin,  MessageCircle, Sparkles, ArrowRight } from 'lucide-react'
 
 export function Contact() {
   return (
-    <div className="bg-white min-h-screen">
-      {/* 1. HEADER SECTION - VIBRANT ET IMMERSIF */}
-      <section className="relative bg-linear-to-br from-[#064e3b] via-[#065f46] to-[#064e3b] pt-48 pb-40 px-6 overflow-hidden text-center">
-        {/* Effets de lueur en arrière-plan */}
-        <div className="absolute top-0 left-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-[120px] -ml-48 -mt-48" />
-        <div className="absolute bottom-0 right-0 w-80 h-80 bg-emerald-400/10 rounded-full blur-[100px] -mr-40 -mb-40" />
-
+    <div className="bg-slate-950 min-h-screen text-white">
+      {/* 1. HEADER SECTION - STYLE MINEA (DARK & GLOW) */}
+      <section className="relative pt-48 pb-40 px-6 overflow-hidden text-center">
+        {/* Lueurs d'arrière-plan */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none" />
+        
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="max-w-4xl mx-auto relative z-10"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mb-6">
-            <MessageCircle size={14} />
-            <span className="font-black uppercase tracking-widest text-[10px]">Support & Partenariat</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-emerald-400 mb-8 shadow-2xl">
+            <MessageCircle size={14} fill="currentColor" className="opacity-20" />
+            <span className="font-black uppercase tracking-[0.3em] text-[10px]">Support Prioritaire</span>
           </div>
-          <h1 className="text-5xl md:text-7xl font-black text-white mb-6 uppercase tracking-tighter leading-tight">
-            Contactez-<span className="text-emerald-400 italic">nous</span>.
+          
+          <h1 className="text-5xl md:text-8xl font-black leading-[1.05] tracking-tighter mb-8">
+            Parlons de votre <br />
+            <span className="bg-linear-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent italic">prochaine bande</span>.
           </h1>
-          <p className="text-emerald-100/60 text-xl max-w-2xl mx-auto font-medium">
-            Une question technique ou besoin d'une démo personnalisée ? Nos experts vous répondent sous 24h.
+          
+          <p className="text-white/50 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed">
+            Une question technique sur l'IA ou besoin d'un accompagnement pour votre ferme ? Nos experts vous répondent sous 24h.
           </p>
         </motion.div>
       </section>
 
-      {/* 2. CARTE DE CONTACT - SURÉLEVÉE ET ÉPURÉE */}
-      <section className="max-w-7xl mx-auto px-6 pb-24 -mt-20 relative z-20">
-        <div className="bg-white rounded-[3rem] shadow-[0_30px_100px_rgba(0,0,0,0.08)] overflow-hidden flex flex-col lg:flex-row border border-slate-50">
+      {/* 2. CARTE DE CONTACT - ULTRA MODERNE */}
+      <section className="max-w-7xl mx-auto px-6 pb-32 -mt-16 relative z-20">
+        <div className="bg-slate-900/50 backdrop-blur-xl rounded-[3.5rem] shadow-2xl overflow-hidden flex flex-col lg:flex-row border border-white/10">
           
-          {/* Côté Gauche : Informations de contact (Sombre & Pro) */}
-          <div className="lg:w-1/3 bg-slate-900 p-12 lg:p-16 text-white relative overflow-hidden">
-            {/* Petite touche de vert pour la vie */}
-            <div className="absolute bottom-0 left-0 w-32 h-32 bg-emerald-500 rounded-full blur-[60px] opacity-20 -ml-16 -mb-16" />
-            
-            <h3 className="text-2xl font-black mb-10 flex items-center gap-3">
-              <Sparkles className="text-emerald-400" size={24} />
-              Nos coordonnées
+          {/* Côté Gauche : Infos (Style Dashboard) */}
+          <div className="lg:w-1/3 bg-linear-to-b from-white/[0.03] to-transparent p-12 lg:p-16 relative border-r border-white/5">
+            <h3 className="text-2xl font-black mb-12 tracking-tight flex items-center gap-3">
+              <Sparkles className="text-emerald-400" size={20} />
+              Coordonnées
             </h3>
             
-            <div className="space-y-12 relative z-10">
-              <div className="flex items-start gap-5 group">
-                <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center shrink-0 border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-slate-900 transition-all duration-300">
-                  <Phone size={20} className="text-emerald-400 group-hover:text-slate-900" />
-                </div>
-                <div>
-                  <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">Appelez-nous</p>
-                  <p className="font-bold text-lg hover:text-emerald-400 transition-colors cursor-pointer">+229 90 00 00 00</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-5 group">
-                <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center shrink-0 border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-slate-900 transition-all duration-300">
-                  <Mail size={20} className="text-emerald-400 group-hover:text-slate-900" />
-                </div>
-                <div>
-                  <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">Email</p>
-                  <p className="font-bold text-lg hover:text-emerald-400 transition-colors cursor-pointer">contact@provendebuilder.com</p>
+            <div className="space-y-12">
+              <div className="group cursor-default">
+                <p className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em] mb-3">Téléphone</p>
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center border border-white/10 group-hover:border-emerald-500/50 transition-colors">
+                    <Phone size={18} className="text-white/70 group-hover:text-emerald-400" />
+                  </div>
+                  <p className="font-bold text-lg group-hover:text-emerald-400 transition-colors">+229 90 00 00 00</p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-5 group">
-                <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center shrink-0 border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-slate-900 transition-all duration-300">
-                  <MapPin size={20} className="text-emerald-400 group-hover:text-slate-900" />
+              <div className="group cursor-default">
+                <p className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em] mb-3">Email</p>
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center border border-white/10 group-hover:border-emerald-500/50 transition-colors">
+                    <Mail size={18} className="text-white/70 group-hover:text-emerald-400" />
+                  </div>
+                  <p className="font-bold text-lg group-hover:text-emerald-400 transition-colors">contact@provendebuilder.com</p>
                 </div>
-                <div>
-                  <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">Siège social</p>
-                  <p className="font-bold text-sm leading-relaxed opacity-80">
-                    Cotonou, Bénin <br/>
-                    Zone Industrielle Akpakpa
+              </div>
+
+              <div className="group cursor-default">
+                <p className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.2em] mb-3">Siège</p>
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center border border-white/10 group-hover:border-emerald-500/50 transition-colors">
+                    <MapPin size={18} className="text-white/70 group-hover:text-emerald-400" />
+                  </div>
+                  <p className="font-bold text-sm text-white/60 leading-relaxed">
+                    Zone Industrielle Akpakpa <br /> Cotonou, Bénin
                   </p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Côté Droit : Formulaire (Clair & Moderne) */}
-          <div className="lg:w-2/3 p-12 lg:p-20 bg-white">
-            <form className="grid md:grid-cols-2 gap-8" onSubmit={(e) => e.preventDefault()}>
+          {/* Côté Droit : Formulaire (Minea Style) */}
+          <div className="lg:w-2/3 p-12 lg:p-20 bg-slate-900/20">
+            <form className="grid md:grid-cols-2 gap-10" onSubmit={(e) => e.preventDefault()}>
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nom Complet</label>
+                <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Nom Complet</label>
                 <input 
                   type="text" 
-                  className="w-full p-5 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/5 transition-all font-medium placeholder:text-slate-300 shadow-inner" 
-                  placeholder="Ex: Jean Koffi" 
+                  className="w-full p-5 bg-white/5 border border-white/10 rounded-2xl outline-none focus:border-emerald-500/50 focus:bg-white/10 transition-all font-medium text-white placeholder:text-white/20 shadow-2xl" 
+                  placeholder="Jean Koffi" 
                 />
               </div>
               
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Professionnel</label>
+                <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Email Pro</label>
                 <input 
                   type="email" 
-                  className="w-full p-5 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/5 transition-all font-medium placeholder:text-slate-300 shadow-inner" 
-                  placeholder="jean@exemple.com" 
+                  className="w-full p-5 bg-white/5 border border-white/10 rounded-2xl outline-none focus:border-emerald-500/50 focus:bg-white/10 transition-all font-medium text-white placeholder:text-white/20 shadow-2xl" 
+                  placeholder="jean@ferme.com" 
                 />
               </div>
               
               <div className="md:col-span-2 space-y-3">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Comment pouvons-nous vous aider ?</label>
+                <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Message</label>
                 <textarea 
                   rows={5} 
-                  className="w-full p-5 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/5 transition-all font-medium placeholder:text-slate-300 shadow-inner" 
-                  placeholder="Détaillez votre besoin ou posez votre question technique..."
+                  className="w-full p-5 bg-white/5 border border-white/10 rounded-3xl outline-none focus:border-emerald-500/50 focus:bg-white/10 transition-all font-medium text-white placeholder:text-white/20 shadow-2xl resize-none" 
+                  placeholder="Comment pouvons-nous optimiser votre production ?"
                 ></textarea>
               </div>
               
-              <div className="md:col-span-2 pt-4">
-                <button className="group relative px-12 py-5 bg-[#064e3b] text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:bg-emerald-600 transition-all flex items-center gap-3 shadow-2xl shadow-emerald-900/20 overflow-hidden">
+              <div className="md:col-span-2 pt-6">
+                {/* --- LE BOUTON CONTACT OPTIMISÉ --- */}
+                <button className="group relative w-full md:w-auto px-12 py-6 bg-emerald-500 text-slate-950 rounded-full font-black uppercase tracking-[0.2em] text-[11px] shadow-[0_0_30px_rgba(16,185,129,0.2)] hover:shadow-[0_0_50px_rgba(16,185,129,0.4)] hover:scale-105 transition-all duration-300 flex items-center justify-center gap-4 overflow-hidden">
                   <span className="relative z-10 flex items-center gap-3">
                     Envoyer le message 
-                    <Send size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                    <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                   </span>
-                  <div className="absolute inset-0 bg-linear-to-r from-emerald-600 to-teal-700 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  {/* Effet de brillance interne */}
+                  <div className="absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                 </button>
               </div>
             </form>
           </div>
         </div>
+      </section>
+
+      {/* Petit CTA de pied de page pour la cohérence */}
+      <section className="py-20 text-center opacity-30">
+        <p className="text-[10px] font-black uppercase tracking-[0.5em]">Sécurité & Confidentialité 100% Garantie</p>
       </section>
     </div>
   )
