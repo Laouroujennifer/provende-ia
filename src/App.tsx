@@ -7,6 +7,7 @@ import { About } from './pages/About'
 import { Contact } from './pages/Contact'
 import { Login } from './pages/Login'
 import { Register } from './pages/Register'
+import { Formations } from './pages/Formations'
 import { Dashboard } from './pages/Dashboard'
 import { Header } from './components/Header'
 import { Footer } from './components/Footer'
@@ -29,7 +30,9 @@ function AppContent() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/register" element={<Register />} 
+          />
+          <Route path="/formations" element={<Formations />} />
           
           {/* Protection : Redirige vers Register si pas connecté */}
           <Route 
