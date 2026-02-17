@@ -92,7 +92,7 @@ export function AutomaticGenerator() {
                 <Beaker className="text-amber-600" size={24} />
             </div>
             <div>
-              <p className="font-black text-[#064e3b] uppercase text-xs tracking-widest mb-1">Essai Gratuit Actif</p>
+              <p className="font-black text-primary uppercase text-xs tracking-widest mb-1">Essai Gratuit Actif</p>
               <p className="text-sm text-amber-800 font-bold">
                 Calculs restants : <span className="text-xl">{3 - (subscription.autoFormulasCount || 0)}</span> / 3
               </p>
@@ -191,7 +191,7 @@ export function AutomaticGenerator() {
       {optimizedResult && requirement && (
         <div className="space-y-8 pb-20">
           {/* Success Banner */}
-          <div className="bg-linear-to-r from-emerald-500 to-teal-600 rounded-[2rem] p-8 flex items-center gap-6 text-white shadow-xl shadow-emerald-100">
+          <div className="bg-linear-to-r from-emerald-500 to-teal-600 rounded-4xl p-8 flex items-center gap-6 text-white shadow-xl shadow-emerald-100">
             <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md">
               <CheckCircle2 size={32} />
             </div>

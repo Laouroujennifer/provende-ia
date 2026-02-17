@@ -8,7 +8,7 @@ export function Contact() {
       {/* 1. HEADER SECTION - STYLE MINEA (DARK & GLOW) */}
       <section className="relative pt-48 pb-40 px-6 overflow-hidden text-center">
         {/* Lueurs d'arrière-plan */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-125px bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none" />
         
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -36,7 +36,7 @@ export function Contact() {
         <div className="bg-slate-900/50 backdrop-blur-xl rounded-[3.5rem] shadow-2xl overflow-hidden flex flex-col lg:flex-row border border-white/10">
           
           {/* Côté Gauche : Infos (Style Dashboard) */}
-          <div className="lg:w-1/3 bg-linear-to-b from-white/[0.03] to-transparent p-12 lg:p-16 relative border-r border-white/5">
+          <div className="lg:w-1/3 bg-linear-to-b from-white/3 to-transparent p-12 lg:p-16 relative border-r border-white/5">
             <h3 className="text-2xl font-black mb-12 tracking-tight flex items-center gap-3">
               <Sparkles className="text-emerald-400" size={20} />
               Coordonnées

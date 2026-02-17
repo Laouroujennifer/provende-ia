@@ -10,7 +10,7 @@ export function Formations() {
       {/* 1. HERO SECTION - STYLE MINEA */}
       <section className="relative pt-48 pb-32 px-6 overflow-hidden flex flex-col items-center text-center">
         {/* Lueurs d'arrière-plan */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-125 bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none" />
         
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -68,7 +68,7 @@ export function Formations() {
                 i: <BookOpen className="text-emerald-400" />
               }
             ].map((f, i) => (
-              <div key={i} className="p-10 bg-white/5 border border-white/10 rounded-[2.5rem] hover:bg-white/[0.08] transition-all group">
+              <div key={i} className="p-10 bg-white/5 border border-white/10 rounded-[2.5rem] hover:bg-white/8 transition-all group">
                 <div className="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
                   {f.i}
                 </div>

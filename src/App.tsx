@@ -1,6 +1,7 @@
 // src/App.tsx
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+import { SubscriptionProvider } from './contexts/SubscriptionContext' // <--- IMPORT ICI
 import { Home } from './pages/Home'
 import { Services } from './pages/Services'
 import { About } from './pages/About'
@@ -9,6 +10,7 @@ import { Login } from './pages/Login'
 import { Register } from './pages/Register'
 import { Formations } from './pages/Formations'
 import { Dashboard } from './pages/Dashboard'
+
 import { Header } from './components/Header'
 import { Footer } from './components/Footer'
 
@@ -23,18 +25,17 @@ function AppContent() {
     <div className="flex flex-col min-h-screen bg-slate-950 text-white">
       {!isIsolated && <Header />}
       
-      <main className="flex-grow">
+      <main className="grow">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/services" element={<Services />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+       
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} 
-          />
+          <Route path="/register" element={<Register />} />
           <Route path="/formations" element={<Formations />} />
           
-          {/* Protection : Redirige vers Register si pas connecté */}
           <Route 
             path="/dashboard" 
             element={isAuthenticated ? <Dashboard /> : <Navigate to="/register" />} 
@@ -51,9 +52,12 @@ function AppContent() {
 export function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <AppContent />
-      </BrowserRouter>
+      {/* 2. ON ENVELOPPE TOUT ICI */}
+      <SubscriptionProvider> 
+        <BrowserRouter>
+          <AppContent />
+        </BrowserRouter>
+      </SubscriptionProvider>
     </AuthProvider>
   )
 }
