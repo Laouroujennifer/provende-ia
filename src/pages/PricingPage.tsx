@@ -78,7 +78,7 @@ export function PricingPage() {
       alert("Félicitations ! Votre compte est maintenant PRO pour 1 an.");
       navigate('/dashboard');
     } catch (error) {
-      console.error("Erreur d'activation:", error);
+      console.error("Erreur activation:", error);
       alert("Erreur lors de l'activation. Contactez-nous sur WhatsApp.");
     } finally {
       setLoadingPlan(null);
@@ -94,10 +94,11 @@ export function PricingPage() {
 
     setLoadingPlan(planId);
 
+    // DÉCLENCHEMENT KKIAPAY
     window.openKkiapayWidget({
       amount: amount,
-      api_key: "pk_xxxxxxxxxxxxxxxxxxxxxxxxxxxx", // REMPLACE PAR TA CLÉ PK_...
-      sandbox: true,
+      api_key: import.meta.env.VITE_KKIAPAY_PUBLIC_KEY, // Utilise la clé du .env
+      sandbox: true, // Laisse à TRUE pour tester avec le 97000000
       name: user?.user_metadata?.first_name || "Éleveur",
       email: user?.email || "",
       data: planId,
@@ -115,8 +116,7 @@ export function PricingPage() {
 
   return (
     <div className="bg-slate-50 min-h-screen pb-24 text-slate-900">
-      {/* SECTION HEADER - VERT FONCÉ FIXE */}
-      <section className="bg-[#064e3b] pt-32 pb-60 relative overflow-hidden text-white text-center">
+      <section className="bg-[#064e3b] pt-32 pb-60 relative overflow-hidden text-white text-center text-left">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <svg className="w-full h-full" viewBox="0 0 100 100">
             <pattern id="grid-p" width="10" height="10" patternUnits="userSpaceOnUse">
@@ -126,20 +126,19 @@ export function PricingPage() {
           </svg>
         </div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 px-6 text-center max-w-4xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 px-6 max-w-4xl mx-auto text-center">
           <span className="bg-emerald-500/20 text-emerald-400 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 inline-block border border-emerald-500/20">
             Investissez dans votre ferme
           </span>
           <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tighter leading-tight">
             Un petit prix pour de <span className="text-emerald-400 italic">gros profits</span>.
           </h1>
-          <p className="text-emerald-100/70 text-lg md:text-xl max-w-2xl mx-auto font-medium">
+          <p className="text-emerald-100/70 text-lg md:text-xl font-medium">
             Le plan Pro se rentabilise dès votre première tonne d'aliment produite.
           </p>
         </motion.div>
       </section>
 
-      {/* SECTION CARTES */}
       <section className="max-w-5xl mx-auto px-6 -mt-40 relative z-20">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {plans.map((plan) => (
@@ -156,12 +155,12 @@ export function PricingPage() {
               )}
               
               <h3 className="text-lg font-black text-slate-400 mb-2 uppercase tracking-widest">{plan.name}</h3>
-              <div className="text-5xl font-black text-slate-900 mb-6 tracking-tighter">
+              <div className="text-5xl font-black text-slate-900 mb-6 tracking-tighter text-left">
                 {plan.price === 0 ? "0 F" : formatPrice(plan.price, currency)}
                 <span className="text-sm text-slate-400 font-bold uppercase tracking-normal"> / {plan.period}</span>
               </div>
               
-              <ul className="space-y-5 mb-12 flex-1">
+              <ul className="space-y-5 mb-12 flex-1 text-left">
                 {plan.features.map(f => (
                   <li key={f} className="flex items-center gap-4 text-slate-600 font-bold text-xs uppercase tracking-tight">
                     <div className="w-6 h-6 rounded-full bg-emerald-50 flex items-center justify-center shrink-0 border border-emerald-100">
@@ -172,9 +171,8 @@ export function PricingPage() {
                 ))}
               </ul>
 
-              {/* BOUTON - COULEUR FIXE VERT FONCÉ */}
               <button 
-                onClick={() => handleSubscribe(plan.id as PlanID, plan.price)}
+                onClick={() => handleSubscribe(plan.id, plan.price)}
                 disabled={loadingPlan !== null || plan.id === 'free'}
                 className={`w-full py-6 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 shadow-xl ${
                   plan.highlight 
@@ -186,16 +184,6 @@ export function PricingPage() {
               </button>
             </div>
           ))}
-        </div>
-
-        {/* LOGOS PAIEMENT */}
-        <div className="mt-16 text-center">
-           <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mb-8">Paiement Mobile Money Sécurisé (Bénin & Afrique)</p>
-           <div className="flex justify-center items-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/9/93/MTN_Logo.svg" alt="MTN" className="h-10" />
-              <img src="https://upload.wikimedia.org/wikipedia/commons/a/a8/Moov_Logo.svg" alt="Moov" className="h-8" />
-              <img src="https://upload.wikimedia.org/wikipedia/fr/0/0e/Logo_Celtiis.png" alt="Celtiis" className="h-10" />
-           </div>
         </div>
       </section>
     </div>
