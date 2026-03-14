@@ -1,6 +1,6 @@
-import { useState } from 'react' // Suppression de "React" car seul useState est utilisé
-import { Plus, Trash2 } from 'lucide-react' // Suppression de "Save" car non utilisé ici
-// Correction TS1484 : Utilisation de "import type" pour les interfaces
+import { useState } from 'react'
+import { Plus, Trash2 } from 'lucide-react'
+// Correction TS1484 : Utilisation de "import type"
 import type { SelectedIngredient } from '../types/ingredients' 
 import { ingredientsDatabase } from '../data/ingredientsDatabase'
 import { calculateTotals, getFinalValues } from '../utils/nutritionCalculations'
@@ -25,7 +25,7 @@ export function IngredientTable({
         {
           ...ingredient,
           quantity: 0,
-          price: ingredient.defaultPrice || 0,
+          price: 0, // Le prix est mis à 0 par défaut car masqué
         },
       ])
       setSelectedToAdd('')
@@ -38,15 +38,11 @@ export function IngredientTable({
     onUpdateIngredients(newIngredients)
   }
 
-  const updateValue = (
-    index: number,
-    field: 'quantity' | 'price',
-    value: number,
-  ) => {
+  const updateQuantity = (index: number, value: number) => {
     const newIngredients = [...selectedIngredients]
     newIngredients[index] = {
       ...newIngredients[index],
-      [field]: value,
+      quantity: value,
     }
     onUpdateIngredients(newIngredients)
   }
@@ -60,101 +56,80 @@ export function IngredientTable({
   )
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-250px">
-          <thead className="bg-gray-50 border-b border-gray-200">
+        <table className="w-full min-w-[800px]">
+          <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
-              <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-64">
+              <th className="px-6 py-4 text-left text-[10px] font-black text-slate-500 uppercase tracking-widest w-64">
                 Matière Première
               </th>
-              <th className="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider w-32">
+              <th className="px-4 py-4 text-right text-[10px] font-black text-slate-500 uppercase tracking-widest w-32">
                 Qté (kg)
               </th>
-              <th className="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider w-32">
-                Prix (FCFA)
-              </th>
-              <th className="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-4 py-4 text-right text-[10px] font-black text-slate-500 uppercase tracking-widest">
                 EM kcal
               </th>
-              <th className="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-4 py-4 text-right text-[10px] font-black text-slate-500 uppercase tracking-widest">
                 PB %
               </th>
-              <th className="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-4 py-4 text-right text-[10px] font-black text-slate-500 uppercase tracking-widest">
                 Lys %
               </th>
-              <th className="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-4 py-4 text-right text-[10px] font-black text-slate-500 uppercase tracking-widest">
                 Met %
               </th>
-              <th className="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-4 py-4 text-right text-[10px] font-black text-slate-500 uppercase tracking-widest">
                 Ca %
               </th>
-              <th className="px-4 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-4 py-4 text-right text-[10px] font-black text-slate-500 uppercase tracking-widest">
                 P %
               </th>
-              <th className="px-4 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider w-16">
+              <th className="px-4 py-4 text-center text-[10px] font-black text-slate-500 uppercase tracking-widest w-16">
                 Action
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-slate-100">
             {selectedIngredients.map((ing, index) => (
-              <tr key={ing.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-3 text-sm font-medium text-gray-900">
+              <tr key={ing.id} className="hover:bg-slate-50 transition-colors">
+                <td className="px-6 py-3 text-sm font-bold text-slate-900">
                   {ing.name}
                 </td>
                 <td className="px-4 py-3">
                   <input
                     type="number"
                     min="0"
+                    placeholder="0"
                     value={ing.quantity || ''}
                     onChange={(e) =>
-                      updateValue(
-                        index,
-                        'quantity',
-                        parseFloat(e.target.value) || 0,
-                      )
+                      updateQuantity(index, parseFloat(e.target.value) || 0)
                     }
-                    className="w-full text-right px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-teal-500 outline-none"
+                    className="w-full text-right px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none font-bold text-slate-900"
                   />
                 </td>
-                <td className="px-4 py-3">
-                  <input
-                    type="number"
-                    min="0"
-                    value={ing.price || ''}
-                    onChange={(e) =>
-                      updateValue(
-                        index,
-                        'price',
-                        parseFloat(e.target.value) || 0,
-                      )
-                    }
-                    className="w-full text-right px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-teal-500 outline-none"
-                  />
-                </td>
-                <td className="px-4 py-3 text-right text-sm text-gray-500">
+                <td className="px-4 py-3 text-right text-sm font-medium text-slate-500">
                   {ing.em}
                 </td>
-                <td className="px-4 py-3 text-right text-sm text-gray-500">
+                <td className="px-4 py-3 text-right text-sm font-medium text-slate-500">
                   {ing.pb}
                 </td>
-                <td className="px-4 py-3 text-right text-sm text-gray-500">
+                <td className="px-4 py-3 text-right text-sm font-medium text-slate-500">
                   {ing.lys}
                 </td>
-                <td className="px-4 py-3 text-right text-sm text-gray-500">
+                <td className="px-4 py-3 text-right text-sm font-medium text-slate-500">
                   {ing.met}
                 </td>
-                <td className="px-4 py-3 text-right text-sm text-gray-500">
+                <td className="px-4 py-3 text-right text-sm font-medium text-slate-500">
                   {ing.ca}
                 </td>
-                <td className="px-4 py-3 text-right text-sm text-gray-500">
+                <td className="px-4 py-3 text-right text-sm font-medium text-slate-500">
                   {ing.p}
                 </td>
                 <td className="px-4 py-3 text-center">
                   <button
                     onClick={() => handleRemove(index)}
-                    className="text-red-400 hover:text-red-600 transition-colors"
+                    className="p-2 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -163,15 +138,15 @@ export function IngredientTable({
             ))}
 
             {/* Ligne d'ajout */}
-            <tr className="bg-gray-50">
-              <td className="px-6 py-3" colSpan={10}>
+            <tr className="bg-slate-50/50">
+              <td className="px-6 py-4" colSpan={9}>
                 <div className="flex items-center gap-4">
                   <select
                     value={selectedToAdd}
                     onChange={(e) => setSelectedToAdd(e.target.value)}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 outline-none bg-white"
+                    className="flex-1 px-4 py-3 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-emerald-500 outline-none bg-white font-medium text-sm"
                   >
-                    <option value="">Sélectionner un ingrédient...</option>
+                    <option value="">+ Ajouter un ingrédient au mélange...</option>
                     {availableIngredients.map((i) => (
                       <option key={i.id} value={i.id}>
                         {i.name}
@@ -181,7 +156,7 @@ export function IngredientTable({
                   <button
                     onClick={handleAdd}
                     disabled={!selectedToAdd}
-                    className="flex items-center gap-2 bg-teal-600 text-white px-6 py-2 rounded-lg hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                    className="flex items-center gap-2 bg-[#064e3b] text-white px-6 py-3 rounded-2xl hover:bg-emerald-900 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-black text-[10px] uppercase tracking-widest shadow-lg shadow-emerald-900/10"
                   >
                     <Plus className="w-4 h-4" />
                     Ajouter
@@ -191,33 +166,30 @@ export function IngredientTable({
             </tr>
 
             {/* Ligne TOTAL */}
-            <tr className="bg-teal-50 border-t-2 border-teal-100 font-bold">
-              <td className="px-6 py-4 text-teal-900">TOTAL</td>
-              <td className="px-4 py-4 text-right text-teal-900">
-                {rawTotals.weight.toFixed(2)}
+            <tr className="bg-emerald-50/50 border-t-2 border-emerald-100 font-black">
+              <td className="px-6 py-5 text-emerald-900 text-xs uppercase tracking-widest">Poids du mélange</td>
+              <td className={`px-4 py-5 text-right text-base ${rawTotals.weight === 100 ? 'text-emerald-600' : 'text-slate-900'}`}>
+                {rawTotals.weight.toFixed(2)} kg
               </td>
-              <td className="px-4 py-4 text-right text-teal-900">
-                {rawTotals.cost.toLocaleString()}
-              </td>
-              <td className="px-4 py-4 text-right text-teal-900">
+              <td className="px-4 py-5 text-right text-emerald-900 text-sm">
                 {finalTotals.em.toFixed(0)}
               </td>
-              <td className="px-4 py-4 text-right text-teal-900">
-                {finalTotals.pb.toFixed(2)}
+              <td className="px-4 py-5 text-right text-emerald-900 text-sm">
+                {finalTotals.pb.toFixed(2)}%
               </td>
-              <td className="px-4 py-4 text-right text-teal-900">
-                {finalTotals.lys.toFixed(2)}
+              <td className="px-4 py-5 text-right text-emerald-900 text-sm">
+                {finalTotals.lys.toFixed(2)}%
               </td>
-              <td className="px-4 py-4 text-right text-teal-900">
-                {finalTotals.met.toFixed(2)}
+              <td className="px-4 py-5 text-right text-emerald-900 text-sm">
+                {finalTotals.met.toFixed(2)}%
               </td>
-              <td className="px-4 py-4 text-right text-teal-900">
-                {finalTotals.ca.toFixed(2)}
+              <td className="px-4 py-5 text-right text-emerald-900 text-sm">
+                {finalTotals.ca.toFixed(2)}%
               </td>
-              <td className="px-4 py-4 text-right text-teal-900">
-                {finalTotals.p.toFixed(2)}
+              <td className="px-4 py-5 text-right text-emerald-900 text-sm">
+                {finalTotals.p.toFixed(2)}%
               </td>
-              <td className="px-4 py-4"></td>
+              <td className="px-4 py-5"></td>
             </tr>
           </tbody>
         </table>

@@ -1,8 +1,18 @@
 import { useEffect, useState, createContext, useContext, type ReactNode } from 'react'
-import type { UserSubscription, Currency } from '../types/subscription'
-import { detectCurrency } from '../utils/geolocation'
+import { useAuth } from './AuthContext'
+import { supabase } from '../lib/supabase'
 
-// L'interface doit TOUT contenir pour que les autres pages ne fassent pas d'erreur
+export type Currency = 'XOF' | 'EUR' | 'USD'
+export interface UserSubscription {
+  status: 'trial' | 'active' | 'expired'
+  planId: 'free' | 'monthly' | 'annual'
+  startDate: string
+  endDate: string
+  formulasCount: number
+  autoFormulasCount: number
+  bonusCalculations: number 
+}
+
 interface SubscriptionContextType {
   subscription: UserSubscription
   currency: Currency
@@ -16,67 +26,65 @@ interface SubscriptionContextType {
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined)
 
+const INITIAL_SUB: UserSubscription = {
+  status: 'trial', planId: 'free', startDate: '', endDate: '', formulasCount: 0, autoFormulasCount: 0, bonusCalculations: 0
+}
+
 export function SubscriptionProvider({ children }: { children: ReactNode }) {
-  const [currency, setCurrency] = useState<Currency>(() => detectCurrency())
-  const [subscription, setSubscription] = useState<UserSubscription>(() => {
-    const saved = localStorage.getItem('provende_subscription')
-    if (saved) return JSON.parse(saved)
-    return {
-      status: 'trial',
-      planId: 'free',
-      startDate: new Date().toISOString(),
-      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      formulasCount: 0,
-      autoFormulasCount: 0,
-    }
-  })
+  const { user } = useAuth()
+  const [currency, setCurrency] = useState<Currency>('XOF')
+  const [subscription, setSubscription] = useState<UserSubscription>(INITIAL_SUB)
 
   useEffect(() => {
-    localStorage.setItem('provende_subscription', JSON.stringify(subscription))
-  }, [subscription])
+    async function loadProfile() {
+      if (!user) return;
+      try {
+        const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
+        if (data && !error) {
+          const isPro = data.subscription_status === 'pro';
+          setSubscription({
+            status: isPro ? 'active' : 'trial',
+            planId: isPro ? 'monthly' : 'free',
+            startDate: data.created_at,
+            endDate: new Date(new Date(data.created_at).getTime() + 30*24*60*60*1000).toISOString(),
+            formulasCount: data.manual_formulas_count || 0,
+            autoFormulasCount: data.auto_formulas_count || 0,
+            bonusCalculations: data.bonus_calculations || 0
+          });
+        }
+      } catch (err) { console.error("Erreur chargement profil:", err); }
+    }
+    loadProfile();
+  }, [user])
 
-  const upgradeSubscription = (planId: 'monthly' | 'annual') => {
-    setSubscription(prev => ({
-      ...prev,
-      status: 'active',
-      planId: planId,
-      autoFormulasCount: 0,
-      formulasCount: 0
-    }))
+  const upgradeSubscription = async (planId: 'monthly' | 'annual') => {
+    if (!user) return;
+    const { error } = await supabase.from('profiles').update({ subscription_status: 'pro' }).eq('id', user.id);
+    if (!error) setSubscription(prev => ({ ...prev, status: 'active', planId }));
   }
 
-  const incrementAutoCount = () => {
-    setSubscription((prev: UserSubscription) => ({
-      ...prev,
-      autoFormulasCount: (prev.autoFormulasCount || 0) + 1,
-    }))
+  const incrementAutoCount = async () => {
+    if (!user) return;
+    const next = (subscription.autoFormulasCount || 0) + 1;
+    await supabase.from('profiles').update({ auto_formulas_count: next }).eq('id', user.id);
+    setSubscription(prev => ({ ...prev, autoFormulasCount: next }));
   }
 
-  const incrementFormulaCount = () => {
-    setSubscription((prev: UserSubscription) => ({
-      ...prev,
-      formulasCount: (prev.formulasCount || 0) + 1,
-    }))
+  const incrementFormulaCount = async () => {
+    if (!user) return;
+    const next = (subscription.formulasCount || 0) + 1;
+    await supabase.from('profiles').update({ manual_formulas_count: next }).eq('id', user.id);
+    setSubscription(prev => ({ ...prev, formulasCount: next }));
   }
 
-  const isExpired = new Date(subscription.endDate) < new Date()
-  
-  // Autorisation Mode IA (3 essais)
-  const canAccessMode2 = subscription.status === 'active' || (subscription.autoFormulasCount || 0) < 3
-
-  // Autorisation Sauvegarde Manuel (5 essais)
-  const canSaveFormula = !isExpired && (subscription.status === 'active' || (subscription.formulasCount || 0) < 5)
+  const totalAllowed = 3 + (subscription.bonusCalculations || 0);
+  const canAccessMode2 = subscription.status === 'active' || subscription.autoFormulasCount < totalAllowed;
+  const canSaveFormula = subscription.status === 'active' || subscription.formulasCount < 10 // Limite généreuse
 
   return (
     <SubscriptionContext.Provider value={{
-      subscription, 
-      currency, 
-      setCurrency, 
-      upgradeSubscription, 
-      incrementAutoCount, 
-      incrementFormulaCount, 
-      canAccessMode2, 
-      canSaveFormula
+      subscription, currency, setCurrency, upgradeSubscription, 
+      incrementAutoCount, incrementFormulaCount, canAccessMode2, canSaveFormula
     }}>
       {children}
     </SubscriptionContext.Provider>
@@ -85,7 +93,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useSubscription = () => {
-  const context = useContext(SubscriptionContext)
-  if (!context) throw new Error('useSubscription must be used within SubscriptionProvider')
-  return context
+  const context = useContext(SubscriptionContext);
+  if (!context) throw new Error('useSubscription must be used within SubscriptionProvider');
+  return context;
 }
