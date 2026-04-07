@@ -10,7 +10,6 @@ export const optimizeFormula = (
   const emT  = (requirement.em.min  + requirement.em.max)  / 2
   const pbT  = (requirement.pb.min  + requirement.pb.max)  / 2
   const caT  = ((requirement.ca?.min || 0) + (requirement.ca?.max || 0)) / 2
-  const pT   = ((requirement.p?.min  || 0) + (requirement.p?.max  || 0)) / 2
   const lysT = ((requirement.lys?.min || 0) + (requirement.lys?.max || 0)) / 2
   const metT = ((requirement.met?.min || 0) + (requirement.met?.max || 0)) / 2
 
