@@ -1,3 +1,5 @@
+// src/utils/nutritionCalculations.ts
+
 // Correction TS1484 : Ajout de "type" pour les importations d'interfaces
 import type { SelectedIngredient, FormulaTotals } from '../types/ingredients'
 import type { AnimalRequirement } from '../types/animalRequirements'
@@ -30,18 +32,18 @@ export const calculateTotals = (
     totals.cost += qty * price
 
     // Calcul de la contribution nutritionnelle brute
-    totals.ms += ing.ms * qty
-    totals.cb += ing.cb * qty
-    totals.mg += ing.mg * qty
-    totals.em += ing.em * qty
-    totals.en += ing.en * qty
-    totals.pb += ing.pb * qty
-    totals.lys += ing.lys * qty
-    totals.met += ing.met * qty
-    totals.aas += ing.aas * qty
-    totals.ca += ing.ca * qty
-    totals.p += ing.p * qty
-    totals.na += ing.na * qty
+    totals.ms += (ing.ms || 0) * qty
+    totals.cb += (ing.cb || 0) * qty
+    totals.mg += (ing.mg || 0) * qty
+    totals.em += (ing.em || 0) * qty
+    totals.en += (ing.en || 0) * qty
+    totals.pb += (ing.pb || 0) * qty
+    totals.lys += (ing.lys || 0) * qty
+    totals.met += (ing.met || 0) * qty
+    totals.aas += (ing.aas || 0) * qty
+    totals.ca += (ing.ca || 0) * qty
+    totals.p += (ing.p || 0) * qty
+    totals.na += (ing.na || 0) * qty
   })
 
   return totals
@@ -81,26 +83,36 @@ export const generateRecommendations = (
   const final = getFinalValues(totals)
   const recs: Recommendation[] = []
 
-  // Fonction utilitaire pour vérifier les plages
+  /**
+   * Fonction utilitaire améliorée avec TOLÉRANCE
+   * Permet d'éviter d'afficher "Trop bas" pour une différence infime
+   */
   const check = (
     val: number,
     range: { min: number; max: number },
     name: string,
     unit: string,
   ) => {
-    if (val < range.min) {
+    const tolerance = 0.97; // Tolérance de 3% sur le minimum
+    const upperLimit = 1.05; // Tolérance de 5% sur le maximum (moins critique en nutrition)
+
+    const isTooLow = val < (range.min * tolerance);
+    const isTooHigh = val > (range.max * upperLimit);
+
+    if (isTooLow) {
       recs.push({
         type: 'warning',
-        message: `Niveau de ${name} trop bas (${val.toFixed(2)}${unit}). Cible: ${range.min}-${range.max}${unit}.`,
+        message: `Niveau de ${name} trop bas (${val.toFixed(2)}${unit}). Cible min: ${range.min}${unit}.`,
         nutrient: name,
       })
-    } else if (val > range.max) {
+    } else if (isTooHigh) {
       recs.push({
         type: 'warning',
-        message: `Niveau de ${name} trop élevé (${val.toFixed(2)}${unit}). Cible: ${range.min}-${range.max}${unit}.`,
+        message: `Niveau de ${name} trop élevé (${val.toFixed(2)}${unit}). Cible max: ${range.max}${unit}.`,
         nutrient: name,
       })
     } else {
+      // Si on est dans la plage (avec tolérance), c'est OPTIMAL
       recs.push({
         type: 'success',
         message: `${name} optimal (${val.toFixed(2)}${unit})`,

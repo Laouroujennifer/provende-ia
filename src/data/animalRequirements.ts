@@ -1,7 +1,7 @@
 import type { AnimalRequirement } from '../types/animalRequirements'
 
 export const animalRequirements: AnimalRequirement[] = [
-  // --- POULET DE CHAIR (Basé sur les étiquettes GVS) ---
+  // ─── POULET DE CHAIR CLASSIQUE (Basé sur GVS) ──────────────────────────
   {
     id: 'chair_demarrage',
     species: 'Poulet de Chair',
@@ -45,7 +45,7 @@ export const animalRequirements: AnimalRequirement[] = [
     mg: { min: 4.0, max: 6.0 },
   },
 
-  // --- POULES PONDEUSES (Basé sur le manuel et les étiquettes) ---
+  // ─── POULES PONDEUSES CLASSIQUES ───────────────────────────────────────
   {
     id: 'ponte_demarrage',
     species: 'Poules Pondeuses',
@@ -101,5 +101,93 @@ export const animalRequirements: AnimalRequirement[] = [
     p: { min: 0.42, max: 0.55 },
     na: { min: 0.16, max: 0.18 },
     mg: { min: 5.0, max: 6.0 },
+  },
+
+  // ─── GOLIATH CHAIR (Guide Goliath 2023) ───────────────────────────────
+  {
+    id: 'goliath_chair_demarrage',
+    species: 'Goliath Chair',
+    stage: 'Démarrage (0-4 sem)',
+    ageRange: '0 - 4 semaines',
+    em: { min: 3000, max: 3200 },
+    pb: { min: 21, max: 24 },
+    lys: { min: 0.90, max: 1.24 },
+    met: { min: 0.40, max: 0.52 },
+    ca: { min: 1.0, max: 1.1 },
+    p: { min: 0.45, max: 0.6 },
+    na: { min: 0.15, max: 0.20 },
+    mg: { min: 2.0, max: 5.0 }
+  },
+  {
+    id: 'goliath_chair_croissance',
+    species: 'Goliath Chair',
+    stage: 'Croissance (5-10 sem)',
+    ageRange: '5 - 10 semaines',
+    em: { min: 2900, max: 3200 },
+    pb: { min: 20, max: 22 },
+    lys: { min: 0.74, max: 1.0 },
+    met: { min: 0.30, max: 0.50 },
+    ca: { min: 0.9, max: 1.2 },
+    p: { min: 0.35, max: 0.5 },
+    na: { min: 0.15, max: 0.20 },
+    mg: { min: 2.0, max: 7.0 }
+  },
+
+  // ─── GOLIATH PONTE (Guide Goliath 2023) ───────────────────────────────
+  {
+    id: 'goliath_ponte_demarrage',
+    species: 'Goliath Ponte',
+    stage: 'Démarrage (0-4 sem)',
+    ageRange: '0 - 4 semaines',
+    em: { min: 3000, max: 3200 },
+    pb: { min: 21, max: 24 },
+    lys: { min: 0.90, max: 1.24 },
+    met: { min: 0.40, max: 0.52 },
+    ca: { min: 1.0, max: 1.1 },
+    p: { min: 0.45, max: 0.6 },
+    na: { min: 0.15, max: 0.20 },
+    mg: { min: 2.0, max: 5.0 }
+  },
+  {
+    id: 'goliath_ponte_croissance',
+    species: 'Goliath Ponte',
+    stage: 'Croissance (5-8 sem)',
+    ageRange: '5 - 8 semaines',
+    em: { min: 2900, max: 3000 },
+    pb: { min: 19, max: 21 },
+    lys: { min: 0.85, max: 1.0 },
+    met: { min: 0.32, max: 0.50 },
+    ca: { min: 0.97, max: 1.0 },
+    p: { min: 0.40, max: 0.6 },
+    na: { min: 0.15, max: 0.20 },
+    mg: { min: 2.0, max: 5.0 }
+  },
+  {
+    id: 'goliath_poulette',
+    species: 'Goliath Ponte',
+    stage: 'Poulette (9-20 sem)',
+    ageRange: '9 - 20 semaines',
+    em: { min: 2600, max: 2800 },
+    pb: { min: 16, max: 18 },
+    lys: { min: 0.55, max: 0.80 },
+    met: { min: 0.24, max: 0.50 },
+    ca: { min: 0.90, max: 1.20 },
+    p: { min: 0.35, max: 0.5 },
+    na: { min: 0.15, max: 0.20 },
+    mg: { min: 2.0, max: 7.0 }
+  },
+  {
+    id: 'goliath_ponte_adulte',
+    species: 'Goliath Ponte',
+    stage: 'Ponte adulte (21 sem+)',
+    ageRange: 'Dès 21 semaines',
+    em: { min: 2600, max: 2900 },
+    pb: { min: 17, max: 19 },
+    lys: { min: 0.70, max: 0.93 },
+    met: { min: 0.35, max: 0.45 },
+    ca: { min: 3.5, max: 4.0 },
+    p: { min: 0.35, max: 0.45 },
+    na: { min: 0.15, max: 0.20 },
+    mg: { min: 2.0, max: 5.0 }
   }
 ]

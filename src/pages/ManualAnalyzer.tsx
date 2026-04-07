@@ -9,7 +9,7 @@ import { calculateTotals, generateRecommendations } from '../utils/nutritionCalc
 import { useSubscription } from '../contexts/SubscriptionContext'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
-import type { SelectedIngredient } from '../types/ingredients'
+import type { SelectedIngredient } from '../types/ingredients' 
 
 export function ManualAnalyzer() {
   const { user } = useAuth()
