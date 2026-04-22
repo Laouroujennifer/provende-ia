@@ -5,7 +5,6 @@ import {
   TrendingUp, ArrowUpRight, Wheat, ChevronRight, Sparkles,
   Zap, X, Star, Lock
 } from 'lucide-react'
-import { ModeSelector } from '../components/ModeSelector'
 import { ManualAnalyzer } from './ManualAnalyzer'
 import { AutomaticGenerator } from './AutomaticGenerator'
 import { ReferralSection } from './ReferralSection'
@@ -162,7 +161,7 @@ function UpgradeModal({ onClose, onGoReferral, onGoPricing }: {
         <div className="bg-[#042818] px-8 pt-8 pb-12">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-1.5 text-white/30 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+            className="absolute top-4 right-4 p-1.5 text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
           >
             <X size={16} />
           </button>
@@ -175,7 +174,7 @@ function UpgradeModal({ onClose, onGoReferral, onGoPricing }: {
           <h2 className="text-2xl font-black text-white tracking-tight mb-2">
             Votre essai est terminé.
           </h2>
-          <p className="text-white/40 text-sm font-medium leading-relaxed">
+          <p className="text-white/70 text-sm font-medium leading-relaxed">
             Vous avez utilisé votre unique essai gratuit. Choisissez comment continuer.
           </p>
         </div>
@@ -190,7 +189,7 @@ function UpgradeModal({ onClose, onGoReferral, onGoPricing }: {
             </div>
             <div className="flex-1">
               <p className="font-black text-[13px]">Passer Pro</p>
-              <p className="text-white/70 text-[11px] font-medium mt-0.5">
+              <p className="text-white/80 text-[11px] font-medium mt-0.5">
                 Générations illimitées · Export PDF · Support
               </p>
             </div>
@@ -206,14 +205,14 @@ function UpgradeModal({ onClose, onGoReferral, onGoPricing }: {
             </div>
             <div className="flex-1">
               <p className="font-black text-[13px]">Parrainer un ami</p>
-              <p className="text-purple-500 text-[11px] font-medium mt-0.5">
+              <p className="text-purple-600 text-[11px] font-medium mt-0.5">
                 Gagnez <strong>+1 essai bonus</strong> par ami invité
               </p>
             </div>
             <ChevronRight size={16} className="shrink-0 opacity-40" />
           </button>
 
-          <p className="text-center text-[10px] text-slate-300 font-bold pt-1">
+          <p className="text-center text-[10px] text-slate-400 font-bold pt-1">
             Plan PRO à partir de 5 000 FCFA / mois
           </p>
         </div>
@@ -256,7 +255,6 @@ export function Dashboard() {
 
   const handleUseTrialClick = () => {
     setActiveView('calculator')
-    setMode('auto')
     setIsSidebarOpen(false)
   }
 
@@ -284,32 +282,36 @@ export function Dashboard() {
         />
       )}
 
+      {/* ─── SIDEBAR ─── */}
       <aside
         className={`fixed inset-y-0 left-0 z-50 w-68 bg-[#042818] text-white flex flex-col transform transition-transform duration-300 ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0 lg:static lg:w-64`}
       >
-        <div className="p-7 flex items-center gap-3 border-b border-white/5">
+        {/* Logo */}
+        <div className="p-7 flex items-center gap-3 border-b border-white/10">
           <div className="w-9 h-9 bg-emerald-500 rounded-xl flex items-center justify-center text-[#042818] font-black text-sm shadow-lg shadow-emerald-900/50">
             PB
           </div>
-          <span className="font-black uppercase tracking-tighter text-base">
+          <span className="font-black uppercase tracking-tighter text-base text-white">
             Provende<span className="text-emerald-400">Builder</span>
           </span>
         </div>
 
-        <div className="mx-4 mt-4 flex items-center gap-3 bg-white/5 border border-white/8 rounded-xl px-4 py-3">
+        {/* User block */}
+        <div className="mx-4 mt-4 flex items-center gap-3 bg-white/10 border border-white/15 rounded-xl px-4 py-3">
           <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center font-black text-xs text-white shrink-0">
             {userInitials}
           </div>
           <div className="min-w-0">
             <p className="text-[11px] font-black text-white truncate">{userName}</p>
-            <p className="text-[9px] font-bold text-white/30 uppercase tracking-widest">
+            <p className="text-[9px] font-bold text-white/60 uppercase tracking-widest">
               {subscription.status === 'active' ? 'Pro' : 'Free'}
             </p>
           </div>
         </div>
 
+        {/* Nav */}
         <nav className="flex-1 px-4 mt-4 space-y-1">
           {navItems.map((item) => (
             <button
@@ -318,7 +320,7 @@ export function Dashboard() {
               className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-[11px] uppercase tracking-widest transition-all ${
                 activeView === item.id
                   ? 'bg-emerald-500 text-[#042818] shadow-lg shadow-emerald-900/40'
-                  : 'text-white/35 hover:text-white hover:bg-white/6'
+                  : 'text-white/75 hover:text-white hover:bg-white/10'
               }`}
             >
               {item.icon}
@@ -327,7 +329,7 @@ export function Dashboard() {
                 <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${
                   activeView === item.id
                     ? 'bg-[#042818]/20 text-[#042818]'
-                    : 'bg-emerald-500/15 text-emerald-400'
+                    : 'bg-emerald-500/20 text-emerald-300'
                 }`}>
                   {item.badge}
                 </span>
@@ -336,34 +338,38 @@ export function Dashboard() {
           ))}
         </nav>
 
-        <div className="mx-4 mb-4 bg-white/5 border border-white/8 rounded-xl p-4">
+        {/* Trial widget */}
+        <div className="mx-4 mb-4 bg-white/10 border border-white/15 rounded-xl p-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Essai gratuit</span>
-            <span className="text-[10px] font-black text-white/60">{usedTrials}/{grandTotal}</span>
+            <span className="text-[10px] font-black text-white/80">{usedTrials}/{grandTotal}</span>
           </div>
-          <div className="h-1.5 bg-white/8 rounded-full overflow-hidden mb-2">
+          <div className="h-1.5 bg-white/15 rounded-full overflow-hidden mb-2">
             <div
               className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all"
               style={{ width: `${Math.min((usedTrials / grandTotal) * 100, 100)}%` }}
             />
           </div>
-          <p className="text-[10px] text-white/35 font-medium">
+          <p className="text-[10px] text-white/60 font-medium">
             {grandTotal - usedTrials > 0 ? '1 essai restant' : 'Essai épuisé'}
           </p>
         </div>
 
-        <div className="p-4 border-t border-white/5">
+        {/* Logout */}
+        <div className="p-4 border-t border-white/10">
           <button
             onClick={() => signOut()}
-            className="w-full flex items-center gap-3 px-4 py-3 text-red-400/50 font-bold text-[10px] uppercase tracking-widest hover:text-red-400 hover:bg-red-400/8 rounded-xl transition-all"
+            className="w-full flex items-center gap-3 px-4 py-3 text-red-400/80 font-bold text-[10px] uppercase tracking-widest hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all"
           >
             <LogOut size={16} /> Se déconnecter
           </button>
         </div>
       </aside>
 
+      {/* ─── MAIN ─── */}
       <main className="flex-1 flex flex-col min-h-screen overflow-y-auto">
 
+        {/* Mobile header */}
         <header className="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
           <button
             onClick={() => setIsSidebarOpen(true)}
@@ -380,10 +386,11 @@ export function Dashboard() {
           </div>
         </header>
 
+        {/* Desktop header */}
         <div className="hidden lg:flex items-center justify-between px-10 py-5 bg-white border-b border-slate-100 sticky top-0 z-30">
           <div>
             <h2 className="text-xl font-black text-slate-900 tracking-tight">{viewTitles[activeView].t}</h2>
-            <p className="text-[12px] text-slate-400 font-medium mt-0.5">{viewTitles[activeView].s}</p>
+            <p className="text-[12px] text-slate-500 font-medium mt-0.5">{viewTitles[activeView].s}</p>
           </div>
           <div className="flex items-center gap-3">
             <TrialPill used={usedTrials} total={grandTotal} onClick={() => setActiveView('home')} />
@@ -399,8 +406,10 @@ export function Dashboard() {
           </div>
         </div>
 
+        {/* ─── CONTENT ─── */}
         <div className="flex-1 p-5 md:p-10">
 
+          {/* HOME */}
           {activeView === 'home' && (
             <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
@@ -413,7 +422,7 @@ export function Dashboard() {
                   <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight mb-1">
                     Bienvenue, {userName} 👋
                   </h1>
-                  <p className="text-white/45 text-sm font-medium">Voici le résumé de votre activité.</p>
+                  <p className="text-white/70 text-sm font-medium">Voici le résumé de votre activité.</p>
                 </div>
                 <div className="relative z-10 flex items-center gap-2 px-4 py-2 bg-emerald-500/12 border border-emerald-500/20 rounded-full self-start sm:self-auto">
                   <Sparkles size={13} className="text-emerald-400" />
@@ -481,12 +490,12 @@ export function Dashboard() {
                     className="group relative bg-[#042818] p-7 rounded-2xl text-left hover:scale-[1.01] transition-all shadow-xl overflow-hidden border border-emerald-900/60"
                   >
                     <div className="absolute top-0 right-0 w-40 h-40 bg-white/4 rounded-full -mr-20 -mt-20 group-hover:scale-110 transition-transform duration-500" />
-                    <div className="w-11 h-11 bg-white/8 border border-white/10 rounded-xl flex items-center justify-center text-emerald-400 mb-5 group-hover:bg-emerald-500/20 group-hover:border-emerald-500/30 transition-colors">
+                    <div className="w-11 h-11 bg-white/10 border border-white/15 rounded-xl flex items-center justify-center text-emerald-400 mb-5 group-hover:bg-emerald-500/20 group-hover:border-emerald-500/30 transition-colors">
                       <FlaskConical size={20} />
                     </div>
                     <h3 className="text-xl font-black text-white mb-2 tracking-tight">Calculateur de Provende</h3>
-                    <p className="text-emerald-100/45 text-sm font-medium mb-5 leading-relaxed">
-                      Ajustez vos ingrédients ou générez automatiquement vos formules optimisées.
+                    <p className="text-emerald-100/60 text-sm font-medium mb-5 leading-relaxed">
+                      Vérifiez vos formules ou générez automatiquement vos formules optimisées.
                     </p>
                     <div className="flex items-center gap-2 text-emerald-400 font-black text-[10px] uppercase tracking-widest">
                       Ouvrir l'outil <ChevronRight size={13} className="group-hover:translate-x-1 transition-transform" />
@@ -501,7 +510,7 @@ export function Dashboard() {
                       <Wheat size={20} />
                     </div>
                     <h3 className="text-xl font-black text-slate-900 mb-2 tracking-tight">Historique des Recettes</h3>
-                    <p className="text-slate-400 text-sm font-medium mb-5 leading-relaxed">
+                    <p className="text-slate-500 text-sm font-medium mb-5 leading-relaxed">
                       Retrouvez toutes vos formulations sauvegardées et vos résultats.
                     </p>
                     <div className="flex items-center gap-2 text-emerald-600 font-black text-[10px] uppercase tracking-widest">
@@ -520,7 +529,7 @@ export function Dashboard() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-black text-sm text-slate-900">Programme Ambassadeur</p>
-                  <p className="text-[12px] text-slate-400 font-medium mt-0.5">
+                  <p className="text-[12px] text-slate-500 font-medium mt-0.5">
                     Parrainez un ami et gagnez chacun{' '}
                     <strong className="text-purple-600 font-black">+1 essai bonus</strong>
                   </p>
@@ -536,36 +545,64 @@ export function Dashboard() {
             </div>
           )}
 
+          {/* CALCULATOR */}
           {activeView === 'calculator' && (
             <div className="max-w-6xl mx-auto space-y-7 animate-in fade-in duration-500">
-              <div className="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm inline-block">
-                <ModeSelector currentMode={mode} onModeChange={setMode} />
+
+              {/* Mode selector */}
+              <div className="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm flex gap-3 w-full">
+                <button
+                  onClick={() => setMode('manual')}
+                  className={`flex-1 flex items-center justify-center gap-3 px-8 py-6 rounded-xl font-black text-base uppercase tracking-widest transition-all ${
+                    mode === 'manual'
+                      ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200 scale-[1.01]'
+                      : 'text-slate-400 hover:text-slate-700 hover:bg-slate-50'
+                  }`}
+                >
+                  <FlaskConical size={22} />
+                  Vérificateur de formules
+                </button>
+                <button
+                  onClick={() => setMode('auto')}
+                  className={`flex-1 flex items-center justify-center gap-3 px-8 py-6 rounded-xl font-black text-base uppercase tracking-widest transition-all ${
+                    mode === 'auto'
+                      ? 'bg-amber-500 text-white shadow-lg shadow-amber-200 scale-[1.01]'
+                      : 'text-slate-400 hover:text-slate-700 hover:bg-slate-50'
+                  }`}
+                >
+                  <Zap size={22} />
+                  Générateur automatique
+                </button>
               </div>
+
+              {/* Banner : essai restant */}
               {mode === 'auto' && grandTotal - usedTrials > 0 && (
-                <div className="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-5 py-3">
+                <div className="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-5 py-3.5">
                   <Zap size={15} className="text-amber-500 shrink-0" fill="currentColor" />
-                  <p className="text-[12px] font-bold text-amber-700">
+                  <p className="text-[13px] font-bold text-amber-800">
                     Il vous reste{' '}
                     <strong className="font-black">1 essai gratuit</strong>.
                     La génération automatique en consomme un.
                   </p>
                 </div>
               )}
+
+              {/* Banner : essai épuisé */}
               {mode === 'auto' && grandTotal - usedTrials === 0 && (
-                <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-5 py-3">
+                <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-xl px-5 py-3.5">
                   <Zap size={15} className="text-red-500 shrink-0" />
-                  <p className="text-[12px] font-bold text-red-700">
+                  <p className="text-[13px] font-bold text-red-800">
                     Votre essai gratuit a été utilisé.{' '}
                     <button
                       onClick={() => setShowUpgradeModal(true)}
-                      className="underline font-black text-red-800 hover:text-red-900"
+                      className="underline font-black text-red-900 hover:text-red-950"
                     >
                       Passez Pro
                     </button>{' '}
                     ou{' '}
                     <button
                       onClick={() => setActiveView('referral')}
-                      className="underline font-black text-red-800 hover:text-red-900"
+                      className="underline font-black text-red-900 hover:text-red-950"
                     >
                       parrainez un ami
                     </button>{' '}
@@ -573,6 +610,30 @@ export function Dashboard() {
                   </p>
                 </div>
               )}
+
+              {/* Description du mode sélectionné */}
+              <div className="bg-white border border-slate-200 rounded-2xl px-6 py-4 flex items-start gap-4 shadow-sm">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                  mode === 'manual'
+                    ? 'bg-emerald-50 text-emerald-600'
+                    : 'bg-amber-50 text-amber-600'
+                }`}>
+                  {mode === 'manual' ? <FlaskConical size={18} /> : <Zap size={18} />}
+                </div>
+                <div>
+                  <p className="font-black text-slate-900 text-sm">
+                    {mode === 'manual'
+                      ? 'Vérificateur de formules — Analysez et validez vos rations'
+                      : 'Générateur de formules automatiques — Optimisation par IA'}
+                  </p>
+                  <p className="text-[12px] text-slate-500 font-medium mt-0.5">
+                    {mode === 'manual'
+                      ? 'Entrez vos matières premières, proportions et objectifs nutritionnels pour vérifier votre formule.'
+                      : "Laissez l'IA formuler la ration la plus économique selon vos critères."}
+                  </p>
+                </div>
+              </div>
+
               <div>
                 {mode === 'manual'
                   ? <ManualAnalyzer />
@@ -582,12 +643,14 @@ export function Dashboard() {
             </div>
           )}
 
+          {/* HISTORY */}
           {activeView === 'history' && (
             <div className="max-w-6xl mx-auto animate-in fade-in duration-500">
               <SavedFormulas />
             </div>
           )}
 
+          {/* REFERRAL */}
           {activeView === 'referral' && (
             <div className="max-w-4xl mx-auto animate-in fade-in duration-500">
               <ReferralSection />

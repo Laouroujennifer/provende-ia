@@ -7,9 +7,8 @@ export function Home() {
   return (
     <div className="bg-slate-950 text-white min-h-screen selection:bg-emerald-500/30 overflow-x-hidden">
       
-      {/* 1. HERO SECTION (STYLE MINEA - CENTRÉE) */}
+      {/* 1. HERO SECTION */}
       <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 px-6 overflow-hidden flex flex-col items-center text-center">
-        {/* Lueur d'arrière-plan */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none" />
         <div className="absolute top-20 right-0 w-64 h-64 bg-cyan-500/10 blur-[100px] rounded-full pointer-events-none" />
         
@@ -18,21 +17,13 @@ export function Home() {
           animate={{ opacity: 1, y: 0 }}
           className="max-w-4xl relative z-10"
         >
-          {/* Badge vibrant - IA supprimé */}
+          {/* Badge */}
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-[0.3em] mb-8 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
             <Zap size={12} fill="currentColor" /> Technologie & Précision
           </div>
 
-          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-[1.05] tracking-tighter mb-8 text-balance">
-            Trouvez votre provende <br />
-            <span className="bg-linear-to-r from-emerald-400 via-emerald-300 to-cyan-400 bg-clip-text text-transparent italic drop-shadow-sm">optimale en 3 clics</span>
-          </h1>
-          
-          <p className="text-base md:text-xl text-white/50 max-w-2xl mx-auto mb-10 md:mb-12 font-medium leading-relaxed">
-            ProvendeBuilder est une solution tout-en-un, conçue pour vous aider à optimiser votre élevage, augmenter votre croissance et booster vos profits.
-          </p>
-          
-          <div className="flex flex-col items-center gap-6">
+          {/* ✅ BOUTON CTA — en haut, première chose visible */}
+          <div className="flex flex-col items-center gap-6 mb-10 md:mb-12">
             <Link to="/register" className="w-full sm:w-auto px-8 md:px-12 py-5 md:py-6 bg-emerald-500 text-slate-950 rounded-full font-black text-sm uppercase tracking-widest shadow-[0_0_40px_rgba(16,185,129,0.4)] hover:bg-emerald-400 hover:scale-105 transition-all flex items-center justify-center gap-3">
               Démarrer l'essai gratuit <ArrowRight size={20} />
             </Link>
@@ -40,16 +31,24 @@ export function Home() {
               Essai de 3 formules inclus • Sans carte bancaire
             </p>
           </div>
+
+          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-[1.05] tracking-tighter mb-8 text-balance">
+            Trouvez votre provende <br />
+            <span className="bg-linear-to-r from-emerald-400 via-emerald-300 to-cyan-400 bg-clip-text text-transparent italic drop-shadow-sm">optimale en 3 clics</span>
+          </h1>
+          
+          <p className="text-base md:text-xl text-white/50 max-w-2xl mx-auto font-medium leading-relaxed">
+            ProvendeBuilder est une solution tout-en-un, conçue pour vous aider à optimiser votre élevage, augmenter votre croissance et booster vos profits.
+          </p>
         </motion.div>
 
-        {/* MOCKUP PRODUIT (OPTION 1 : IMAGE TECH + SIMULATION INTERFACE) */}
+        {/* MOCKUP PRODUIT */}
         <motion.div 
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
           className="mt-16 md:mt-20 max-w-5xl w-full border border-white/10 rounded-[1.5rem] md:rounded-[2.5rem] p-2 md:p-3 bg-white/5 backdrop-blur-sm shadow-2xl relative group overflow-hidden"
         >
-          {/* Simulation de barre de navigateur */}
           <div className="absolute top-4 md:top-6 left-6 md:left-10 flex gap-1.5 md:gap-2 z-20">
              <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-red-500/50" />
              <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-amber-500/50" />
@@ -57,17 +56,12 @@ export function Home() {
           </div>
 
           <div className="relative overflow-hidden rounded-[1.2rem] md:rounded-[2rem]">
-            {/* Image de fond Tech/Ferme */}
             <img 
               src="https://images.unsplash.com/photo-1595246140625-573b715d11dc?q=80&w=2000" 
               className="w-full h-[300px] md:h-[500px] object-cover opacity-60 group-hover:scale-[1.02] transition-transform duration-1000"
               alt="Technologie agricole de précision"
             />
-            
-            {/* Overlay Gradient pour le look Dashboard */}
             <div className="absolute inset-0 bg-linear-to-t from-slate-950 via-slate-950/20 to-transparent pointer-events-none" />
-
-            {/* Texte flottant simulant l'outil */}
             <div className="absolute bottom-6 left-6 md:bottom-12 md:left-12 text-left z-20">
               <div className="flex items-center gap-3 mb-2 md:mb-4">
                 <span className="relative flex h-3 w-3">
@@ -84,7 +78,7 @@ export function Home() {
         </motion.div>
       </section>
 
-      {/* 2. SECTION EXPERTISE TECHNIQUE (FOND BLANC) */}
+      {/* 2. SECTION EXPERTISE TECHNIQUE */}
       <section className="py-20 md:py-32 px-6 bg-white text-slate-900 relative">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 md:gap-20 items-center">
@@ -122,7 +116,6 @@ export function Home() {
                 className="rounded-[2rem] md:rounded-[3rem] shadow-2xl relative z-10 border border-slate-100 w-full" 
                 alt="Élevage moderne" 
               />
-              {/* Badge flottant */}
               <div className="absolute -bottom-6 -right-2 md:-bottom-10 md:-right-6 bg-[#064e3b] p-5 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] text-white shadow-2xl z-20 border border-emerald-500/20 transform group-hover:scale-105 transition-transform max-w-[180px] md:max-w-none">
                 <p className="text-[8px] md:text-[10px] font-black opacity-60 uppercase tracking-[0.2em] mb-1 md:mb-2 text-emerald-400">Impact Économique</p>
                 <p className="text-2xl md:text-4xl font-black text-white">-15% à -25%</p>
@@ -136,7 +129,6 @@ export function Home() {
       {/* 3. SECTION CTA FINAL */}
       <section className="py-20 md:py-32 px-6 bg-slate-50 text-slate-900 border-t border-slate-100">
         <div className="max-w-5xl mx-auto bg-slate-950 rounded-[2rem] md:rounded-[3.5rem] p-10 md:p-24 text-center relative overflow-hidden shadow-2xl border border-white/5">
-          {/* Lueur d'ambiance */}
           <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none" />
           
           <h2 className="text-3xl md:text-6xl font-black text-white mb-6 md:mb-8 tracking-tighter leading-tight">
