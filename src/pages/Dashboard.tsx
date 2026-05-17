@@ -116,7 +116,7 @@ function FreeTrialCard({ used, total, bonus, onUse, onDismiss }: FreeTrialCardPr
               >
                 Utiliser mon essai <ArrowUpRight size={14} />
               </button>
-              <p className="text-center text-[10px] text-amber-600 font-bold">1 essai restant</p>
+              <p className="text-center text-[10px] text-amber-600 font-bold">{remaining} essai{remaining > 1 ? 's' : ''} restant{remaining > 1 ? 's' : ''}</p>
             </>
           ) : (
             <>
@@ -175,7 +175,7 @@ function UpgradeModal({ onClose, onGoReferral, onGoPricing }: {
             Votre essai est terminé.
           </h2>
           <p className="text-white/70 text-sm font-medium leading-relaxed">
-            Vous avez utilisé votre unique essai gratuit. Choisissez comment continuer.
+            Vous avez utilisé vos essais gratuits. Choisissez comment continuer.
           </p>
         </div>
 
@@ -234,7 +234,8 @@ export function Dashboard() {
   const userName = user?.user_metadata?.first_name || 'Éleveur'
   const userInitials = userName.substring(0, 2).toUpperCase()
 
-  const totalFreeTrials = 1
+  // MODE TEST : nombre d'essais quasi-illimité (revert à 5 pour la prod)
+  const totalFreeTrials = 9999
   const usedTrials = subscription.autoFormulasCount ?? 0
   const bonusTrials = subscription.bonusCalculations ?? 0
   const grandTotal = totalFreeTrials + bonusTrials
@@ -351,7 +352,7 @@ export function Dashboard() {
             />
           </div>
           <p className="text-[10px] text-white/60 font-medium">
-            {grandTotal - usedTrials > 0 ? '1 essai restant' : 'Essai épuisé'}
+            {grandTotal - usedTrials > 0 ? `${grandTotal - usedTrials} essai${grandTotal - usedTrials > 1 ? 's' : ''} restant${grandTotal - usedTrials > 1 ? 's' : ''}` : 'Essai épuisé'}
           </p>
         </div>
 
@@ -575,13 +576,13 @@ export function Dashboard() {
                 </button>
               </div>
 
-              {/* Banner : essai restant */}
+              {/* Banner : essais restants */}
               {mode === 'auto' && grandTotal - usedTrials > 0 && (
                 <div className="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-5 py-3.5">
                   <Zap size={15} className="text-amber-500 shrink-0" fill="currentColor" />
                   <p className="text-[13px] font-bold text-amber-800">
                     Il vous reste{' '}
-                    <strong className="font-black">1 essai gratuit</strong>.
+                    <strong className="font-black">{grandTotal - usedTrials} essai{grandTotal - usedTrials > 1 ? 's' : ''} gratuit{grandTotal - usedTrials > 1 ? 's' : ''}</strong>.
                     La génération automatique en consomme un.
                   </p>
                 </div>

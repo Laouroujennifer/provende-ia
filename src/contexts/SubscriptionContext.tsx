@@ -77,9 +77,12 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     setSubscription(prev => ({ ...prev, formulasCount: next }));
   }
 
-  const totalAllowed = 3 + (subscription.bonusCalculations || 0);
-  const canAccessMode2 = subscription.status === 'active' || subscription.autoFormulasCount < totalAllowed;
-  const canSaveFormula = subscription.status === 'active' || subscription.formulasCount < 10 // Limite généreuse
+  // MODE TEST : tous les usages sont illimités (revert ces 3 lignes pour la prod)
+  const totalAllowed = Number.MAX_SAFE_INTEGER
+  const canAccessMode2 = true
+  const canSaveFormula = true
+  // Pour éviter l'avertissement "totalAllowed n'est jamais utilisé"
+  void totalAllowed
 
   return (
     <SubscriptionContext.Provider value={{

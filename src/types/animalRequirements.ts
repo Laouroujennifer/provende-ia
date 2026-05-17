@@ -1,21 +1,24 @@
-export interface NutrientRange {
-  min: number
-  max: number
-}
+/**
+ * types/animalRequirements.ts
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Interface TypeScript pour les besoins nutritionnels par espèce et phase.
+ * SOURCE : Guide d'élevage Goliath 2023 (CD-Entrepreneur)
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
 
 export interface AnimalRequirement {
   id: string
-  species: string // 'Poulet de chair', 'Pondeuses', etc.
-  stage: string // 'Démarrage', 'Croissance', etc.
-  ageRange: string // '0-4 semaines', etc.
-
-  // Target ranges
-  em: NutrientRange // kcal/kg
-  pb: NutrientRange // %
-  lys: NutrientRange // %
-  met: NutrientRange // %
-  ca: NutrientRange // %
-  p: NutrientRange // %
-  na: NutrientRange // %
-  mg: NutrientRange // %
+  species: string
+  stage: string
+  ageRange: string
+  // Clé de phase pour getBounds() dans optimizationAlgorithm.ts
+  phaseKey: 'chair_starter' | 'chair_grower' | 'layer_starter' | 'layer_grower' | 'layer_pullet' | 'layer_production'
+  em:  { min: number; max: number }
+  pb:  { min: number; max: number }
+  lys: { min: number; max: number }
+  met: { min: number; max: number }
+  ca:  { min: number; max: number }
+  p:   { min: number; max: number }
+  na:  { min: number; max: number }
+  mg:  { min: number; max: number }
 }

@@ -23,3 +23,32 @@
   text-transform: uppercase;
   letter-spacing: 1px;
 }
+
+/* ─── STYLES D'IMPRESSION ───────────────────────────────────────────────────── */
+@media print {
+  html, body, #root {
+    background-color: white !important;
+    color: black !important;
+  }
+  /* Masquer la navigation, header, footer pour l'impression */
+  nav, header, footer, aside,
+  [class*="navbar"], [class*="sidebar"], [class*="trial"], [class*="banner"] {
+    display: none !important;
+  }
+  /* Forcer fond blanc sur les cartes pour bonne lisibilité papier */
+  .bg-slate-900, .bg-emerald-900, [class*="bg-gradient"] {
+    background: white !important;
+    color: black !important;
+    border: 1px solid #cbd5e1 !important;
+  }
+  /* Éviter les coupures dans les tableaux et cartes */
+  table, .rounded-3xl, .rounded-2xl {
+    page-break-inside: avoid;
+  }
+  /* Pas d'ombres ni d'animations à l'impression */
+  * {
+    box-shadow: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}
