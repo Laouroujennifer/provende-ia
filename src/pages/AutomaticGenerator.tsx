@@ -697,14 +697,17 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
 
   const canGenerate = !isOptimizing && checkedIds.size >= 2
 
-  // ─── RECHERCHE D'INGRÉDIENTS ───────────────────────────────────────────────
+  // ─── RECHERCHE D'INGRÉDIENTS (triés alphabétiquement) ──────────────────────
   const filteredIngredients = useMemo(() => {
     const q = searchQuery.trim().toLowerCase()
-    if (!q) return ingredientsDatabase
-    return ingredientsDatabase.filter(i =>
-      i.name.toLowerCase().includes(q) ||
-      i.category.toLowerCase().includes(q)
-    )
+    const base = q
+      ? ingredientsDatabase.filter(i =>
+          i.name.toLowerCase().includes(q) ||
+          i.category.toLowerCase().includes(q)
+        )
+      : ingredientsDatabase
+    // Tri alphabétique français (gère accents : Maïs, Méthionine, etc.)
+    return [...base].sort((a, b) => a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' }))
   }, [searchQuery])
 
   // ─── ENREGISTREMENT FORMULE ─────────────────────────────────────────────────
@@ -1071,7 +1074,19 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
   // ── FORMULAIRE ───────────────────────────────────────────────────────────────
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="relative -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-6 rounded-3xl space-y-6 animate-in fade-in duration-500
+                    bg-gradient-to-br from-amber-50 via-orange-50/40 to-white
+                    border border-amber-100/60 print:bg-white print:border-0">
+
+      {/* Badge "MODE GÉNÉRATEUR IA" en haut à gauche, sticker discret */}
+      <div className="flex items-center gap-2 mb-2 print:hidden">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-md shadow-orange-200">
+          <Sparkles size={12} /> Mode Générateur IA
+        </span>
+        <span className="text-[10px] font-bold text-amber-700 uppercase tracking-widest">
+          Optimisation automatique
+        </span>
+      </div>
 
       {/* Hero */}
       <div className="relative bg-slate-900 rounded-3xl p-8 overflow-hidden text-white border border-white/5">
@@ -1232,31 +1247,54 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
         )}
       </div>
 
-      {/* Bouton générer */}
-      <button
-        onClick={handleOptimize}
-        disabled={!canGenerate}
-        className={`w-full py-7 rounded-3xl font-black text-sm uppercase tracking-widest transition-all shadow-xl ${
-          !canGenerate
-            ? 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'
-            : remaining === 0
-              ? 'bg-red-500 text-white hover:bg-red-400 hover:scale-[1.01] shadow-red-200 active:scale-95'
-              : 'bg-primary text-white hover:scale-[1.01] hover:bg-emerald-900 shadow-emerald-900/20 active:scale-95'
-        }`}
-      >
-        {isOptimizing ? (
-          <span className="flex items-center justify-center gap-2">
-            <RotateCcw className="animate-spin" size={20} /> Optimisation en cours…
-          </span>
-        ) : remaining === 0 ? (
-          'Passer Pro pour continuer →'
-        ) : (
-          <span className="flex items-center justify-center gap-2">
-            <Sparkles size={18} />
-            Générer la formule optimale · {selectedReq.stage}
-          </span>
+      {/* Bouton générer — TRÈS visible */}
+      <div className="relative">
+        {/* Halo lumineux animé derrière le bouton */}
+        {canGenerate && remaining > 0 && (
+          <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 via-amber-400 to-orange-500 rounded-3xl blur-lg opacity-60 group-hover:opacity-100 animate-pulse" aria-hidden="true" />
         )}
-      </button>
+        <button
+          onClick={handleOptimize}
+          disabled={!canGenerate}
+          className={`relative w-full py-8 rounded-3xl font-black text-base md:text-lg uppercase tracking-widest transition-all shadow-2xl border-2 ${
+            !canGenerate
+              ? 'bg-slate-200 text-slate-400 border-slate-300 cursor-not-allowed'
+              : remaining === 0
+                ? 'bg-gradient-to-r from-red-600 to-red-500 text-white border-red-400 hover:from-red-500 hover:to-red-400 hover:scale-[1.02] shadow-red-500/40 active:scale-95'
+                : 'bg-gradient-to-r from-orange-600 via-amber-500 to-orange-600 text-white border-orange-300 hover:from-orange-500 hover:via-amber-400 hover:to-orange-500 hover:scale-[1.02] shadow-orange-500/50 active:scale-95'
+          }`}
+        >
+          {isOptimizing ? (
+            <span className="flex items-center justify-center gap-3">
+              <RotateCcw className="animate-spin" size={24} />
+              Optimisation en cours…
+            </span>
+          ) : remaining === 0 ? (
+            <span className="flex items-center justify-center gap-3">
+              <Star size={22} fill="currentColor" />
+              Passer Pro pour continuer →
+            </span>
+          ) : (
+            <span className="flex items-center justify-center gap-3">
+              <Sparkles size={24} className="animate-pulse" />
+              <span className="drop-shadow-md">Générer la formule optimale</span>
+              <Wand2 size={24} />
+            </span>
+          )}
+        </button>
+        {/* Sous-titre informatif sous le bouton */}
+        {canGenerate && remaining > 0 && (
+          <p className="text-center text-xs font-bold text-emerald-700 mt-3">
+            ✨ Phase : <span className="text-emerald-900">{selectedReq.stage}</span> ·
+            {checkedIds.size} ingrédient{checkedIds.size > 1 ? 's' : ''} sélectionné{checkedIds.size > 1 ? 's' : ''}
+          </p>
+        )}
+        {!canGenerate && checkedIds.size < 2 && (
+          <p className="text-center text-xs font-bold text-amber-700 mt-3 flex items-center justify-center gap-2">
+            <AlertTriangle size={13} /> Coche au moins 2 ingrédients pour activer le bouton
+          </p>
+        )}
+      </div>
 
       {remaining === 0 && (
         <div className="flex flex-col sm:flex-row gap-3">

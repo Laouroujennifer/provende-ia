@@ -260,7 +260,14 @@ export function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex overflow-hidden text-slate-900 font-sans">
+    // ✅ MODIFICATION 1 : Fond dynamique selon le mode actif sur la page calculator
+    <div className={`min-h-screen flex overflow-hidden text-slate-900 font-sans transition-colors duration-500 ${
+      activeView === 'calculator'
+        ? (mode === 'manual'
+            ? 'bg-gradient-to-br from-pink-100 via-pink-50 to-rose-100'
+            : 'bg-gradient-to-br from-amber-100 via-orange-50 to-amber-100')
+        : 'bg-slate-50'
+    }`}>
 
       {isSidebarOpen && (
         <div
@@ -370,8 +377,12 @@ export function Dashboard() {
       {/* ─── MAIN ─── */}
       <main className="flex-1 flex flex-col min-h-screen overflow-y-auto">
 
-        {/* Mobile header */}
-        <header className="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30">
+        {/* ✅ MODIFICATION 3 : Mobile header transparent sur la page calculator */}
+        <header className={`lg:hidden border-b px-4 py-3 flex items-center justify-between sticky top-0 z-30 transition-colors duration-500 ${
+          activeView === 'calculator'
+            ? 'bg-transparent border-transparent backdrop-blur-sm'
+            : 'bg-white border-slate-200'
+        }`}>
           <button
             onClick={() => setIsSidebarOpen(true)}
             className="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600 transition-colors"
@@ -387,8 +398,12 @@ export function Dashboard() {
           </div>
         </header>
 
-        {/* Desktop header */}
-        <div className="hidden lg:flex items-center justify-between px-10 py-5 bg-white border-b border-slate-100 sticky top-0 z-30">
+        {/* ✅ MODIFICATION 2 : Desktop header transparent sur la page calculator */}
+        <div className={`hidden lg:flex items-center justify-between px-10 py-5 border-b sticky top-0 z-30 transition-colors duration-500 ${
+          activeView === 'calculator'
+            ? 'bg-transparent border-transparent backdrop-blur-sm'
+            : 'bg-white border-slate-100'
+        }`}>
           <div>
             <h2 className="text-xl font-black text-slate-900 tracking-tight">{viewTitles[activeView].t}</h2>
             <p className="text-[12px] text-slate-500 font-medium mt-0.5">{viewTitles[activeView].s}</p>
@@ -556,7 +571,7 @@ export function Dashboard() {
                   onClick={() => setMode('manual')}
                   className={`flex-1 flex items-center justify-center gap-3 px-8 py-6 rounded-xl font-black text-base uppercase tracking-widest transition-all ${
                     mode === 'manual'
-                      ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-200 scale-[1.01]'
+                      ? 'bg-pink-500 text-white shadow-lg shadow-pink-200 scale-[1.01]'
                       : 'text-slate-400 hover:text-slate-700 hover:bg-slate-50'
                   }`}
                 >
@@ -616,7 +631,7 @@ export function Dashboard() {
               <div className="bg-white border border-slate-200 rounded-2xl px-6 py-4 flex items-start gap-4 shadow-sm">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
                   mode === 'manual'
-                    ? 'bg-emerald-50 text-emerald-600'
+                    ? 'bg-pink-50 text-pink-600'
                     : 'bg-amber-50 text-amber-600'
                 }`}>
                   {mode === 'manual' ? <FlaskConical size={18} /> : <Zap size={18} />}
