@@ -16,16 +16,16 @@ import { IngredientTable } from '../components/IngredientTable'
 import { calculateTotals, getFinalValues, computeNutritionScore } from '../utils/nutritionCalculations'
 import type { FormulaTotals } from '../types/ingredients'
 
-// ─── STYLES CATÉGORIES ────────────────────────────────────────────────────────
+// ─── STYLES CATÉGORIES (DARK) ────────────────────────────────────────────────
 
 const CAT: Record<string, string> = {
-  'Céréale':    'bg-amber-50 border-amber-200 text-amber-700',
-  'Protéine':   'bg-blue-50 border-blue-200 text-blue-700',
-  'Minéral':    'bg-purple-50 border-purple-200 text-purple-700',
-  'Complément': 'bg-pink-50 border-pink-200 text-pink-700',
+  'Céréale':    'bg-amber-500/10 border-amber-500/30 text-amber-300',
+  'Protéine':   'bg-blue-500/10 border-blue-500/30 text-blue-300',
+  'Minéral':    'bg-purple-500/10 border-purple-500/30 text-purple-300',
+  'Complément': 'bg-pink-500/10 border-pink-500/30 text-pink-300',
 }
 
-// ─── COMPOSANT BILAN NUTRITIONNEL ─────────────────────────────────────────────
+// ─── BILAN NUTRITIONNEL (DARK) ──────────────────────────────────────────────
 
 interface OptimalSummaryProps {
   totals: FormulaTotals
@@ -45,34 +45,30 @@ function OptimalSummary({ totals, req }: OptimalSummaryProps) {
     { label: 'Méthionine',       unit: '%',     value: final.met, min: req.met.min, max: req.met.max, decimals: 2 },
   ]
 
-  // Tolérance epsilon pour éviter "Hors plage" à cause d'arrondis flottants
-  // (ex: PB=18.00000001 dans [16-18])
   const eps = (n: typeof nutrients[0]) => Math.max((n.max - n.min) * 0.005, 0.005)
   const inRangeOf = (n: typeof nutrients[0]) => n.value >= n.min - eps(n) && n.value <= n.max + eps(n)
   const allInRange = nutrients.every(inRangeOf)
 
-  // Couleur du score — FIX: suppression de scoreBg (non utilisé)
   const scoreColor = score >= 90 ? 'text-emerald-400' : score >= 70 ? 'text-amber-400' : 'text-red-400'
 
   return (
-    <div className="bg-white border border-slate-100 rounded-3xl p-8 shadow-sm">
+    <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-3xl p-8 shadow-sm">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="font-black text-slate-900 text-sm uppercase tracking-widest">Bilan nutritionnel</h3>
-          <p className="text-xs text-slate-400 mt-1">Score qualité basé sur le centrage dans les plages cibles</p>
+          <h3 className="font-black text-white text-sm uppercase tracking-widest">Bilan nutritionnel</h3>
+          <p className="text-xs text-white/40 mt-1">Score qualité basé sur le centrage dans les plages cibles</p>
         </div>
         <div className="flex items-center gap-3">
-          {/* Score visuel */}
           <div className="flex flex-col items-center">
             <span className={`text-3xl font-black ${scoreColor}`}>{score}</span>
-            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">/100</span>
+            <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">/100</span>
           </div>
           {allInRange ? (
-            <span className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-[10px] font-black uppercase">
+            <span className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 rounded-xl text-[10px] font-black uppercase">
               <CheckCircle2 size={12} /> Tous critères atteints
             </span>
           ) : (
-            <span className="flex items-center gap-2 px-3 py-1.5 bg-amber-50 border border-amber-200 text-amber-700 rounded-xl text-[10px] font-black uppercase">
+            <span className="flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded-xl text-[10px] font-black uppercase">
               <AlertTriangle size={12} /> Vérification requise
             </span>
           )}
@@ -89,9 +85,9 @@ function OptimalSummary({ totals, req }: OptimalSummaryProps) {
 
           const pct = Math.min(Math.max(((n.value - n.min) / plage) * 100, 0), 100)
           const barColor = !inRange ? 'bg-red-400' : isCentered ? 'bg-emerald-500' : 'bg-amber-400'
-          const cardBg   = !inRange ? 'bg-red-50/60 border-red-100' : isCentered ? 'bg-emerald-50/60 border-emerald-100' : 'bg-amber-50/60 border-amber-100'
-          const textColor = !inRange ? 'text-red-800' : isCentered ? 'text-emerald-800' : 'text-amber-800'
-          const labelColor = !inRange ? 'text-red-700/60' : isCentered ? 'text-emerald-700/60' : 'text-amber-700/60'
+          const cardBg   = !inRange ? 'bg-red-500/10 border-red-500/30' : isCentered ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-amber-500/10 border-amber-500/30'
+          const textColor = !inRange ? 'text-red-300' : isCentered ? 'text-emerald-300' : 'text-amber-300'
+          const labelColor = !inRange ? 'text-red-400/70' : isCentered ? 'text-emerald-400/70' : 'text-amber-400/70'
 
           return (
             <div key={n.label} className={`border rounded-2xl p-4 ${cardBg}`}>
@@ -101,20 +97,16 @@ function OptimalSummary({ totals, req }: OptimalSummaryProps) {
                 <span className="text-sm font-bold opacity-60">{n.unit}</span>
               </p>
 
-              {/* Barre de progression avec marqueur de centre */}
-              <div className="mt-2 h-2 bg-slate-100 rounded-full overflow-hidden relative">
-                {/* Zone idéale (80% centraux) */}
+              <div className="mt-2 h-2 bg-[#0A0A0A] rounded-full overflow-hidden relative">
                 <div
-                  className="absolute top-0 h-full bg-emerald-100 rounded-full"
+                  className="absolute top-0 h-full bg-emerald-500/20 rounded-full"
                   style={{ left: '10%', width: '80%' }}
                 />
-                {/* Valeur actuelle */}
                 <div
                   className={`absolute top-0 h-full rounded-full transition-all duration-700 ${barColor}`}
                   style={{ width: `${Math.max(pct, 6)}%` }}
                 />
-                {/* Marqueur centre */}
-                <div className="absolute top-0 h-full w-0.5 bg-slate-400/40" style={{ left: '50%' }} />
+                <div className="absolute top-0 h-full w-0.5 bg-white/40" style={{ left: '50%' }} />
               </div>
 
               <div className="flex justify-between mt-1">
@@ -124,39 +116,38 @@ function OptimalSummary({ totals, req }: OptimalSummaryProps) {
               </div>
 
               {isCentered && inRange && (
-                <p className="text-[9px] font-black text-emerald-600 mt-1">✓ Zone optimale</p>
+                <p className="text-[9px] font-black text-emerald-400 mt-1">✓ Zone optimale</p>
               )}
               {!isCentered && inRange && (
-                <p className="text-[9px] font-black text-amber-600 mt-1">~ Acceptable (hors centre)</p>
+                <p className="text-[9px] font-black text-amber-400 mt-1">~ Acceptable (hors centre)</p>
               )}
               {!inRange && (
-                <p className="text-[9px] font-black text-red-600 mt-1">✗ Hors plage</p>
+                <p className="text-[9px] font-black text-red-400 mt-1">✗ Hors plage</p>
               )}
             </div>
           )
         })}
       </div>
 
-      {/* Légende */}
-      <div className="mt-4 flex flex-wrap gap-3 pt-4 border-t border-slate-100">
+      <div className="mt-4 flex flex-wrap gap-3 pt-4 border-t border-[#2A2A2A]">
         <div className="flex items-center gap-1.5">
           <div className="w-3 h-3 rounded-full bg-emerald-500" />
-          <span className="text-[10px] text-slate-500 font-bold">Optimal (zone centrale 80%)</span>
+          <span className="text-[10px] text-white/50 font-bold">Optimal (zone centrale 80%)</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="w-3 h-3 rounded-full bg-amber-400" />
-          <span className="text-[10px] text-slate-500 font-bold">Acceptable (dans la plage, hors centre)</span>
+          <span className="text-[10px] text-white/50 font-bold">Acceptable (dans la plage, hors centre)</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="w-3 h-3 rounded-full bg-red-400" />
-          <span className="text-[10px] text-slate-500 font-bold">Hors plage réglementaire</span>
+          <span className="text-[10px] text-white/50 font-bold">Hors plage réglementaire</span>
         </div>
       </div>
     </div>
   )
 }
 
-// ─── COMPOSANT ANALYSE IA ─────────────────────────────────────────────────────
+// ─── ANALYSE IA PANEL (DARK) ─────────────────────────────────────────────────
 
 interface AIAnalysisProps {
   result: SelectedIngredient[]
@@ -169,15 +160,10 @@ function AIAnalysisPanel({ result, req, score }: AIAnalysisProps) {
   const [loading, setLoading]   = useState(false)
   const [done, setDone]         = useState(false)
 
-  // Analyse locale intelligente (l'appel direct à l'API Anthropic depuis le navigateur
-  // est bloqué par CORS et nécessiterait d'exposer une clé API au client, ce qui est
-  // un risque de sécurité majeur. On génère donc l'analyse côté client à partir des
-  // valeurs réelles de la formule.)
   const buildLocalAnalysis = (): string => {
     const totals = calculateTotals(result)
     const final  = getFinalValues(totals)
 
-    // Analyse de chaque nutriment
     type NutInfo = {
       key: string; label: string; value: number; min: number; max: number;
       unit: string; center: number; distance: number; position: 'low' | 'center' | 'high'
@@ -186,7 +172,7 @@ function AIAnalysisPanel({ result, req, score }: AIAnalysisProps) {
       const center = (min + max) / 2
       const range = max - min
       const distance = Math.abs(value - center)
-      const rel = range > 0 ? (value - center) / (range / 2) : 0  // -1 = min, 0 = centre, +1 = max
+      const rel = range > 0 ? (value - center) / (range / 2) : 0
       const position: 'low' | 'center' | 'high' =
         rel < -0.5 ? 'low' : rel > 0.5 ? 'high' : 'center'
       return { key, label, value, min, max, unit, center, distance, position }
@@ -208,13 +194,11 @@ function AIAnalysisPanel({ result, req, score }: AIAnalysisProps) {
       const half = (n.max - n.min) / 2
       return half > 0 && Math.abs(n.value - n.center) / half <= 0.5
     })
-    // Acceptables mais excentrés : dans la plage, mais pas dans la zone centrale 80%
     const offCenter = inRange.filter(n => !optimal.includes(n))
 
     const fmt = (n: NutInfo) => `${n.value.toFixed(n.unit === '%' ? 2 : 0)}${n.unit}`
     const targetStr = (n: NutInfo) => `cible ${n.center.toFixed(n.unit === '%' ? 2 : 0)}${n.unit}`
 
-    // Analyse des dominances dans la formule
     const totalKg = result.reduce((s, i) => s + i.quantity, 0) || 100
     const dominance = (id: string) => {
       const ing = result.find(i => i.id === id)
@@ -229,7 +213,6 @@ function AIAnalysisPanel({ result, req, score }: AIAnalysisProps) {
 
     let txt = ''
 
-    // ─── 1. Verdict global ───
     txt += '**Verdict global**\n\n'
     if (tooLow.length === 0 && tooHigh.length === 0) {
       if (optimal.length === nutrients.length) {
@@ -243,7 +226,6 @@ function AIAnalysisPanel({ result, req, score }: AIAnalysisProps) {
       txt += `Formule à ajuster avant utilisation. ${tooLow.length + tooHigh.length} nutriment(s) sortent des plages recommandées : ${[...tooLow, ...tooHigh].map(n => n.label.toLowerCase().split(' ')[0]).join(', ')}. Voir les corrections obligatoires ci-dessous.\n\n`
     }
 
-    // ─── 2. Points forts ───
     if (optimal.length > 0) {
       txt += '**Points forts**\n\n'
       for (const n of optimal) {
@@ -252,7 +234,6 @@ function AIAnalysisPanel({ result, req, score }: AIAnalysisProps) {
       txt += '\n'
     }
 
-    // ─── 3. Corrections obligatoires (hors plage) ───
     if (tooLow.length > 0 || tooHigh.length > 0) {
       txt += '**Corrections obligatoires**\n\n'
 
@@ -280,10 +261,8 @@ function AIAnalysisPanel({ result, req, score }: AIAnalysisProps) {
       txt += '\n'
     }
 
-    // ─── 4. Suggestions d'amélioration (toujours présent si pas parfait) ───
     const suggestions: string[] = []
 
-    // Sur les nutriments hors centre, propose des corrections fines
     for (const n of offCenter) {
       if (n.position === 'high') {
         if (n.key === 'em' && (sojaGrainePct > 12 || maisPct > 55)) {
@@ -316,7 +295,6 @@ function AIAnalysisPanel({ result, req, score }: AIAnalysisProps) {
       }
     }
 
-    // Analyses de composition (même si tout est dans les plages)
     if (maisPct > 60) {
       suggestions.push(`**Maïs très dominant** (${maisPct.toFixed(0)}%). Une trop forte part d'une seule céréale rend la formule vulnérable aux variations de qualité (aflatoxines, prix). Essaie de remplacer 10-15 kg de maïs par du sorgho ou du son de blé.`)
     }
@@ -341,7 +319,6 @@ function AIAnalysisPanel({ result, req, score }: AIAnalysisProps) {
       txt += '\n'
     }
 
-    // ─── 5. Conseil pratique terrain ───
     txt += '**Conseil pratique terrain**\n\n'
     const stage = req.stage.toLowerCase()
     if (stage.includes('démarrage')) {
@@ -366,7 +343,6 @@ function AIAnalysisPanel({ result, req, score }: AIAnalysisProps) {
     setAnalysis('')
     setDone(false)
 
-    // Petit délai pour l'effet "réflexion IA" et stream progressif
     const fullText = buildLocalAnalysis()
     const words = fullText.split(/(\s+)/)
     for (let i = 0; i < words.length; i++) {
@@ -378,9 +354,7 @@ function AIAnalysisPanel({ result, req, score }: AIAnalysisProps) {
     setLoading(false)
   }
 
-  // Formater l'analyse en sections visuelles riches (cartes colorées par section)
   const formatAnalysis = (text: string) => {
-    // Découper le texte en sections par titre **Titre**
     const lines = text.split('\n')
     const sections: { title: string; content: string[] }[] = []
     let current: { title: string; content: string[] } | null = null
@@ -396,19 +370,18 @@ function AIAnalysisPanel({ result, req, score }: AIAnalysisProps) {
     }
     if (current) sections.push(current)
 
-    // Configuration visuelle par section
     const sectionConfig: Record<string, { color: string; bg: string; border: string; icon: string }> = {
-      'Verdict global':            { color: 'text-slate-900',    bg: 'bg-white',           border: 'border-slate-200',   icon: '📋' },
-      'Points forts':              { color: 'text-emerald-900',  bg: 'bg-emerald-50/50',   border: 'border-emerald-200', icon: '✨' },
-      'Corrections obligatoires':  { color: 'text-red-900',      bg: 'bg-red-50/50',       border: 'border-red-200',     icon: '⚠️' },
-      "Suggestions d'amélioration":{ color: 'text-amber-900',    bg: 'bg-amber-50/50',     border: 'border-amber-200',   icon: '💡' },
-      'Conseil pratique terrain':  { color: 'text-blue-900',     bg: 'bg-blue-50/50',      border: 'border-blue-200',    icon: '🌾' },
+      'Verdict global':            { color: 'text-white',         bg: 'bg-[#0A0A0A]',           border: 'border-[#2A2A2A]',          icon: '📋' },
+      'Points forts':              { color: 'text-emerald-300',   bg: 'bg-emerald-500/10',      border: 'border-emerald-500/30',     icon: '✨' },
+      'Corrections obligatoires':  { color: 'text-red-300',       bg: 'bg-red-500/10',          border: 'border-red-500/30',         icon: '⚠️' },
+      "Suggestions d'amélioration":{ color: 'text-amber-300',     bg: 'bg-amber-500/10',        border: 'border-amber-500/30',       icon: '💡' },
+      'Conseil pratique terrain':  { color: 'text-cyan-300',      bg: 'bg-cyan-500/10',         border: 'border-cyan-500/30',        icon: '🌾' },
     }
 
     return (
       <div className="space-y-4">
         {sections.map((sec, idx) => {
-          const cfg = sectionConfig[sec.title] ?? { color: 'text-slate-900', bg: 'bg-slate-50', border: 'border-slate-200', icon: '•' }
+          const cfg = sectionConfig[sec.title] ?? { color: 'text-white', bg: 'bg-[#1A1A1A]', border: 'border-[#2A2A2A]', icon: '•' }
           return (
             <div key={idx} className={`rounded-2xl border ${cfg.border} ${cfg.bg} p-5`}>
               <div className="flex items-center gap-2 mb-3">
@@ -419,24 +392,23 @@ function AIAnalysisPanel({ result, req, score }: AIAnalysisProps) {
                 {sec.content.filter(l => l.trim() !== '').map((line, j) => {
                   const isBullet = line.startsWith('- ')
                   const clean = isBullet ? line.slice(2) : line
-                  // Parser le **gras** dans la ligne
                   const parts = clean.split(/(\*\*[^*]+\*\*)/g)
                   return (
                     <div
                       key={j}
-                      className={`text-sm leading-relaxed ${cfg.color === 'text-slate-900' ? 'text-slate-700' : cfg.color.replace('-900', '-800')} ${isBullet ? 'pl-4 relative' : ''}`}
+                      className={`text-sm leading-relaxed text-white/80 ${isBullet ? 'pl-4 relative' : ''}`}
                     >
                       {isBullet && (
                         <span className={`absolute left-0 top-2 w-1.5 h-1.5 rounded-full ${
-                          cfg.color === 'text-emerald-900' ? 'bg-emerald-400' :
-                          cfg.color === 'text-red-900' ? 'bg-red-400' :
-                          cfg.color === 'text-amber-900' ? 'bg-amber-400' :
-                          cfg.color === 'text-blue-900' ? 'bg-blue-400' : 'bg-slate-400'
+                          cfg.color === 'text-emerald-300' ? 'bg-emerald-400' :
+                          cfg.color === 'text-red-300' ? 'bg-red-400' :
+                          cfg.color === 'text-amber-300' ? 'bg-amber-400' :
+                          cfg.color === 'text-cyan-300' ? 'bg-cyan-400' : 'bg-white/40'
                         }`} />
                       )}
                       {parts.map((p, k) => {
                         const boldMatch = p.match(/^\*\*([^*]+)\*\*$/)
-                        if (boldMatch) return <strong key={k} className="font-black">{boldMatch[1]}</strong>
+                        if (boldMatch) return <strong key={k} className="font-black text-white">{boldMatch[1]}</strong>
                         return <span key={k}>{p}</span>
                       })}
                     </div>
@@ -451,15 +423,15 @@ function AIAnalysisPanel({ result, req, score }: AIAnalysisProps) {
   }
 
   return (
-    <div className="bg-white border border-slate-100 rounded-3xl p-8 shadow-sm">
+    <div className="bg-gradient-to-br from-purple-950/40 via-[#1A1A1A] to-violet-950/40 border border-purple-500/30 rounded-3xl p-8 shadow-sm">
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-violet-50 border border-violet-200 rounded-xl flex items-center justify-center">
-            <Sparkles size={16} className="text-violet-600" />
+          <div className="w-9 h-9 bg-purple-500/20 border border-purple-500/30 rounded-xl flex items-center justify-center">
+            <Sparkles size={16} className="text-purple-400" />
           </div>
           <div>
-            <h3 className="font-black text-slate-900 text-sm uppercase tracking-widest">Analyse IA</h3>
-            <p className="text-[11px] text-slate-400 font-medium">Recommandations personnalisées par intelligence artificielle</p>
+            <h3 className="font-black text-purple-300 text-sm uppercase tracking-widest">Analyse IA</h3>
+            <p className="text-[11px] text-purple-400/70 font-medium">Recommandations personnalisées par intelligence artificielle</p>
           </div>
         </div>
 
@@ -469,8 +441,8 @@ function AIAnalysisPanel({ result, req, score }: AIAnalysisProps) {
             disabled={loading}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-black text-[11px] uppercase tracking-widest transition-all ${
               loading
-                ? 'bg-slate-100 text-slate-400 cursor-wait'
-                : 'bg-violet-600 text-white hover:bg-violet-500 shadow-lg shadow-violet-200'
+                ? 'bg-[#2A2A2A] text-white/40 cursor-wait'
+                : 'bg-gradient-to-r from-purple-600 to-violet-600 text-white hover:from-purple-500 hover:to-violet-500 shadow-lg shadow-purple-500/30'
             }`}
           >
             {loading ? (
@@ -488,36 +460,34 @@ function AIAnalysisPanel({ result, req, score }: AIAnalysisProps) {
         {done && (
           <button
             onClick={runAnalysis}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest bg-slate-100 text-slate-500 hover:bg-slate-200 transition-all"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest bg-[#1A1A1A] border border-[#2A2A2A] text-white/60 hover:bg-[#2A2A2A] transition-all"
           >
             <RotateCcw size={12} /> Relancer
           </button>
         )}
       </div>
 
-      {/* État initial */}
       {!analysis && !loading && (
         <div className="flex flex-col items-center justify-center py-10 text-center">
-          <div className="w-16 h-16 bg-violet-50 rounded-2xl flex items-center justify-center mb-4">
-            <Sparkles size={28} className="text-violet-400" />
+          <div className="w-16 h-16 bg-purple-500/20 border border-purple-500/30 rounded-2xl flex items-center justify-center mb-4">
+            <Sparkles size={28} className="text-purple-400" />
           </div>
-          <p className="font-black text-slate-700 mb-1">Analyse IA disponible</p>
-          <p className="text-sm text-slate-400 max-w-xs">
+          <p className="font-black text-white mb-1">Analyse IA disponible</p>
+          <p className="text-sm text-white/40 max-w-xs">
             Cliquez sur "Analyser cette formule" pour obtenir un diagnostic nutritionnel détaillé
-            et des conseils personnalisés pour améliorer votre ration.
+            et des conseils personnalisés.
           </p>
 
-          {/* Score préliminaire */}
           <div className={`mt-6 px-6 py-3 rounded-2xl border ${
-            score >= 90 ? 'bg-emerald-50 border-emerald-200' :
-            score >= 70 ? 'bg-amber-50 border-amber-200' :
-            'bg-red-50 border-red-200'
+            score >= 90 ? 'bg-emerald-500/10 border-emerald-500/30' :
+            score >= 70 ? 'bg-amber-500/10 border-amber-500/30' :
+            'bg-red-500/10 border-red-500/30'
           }`}>
-            <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">Score actuel</p>
-            <p className={`text-4xl font-black ${score >= 90 ? 'text-emerald-600' : score >= 70 ? 'text-amber-600' : 'text-red-600'}`}>
+            <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1 text-white/50">Score actuel</p>
+            <p className={`text-4xl font-black ${score >= 90 ? 'text-emerald-400' : score >= 70 ? 'text-amber-400' : 'text-red-400'}`}>
               {score}<span className="text-lg">/100</span>
             </p>
-            <p className="text-[11px] font-bold mt-1 opacity-60">
+            <p className="text-[11px] font-bold mt-1 text-white/60">
               {score >= 90 ? '🌟 Excellent — formule très bien centrée' :
                score >= 70 ? '✅ Bon — quelques ajustements possibles' :
                '⚠️ Des améliorations importantes sont possibles'}
@@ -526,35 +496,34 @@ function AIAnalysisPanel({ result, req, score }: AIAnalysisProps) {
         </div>
       )}
 
-      {/* Flux de streaming */}
       {(analysis || loading) && (
         <div className="relative">
           {loading && !analysis && (
-            <div className="flex flex-col items-center justify-center py-12 px-6 bg-gradient-to-br from-violet-50 to-blue-50 rounded-2xl border border-violet-100">
+            <div className="flex flex-col items-center justify-center py-12 px-6 bg-purple-500/5 rounded-2xl border border-purple-500/20">
               <div className="relative">
-                <div className="w-14 h-14 bg-white rounded-2xl shadow-lg flex items-center justify-center mb-3">
-                  <Sparkles size={24} className="text-violet-600 animate-pulse" />
+                <div className="w-14 h-14 bg-[#1A1A1A] rounded-2xl shadow-lg flex items-center justify-center mb-3 border border-purple-500/30">
+                  <Sparkles size={24} className="text-purple-400 animate-pulse" />
                 </div>
-                <div className="absolute -inset-1 bg-violet-400/20 rounded-2xl animate-ping" />
+                <div className="absolute -inset-1 bg-purple-400/20 rounded-2xl animate-ping" />
               </div>
-              <span className="font-black text-sm text-violet-700 uppercase tracking-widest">L'IA analyse votre formule</span>
-              <span className="text-xs text-violet-500 mt-1 font-medium">Diagnostic nutritionnel en cours…</span>
+              <span className="font-black text-sm text-purple-300 uppercase tracking-widest">L'IA analyse votre formule</span>
+              <span className="text-xs text-purple-400/70 mt-1 font-medium">Diagnostic nutritionnel en cours…</span>
             </div>
           )}
 
           {analysis && formatAnalysis(analysis)}
 
           {loading && analysis && (
-            <div className="flex items-center gap-2 text-violet-500 text-xs font-bold mt-2">
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse [animation-delay:200ms]" />
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse [animation-delay:400ms]" />
+            <div className="flex items-center gap-2 text-purple-400 text-xs font-bold mt-2">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse [animation-delay:200ms]" />
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse [animation-delay:400ms]" />
             </div>
           )}
 
           {done && (
-            <div className="mt-4 pt-4 border-t border-slate-200 flex items-center gap-2 text-[10px] text-slate-400 font-bold">
-              <CheckCircle2 size={12} className="text-emerald-500" />
+            <div className="mt-4 pt-4 border-t border-purple-500/20 flex items-center gap-2 text-[10px] text-purple-400/70 font-bold">
+              <CheckCircle2 size={12} className="text-emerald-400" />
               Analyse générée localement à partir des plages Goliath — vérifiez avec un nutritionniste pour des décisions critiques.
             </div>
           )}
@@ -583,17 +552,13 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
   const [checkedIds, setCheckedIds]           = useState<Set<string>>(
     new Set(['mais', 'tourteau_soja', 'premix'])
   )
-  // Nouveaux états : recherche d'ingrédient, enregistrement, conversion
   const [searchQuery, setSearchQuery]         = useState('')
   const [isSaving, setIsSaving]               = useState(false)
   const [savedOk, setSavedOk]                 = useState(false)
   const [saveError, setSaveError]             = useState<string | null>(null)
-  const [batchKg, setBatchKg]                 = useState(100) // kg de mélange à fabriquer
+  const [batchKg, setBatchKg]                 = useState(100)
   const [copiedOk, setCopiedOk]               = useState(false)
 
-  // Prix utilisateur mémorisés dans le navigateur (par ingrédient).
-  // Permet à l'éleveur d'avoir SES prix locaux qui restent d'une session à l'autre.
-  // Format : { 'mais': 250, 'tourteau_soja': 480, ... }
   const [userPrices, setUserPrices] = useState<Record<string, number>>(() => {
     try {
       const stored = typeof window !== 'undefined' ? localStorage.getItem('provende_user_prices') : null
@@ -603,7 +568,6 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
     }
   })
 
-  // Sauvegarder un prix utilisateur (et persister dans le navigateur)
   const updateUserPrice = (ingredientId: string, price: number) => {
     setUserPrices(prev => {
       const next = { ...prev, [ingredientId]: price }
@@ -614,7 +578,6 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
       }
       return next
     })
-    // Mettre à jour aussi le prix dans optimizedResult pour recalcul immédiat
     if (optimizedResult) {
       setOptimizedResult(optimizedResult.map(ing =>
         ing.id === ingredientId ? { ...ing, price } : ing
@@ -622,7 +585,6 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
     }
   }
 
-  // Réinitialiser tous les prix utilisateur
   const resetUserPrices = () => {
     if (!window.confirm('Supprimer tous tes prix personnalisés et revenir aux prix par défaut ?')) return
     setUserPrices({})
@@ -641,7 +603,6 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
 
   const used         = subscription.autoFormulasCount || 0
   const bonus        = subscription.bonusCalculations || 0
-  // MODE TEST : nombre d'essais quasi-illimité (revert à 5 pour la prod)
   const totalAllowed = 9999 + bonus
   const remaining    = totalAllowed - used
 
@@ -674,19 +635,14 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
         .map(i => ({
           ...i,
           quantity: 0,
-          // Prix utilisateur s'il existe, sinon prix par défaut
           price: userPrices[i.id] ?? i.defaultPrice ?? 0,
         }))
       const result = optimizeFormula(pool, selectedReq)
-      // Réappliquer les prix utilisateur sur le résultat (l'auto-completion peut avoir
-      // ajouté des ingrédients dont le prix doit aussi venir des userPrices)
       const resultWithPrices = result.map(ing => ({
         ...ing,
         price: userPrices[ing.id] ?? ing.price ?? ingredientsDatabase.find(i => i.id === ing.id)?.defaultPrice ?? 0,
       }))
       setOptimizedResult(resultWithPrices)
-      // N'incrémenter le compteur d'essais QUE si l'optimisation a vraiment produit
-      // une formule avec des quantités non nulles (évite de perdre un essai sur un échec)
       const hasValidResult = resultWithPrices && resultWithPrices.length > 0 && resultWithPrices.some(i => i.quantity > 0.01)
       if (hasValidResult) {
         incrementAutoCount()
@@ -697,7 +653,6 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
 
   const canGenerate = !isOptimizing && checkedIds.size >= 2
 
-  // ─── RECHERCHE D'INGRÉDIENTS (triés alphabétiquement) ──────────────────────
   const filteredIngredients = useMemo(() => {
     const q = searchQuery.trim().toLowerCase()
     const base = q
@@ -706,11 +661,9 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
           i.category.toLowerCase().includes(q)
         )
       : ingredientsDatabase
-    // Tri alphabétique français (gère accents : Maïs, Méthionine, etc.)
     return [...base].sort((a, b) => a.name.localeCompare(b.name, 'fr', { sensitivity: 'base' }))
   }, [searchQuery])
 
-  // ─── ENREGISTREMENT FORMULE ─────────────────────────────────────────────────
   const handleSaveFormula = async () => {
     if (!optimizedResult || !user) {
       setSaveError(!user ? 'Vous devez être connecté pour enregistrer.' : 'Aucune formule à enregistrer.')
@@ -744,12 +697,10 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
     }
   }
 
-  // ─── IMPRESSION / EXPORT PDF (via window.print) ─────────────────────────────
   const handlePrint = () => {
     window.print()
   }
 
-  // ─── COPIER LA RECETTE ───────────────────────────────────────────────────────
   const handleCopy = async () => {
     if (!optimizedResult) return
     const factor = batchKg / 100
@@ -771,7 +722,7 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
     }
   }
 
-  // ── VUE RÉSULTATS ────────────────────────────────────────────────────────────
+  // ── VUE RÉSULTATS (DARK) ────────────────────────────────────────────────────
 
   if (optimizedResult) {
     const totals       = calculateTotals(optimizedResult)
@@ -781,57 +732,54 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
     const costPerTonne = (costPer100kg * 10).toLocaleString('fr-FR', { maximumFractionDigits: 0 })
     const costForBatch = (costPer100kg * batchKg / 100).toLocaleString('fr-FR', { maximumFractionDigits: 0 })
 
-    // Comptage des nutriments dans la plage (pour badge synthétique)
     const inRangeCount = quality.nutrients.filter(n => n.status !== 'warning').length
     const totalNutrients = quality.nutrients.length
 
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 print:space-y-2">
 
-        {/* Header résultats — version moderne et plus claire */}
-        <div className="relative bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-950 rounded-3xl overflow-hidden text-white shadow-2xl print:bg-white print:text-slate-900 print:shadow-none print:border print:border-slate-300">
+        {/* Header résultats — DARK + ORANGE */}
+        <div className="relative bg-gradient-to-br from-[#1A1A1A] via-[#0A0A0A] to-[#1A1A1A] rounded-3xl overflow-hidden text-white shadow-2xl border border-[#FF6800]/30 print:bg-white print:text-slate-900 print:shadow-none">
           <div className="absolute inset-0 pointer-events-none print:hidden">
-            <div className="absolute top-0 right-0 w-72 h-72 bg-emerald-400/10 rounded-full -mr-20 -mt-20 blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-400/10 rounded-full -ml-20 -mb-20 blur-3xl" />
+            <div className="absolute top-0 right-0 w-72 h-72 bg-[#FF6800]/10 rounded-full -mr-20 -mt-20 blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/10 rounded-full -ml-20 -mb-20 blur-3xl" />
           </div>
 
           <div className="relative z-10 p-6 md:p-8">
-            {/* Première ligne : titre + badge */}
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
               <div className="flex items-start gap-4">
                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${
-                  quality.allOptimal ? 'bg-emerald-400/20 border border-emerald-400/40' : 'bg-amber-400/20 border border-amber-400/40'
+                  quality.allOptimal ? 'bg-emerald-500/20 border border-emerald-500/40' : 'bg-amber-500/20 border border-amber-500/40'
                 } print:bg-slate-100 print:border-slate-200`}>
                   {quality.allOptimal
-                    ? <CheckCircle2 size={26} className="text-emerald-300 print:text-emerald-600" />
-                    : <TrendingUp size={26} className="text-amber-300 print:text-amber-600" />
+                    ? <CheckCircle2 size={26} className="text-emerald-400 print:text-emerald-600" />
+                    : <TrendingUp size={26} className="text-amber-400 print:text-amber-600" />
                   }
                 </div>
                 <div className="text-left">
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-300/80 mb-1 print:text-emerald-700">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#FF6800] mb-1">
                     Formule générée par IA
                   </p>
                   <h2 className="font-black text-white text-2xl md:text-3xl tracking-tight print:text-slate-900">
                     {quality.allOptimal ? 'Formule optimisée' : 'Formule générée'}
                   </h2>
-                  <p className="text-emerald-100/80 text-sm font-medium mt-1 print:text-slate-600">
-                    {selectedReq.species} · <span className="font-black text-emerald-300 print:text-emerald-700">{selectedReq.stage}</span>
+                  <p className="text-white/70 text-sm font-medium mt-1 print:text-slate-600">
+                    {selectedReq.species} · <span className="font-black text-[#FF6800]">{selectedReq.stage}</span>
                   </p>
                 </div>
               </div>
 
-              {/* Score circulaire */}
               <div className="flex items-center gap-4 print:hidden">
                 <div className="text-right">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-emerald-300/70">Score qualité</p>
-                  <p className={`text-4xl font-black ${score >= 85 ? 'text-emerald-300' : score >= 70 ? 'text-amber-300' : 'text-red-300'}`}>
-                    {score}<span className="text-base text-emerald-200/60">/100</span>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Score qualité</p>
+                  <p className={`text-4xl font-black ${score >= 85 ? 'text-emerald-400' : score >= 70 ? 'text-amber-400' : 'text-red-400'}`}>
+                    {score}<span className="text-base text-white/40">/100</span>
                   </p>
                 </div>
                 <div className={`px-3 py-2 rounded-2xl border ${
                   inRangeCount === totalNutrients
-                    ? 'bg-emerald-500/20 border-emerald-400/40 text-emerald-200'
-                    : 'bg-amber-500/20 border-amber-400/40 text-amber-200'
+                    ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
+                    : 'bg-amber-500/20 border-amber-500/40 text-amber-300'
                 }`}>
                   <p className="text-2xl font-black">{inRangeCount}<span className="text-sm opacity-60">/{totalNutrients}</span></p>
                   <p className="text-[9px] font-bold uppercase tracking-widest opacity-80">Dans plage</p>
@@ -841,25 +789,24 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
 
             {/* Coûts */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6 print:grid-cols-3">
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 print:bg-slate-50 print:border-slate-200">
-                <p className="text-[9px] font-black uppercase tracking-widest text-emerald-300/70 mb-1 print:text-slate-500">Coût / tonne</p>
-                <p className="text-xl font-black text-white print:text-slate-900">{costPerTonne} <span className="text-xs text-emerald-200/60 font-medium print:text-slate-500">F</span></p>
+              <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-2xl p-4 print:bg-slate-50 print:border-slate-200">
+                <p className="text-[9px] font-black uppercase tracking-widest text-[#FF6800] mb-1 print:text-slate-500">Coût / tonne</p>
+                <p className="text-xl font-black text-white print:text-slate-900">{costPerTonne} <span className="text-xs text-white/40 font-medium">F</span></p>
               </div>
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 print:bg-slate-50 print:border-slate-200">
-                <p className="text-[9px] font-black uppercase tracking-widest text-emerald-300/70 mb-1 print:text-slate-500">Coût / 100 kg</p>
-                <p className="text-xl font-black text-white print:text-slate-900">{costPer100kg.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} <span className="text-xs text-emerald-200/60 font-medium print:text-slate-500">F</span></p>
+              <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-2xl p-4 print:bg-slate-50 print:border-slate-200">
+                <p className="text-[9px] font-black uppercase tracking-widest text-[#FF6800] mb-1 print:text-slate-500">Coût / 100 kg</p>
+                <p className="text-xl font-black text-white print:text-slate-900">{costPer100kg.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} <span className="text-xs text-white/40 font-medium">F</span></p>
               </div>
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 print:bg-slate-50 print:border-slate-200">
-                <p className="text-[9px] font-black uppercase tracking-widest text-emerald-300/70 mb-1 print:text-slate-500">Pour {batchKg} kg</p>
-                <p className="text-xl font-black text-white print:text-slate-900">{costForBatch} <span className="text-xs text-emerald-200/60 font-medium print:text-slate-500">F</span></p>
+              <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-2xl p-4 print:bg-slate-50 print:border-slate-200">
+                <p className="text-[9px] font-black uppercase tracking-widest text-[#FF6800] mb-1 print:text-slate-500">Pour {batchKg} kg</p>
+                <p className="text-xl font-black text-white print:text-slate-900">{costForBatch} <span className="text-xs text-white/40 font-medium">F</span></p>
               </div>
             </div>
 
             {/* Convertisseur batch + Actions */}
             <div className="flex flex-col md:flex-row gap-3 print:hidden">
-              {/* Convertisseur quantité à fabriquer */}
-              <div className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 flex items-center gap-3">
-                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-300/70 shrink-0">Fabriquer</span>
+              <div className="flex-1 bg-[#1A1A1A] border border-[#2A2A2A] rounded-2xl px-4 py-3 flex items-center gap-3">
+                <span className="text-[10px] font-black uppercase tracking-widest text-[#FF6800] shrink-0">Fabriquer</span>
                 <div className="flex flex-1 gap-1">
                   {[25, 50, 100, 200, 500].map(qty => (
                     <button
@@ -867,8 +814,8 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
                       onClick={() => setBatchKg(qty)}
                       className={`flex-1 py-2 rounded-xl text-xs font-black transition-all ${
                         batchKg === qty
-                          ? 'bg-emerald-400 text-emerald-950 shadow-lg shadow-emerald-400/30'
-                          : 'bg-white/5 text-emerald-100 hover:bg-white/10 border border-white/10'
+                          ? 'bg-[#FF6800] text-white shadow-lg shadow-[#FF6800]/30'
+                          : 'bg-[#0A0A0A] text-white/60 hover:bg-[#2A2A2A] border border-[#2A2A2A]'
                       }`}
                     >
                       {qty} kg
@@ -880,14 +827,14 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
               <div className="flex gap-2 flex-wrap md:flex-nowrap">
                 <button
                   onClick={handleCopy}
-                  className="flex items-center gap-2 px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all"
+                  className="flex items-center gap-2 px-4 py-3 bg-[#1A1A1A] hover:bg-[#2A2A2A] border border-[#2A2A2A] text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all"
                 >
                   {copiedOk ? <Check size={13} /> : <Copy size={13} />}
                   {copiedOk ? 'Copié' : 'Copier'}
                 </button>
                 <button
                   onClick={handlePrint}
-                  className="flex items-center gap-2 px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all"
+                  className="flex items-center gap-2 px-4 py-3 bg-[#1A1A1A] hover:bg-[#2A2A2A] border border-[#2A2A2A] text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all"
                 >
                   <Printer size={13} /> Imprimer
                 </button>
@@ -896,10 +843,10 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
                   disabled={isSaving}
                   className={`flex items-center gap-2 px-5 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg ${
                     savedOk
-                      ? 'bg-emerald-400 text-emerald-950 shadow-emerald-400/30'
+                      ? 'bg-emerald-500 text-white shadow-emerald-500/30'
                       : isSaving
-                        ? 'bg-white/10 text-white/60 cursor-wait'
-                        : 'bg-amber-400 hover:bg-amber-300 text-amber-950 shadow-amber-400/30'
+                        ? 'bg-[#2A2A2A] text-white/40 cursor-wait'
+                        : 'bg-[#FF6800] hover:bg-[#FF8533] text-white shadow-[#FF6800]/30'
                   }`}
                 >
                   {savedOk ? <Check size={13} /> : isSaving ? <RotateCcw size={13} className="animate-spin" /> : <Save size={13} />}
@@ -907,21 +854,20 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
                 </button>
                 <button
                   onClick={() => setOptimizedResult(null)}
-                  className="flex items-center gap-2 px-4 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all"
+                  className="flex items-center gap-2 px-4 py-3 bg-[#0A0A0A] hover:bg-[#2A2A2A] border border-[#2A2A2A] text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all"
                 >
                   <RotateCcw size={13} /> Nouveau
                 </button>
               </div>
             </div>
 
-            {/* Champ nom de formule */}
             <div className="mt-3 flex items-center gap-2 print:hidden">
               <input
                 type="text"
                 value={formulaName}
                 onChange={e => setFormulaName(e.target.value)}
                 placeholder={`Nom de la formule (ex: Poulet lot ${new Date().toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' })})`}
-                className="flex-1 px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder:text-emerald-200/40 font-medium focus:outline-none focus:bg-white/10 focus:border-emerald-400/40 transition"
+                className="flex-1 px-4 py-2.5 bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl text-sm text-white placeholder:text-white/30 font-medium focus:outline-none focus:bg-[#0A0A0A] focus:border-[#FF6800] transition"
               />
             </div>
             {saveError && (
@@ -932,21 +878,19 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
           </div>
         </div>
 
-        {/* Bilan nutritionnel avec score centrage */}
         <OptimalSummary totals={totals} req={selectedReq} />
 
-        {/* Analyse IA */}
         <AIAnalysisPanel result={optimizedResult} req={selectedReq} score={score} />
 
         {/* Tableau ingrédients + convertisseur batch */}
-        <div className="bg-white border border-slate-100 rounded-3xl p-6 md:p-8 shadow-sm">
+        <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-3xl p-6 md:p-8 shadow-sm">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-5">
             <div>
-              <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">Recette de fabrication</h3>
-              <p className="text-xs text-slate-400 font-medium mt-1">Quantités à peser pour {batchKg} kg de mélange</p>
+              <h3 className="text-sm font-black text-white uppercase tracking-widest">Recette de fabrication</h3>
+              <p className="text-xs text-white/40 font-medium mt-1">Quantités à peser pour {batchKg} kg de mélange</p>
             </div>
             <div className="hidden md:flex items-center gap-2">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Lot</span>
+              <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">Lot</span>
               <div className="flex gap-1">
                 {[25, 50, 100, 200, 500].map(qty => (
                   <button
@@ -954,8 +898,8 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
                     onClick={() => setBatchKg(qty)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
                       batchKg === qty
-                        ? 'bg-emerald-500 text-white shadow-sm'
-                        : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                        ? 'bg-[#FF6800] text-white shadow-sm'
+                        : 'bg-[#0A0A0A] text-white/60 hover:bg-[#2A2A2A] border border-[#2A2A2A]'
                     }`}
                   >
                     {qty}kg
@@ -965,19 +909,18 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
             </div>
           </div>
 
-          {/* Tableau de recette adapté à la quantité */}
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-slate-200 text-left">
-                  <th className="py-2 px-3 font-black text-[10px] text-slate-500 uppercase tracking-widest">Ingrédient</th>
-                  <th className="py-2 px-3 font-black text-[10px] text-slate-500 uppercase tracking-widest text-right">% du mélange</th>
-                  <th className="py-2 px-3 font-black text-[10px] text-slate-500 uppercase tracking-widest text-right">Quantité ({batchKg} kg)</th>
-                  <th className="py-2 px-3 font-black text-[10px] text-slate-500 uppercase tracking-widest text-right print:text-left">
+                <tr className="border-b border-[#2A2A2A] text-left">
+                  <th className="py-2 px-3 font-black text-[10px] text-[#FF6800] uppercase tracking-widest">Ingrédient</th>
+                  <th className="py-2 px-3 font-black text-[10px] text-[#FF6800] uppercase tracking-widest text-right">% du mélange</th>
+                  <th className="py-2 px-3 font-black text-[10px] text-[#FF6800] uppercase tracking-widest text-right">Quantité ({batchKg} kg)</th>
+                  <th className="py-2 px-3 font-black text-[10px] text-[#FF6800] uppercase tracking-widest text-right print:text-left">
                     <span className="print:hidden">Prix (F/kg) ✏️</span>
                     <span className="hidden print:inline">Prix F/kg</span>
                   </th>
-                  <th className="py-2 px-3 font-black text-[10px] text-slate-500 uppercase tracking-widest text-right">Sous-total</th>
+                  <th className="py-2 px-3 font-black text-[10px] text-[#FF6800] uppercase tracking-widest text-right">Sous-total</th>
                 </tr>
               </thead>
               <tbody>
@@ -986,11 +929,11 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
                   const subTotal = kgForBatch * (ing.price || 0)
                   const isUserPrice = userPrices[ing.id] !== undefined
                   return (
-                    <tr key={ing.id} className="border-b border-slate-100 hover:bg-slate-50/50">
-                      <td className="py-3 px-3 font-bold text-slate-700">{ing.name}</td>
-                      <td className="py-3 px-3 text-right font-bold text-slate-500">{ing.quantity.toFixed(2)} %</td>
-                      <td className="py-3 px-3 text-right font-black text-emerald-700">
-                        {kgForBatch.toFixed(2)} <span className="text-xs text-slate-400 font-medium">kg</span>
+                    <tr key={ing.id} className="border-b border-[#2A2A2A] hover:bg-[#FF6800]/5">
+                      <td className="py-3 px-3 font-bold text-white">{ing.name}</td>
+                      <td className="py-3 px-3 text-right font-bold text-white/60">{ing.quantity.toFixed(2)} %</td>
+                      <td className="py-3 px-3 text-right font-black text-[#FF6800]">
+                        {kgForBatch.toFixed(2)} <span className="text-xs text-white/40 font-medium">kg</span>
                       </td>
                       <td className="py-3 px-3 text-right">
                         <div className="flex items-center justify-end gap-1 print:hidden">
@@ -1000,18 +943,18 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
                             step="10"
                             value={ing.price || 0}
                             onChange={e => updateUserPrice(ing.id, parseFloat(e.target.value) || 0)}
-                            className={`w-20 px-2 py-1 text-right text-xs font-bold rounded-lg border outline-none focus:ring-2 focus:ring-emerald-400 transition ${
+                            className={`w-20 px-2 py-1 text-right text-xs font-bold rounded-lg border outline-none focus:ring-2 focus:ring-[#FF6800] transition ${
                               isUserPrice
-                                ? 'border-emerald-300 bg-emerald-50 text-emerald-800'
-                                : 'border-slate-200 bg-slate-50 text-slate-600'
+                                ? 'border-[#FF6800]/40 bg-[#FF6800]/10 text-[#FF6800]'
+                                : 'border-[#2A2A2A] bg-[#0A0A0A] text-white/60'
                             }`}
                             title={isUserPrice ? 'Prix que tu as personnalisé' : 'Prix par défaut — clique pour modifier'}
                           />
-                          <span className="text-xs text-slate-400 font-medium">F</span>
+                          <span className="text-xs text-white/40 font-medium">F</span>
                         </div>
                         <span className="hidden print:inline text-slate-700 font-bold">{(ing.price || 0).toLocaleString('fr-FR')} F</span>
                       </td>
-                      <td className="py-3 px-3 text-right font-bold text-amber-700 text-xs">
+                      <td className="py-3 px-3 text-right font-bold text-amber-400 text-xs">
                         {subTotal.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} F
                       </td>
                     </tr>
@@ -1019,26 +962,25 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
                 })}
               </tbody>
               <tfoot>
-                <tr className="bg-emerald-50/50">
-                  <td className="py-3 px-3 font-black text-slate-900 text-sm">TOTAL</td>
-                  <td className="py-3 px-3 text-right font-black text-slate-900">100 %</td>
-                  <td className="py-3 px-3 text-right font-black text-emerald-700">{batchKg} kg</td>
+                <tr className="bg-[#FF6800]/10 border-t-2 border-[#FF6800]/30">
+                  <td className="py-3 px-3 font-black text-white text-sm">TOTAL</td>
+                  <td className="py-3 px-3 text-right font-black text-white">100 %</td>
+                  <td className="py-3 px-3 text-right font-black text-[#FF6800]">{batchKg} kg</td>
                   <td className="py-3 px-3"></td>
-                  <td className="py-3 px-3 text-right font-black text-amber-700 text-sm">{costForBatch} F</td>
+                  <td className="py-3 px-3 text-right font-black text-amber-400 text-sm">{costForBatch} F</td>
                 </tr>
               </tfoot>
             </table>
           </div>
 
-          {/* Bandeau info prix + bouton reset */}
-          <div className="mt-4 flex flex-col md:flex-row md:items-center justify-between gap-3 p-3 bg-slate-50 rounded-2xl border border-slate-100 print:hidden">
-            <div className="flex items-start gap-2 text-xs text-slate-600">
+          <div className="mt-4 flex flex-col md:flex-row md:items-center justify-between gap-3 p-3 bg-[#0A0A0A] rounded-2xl border border-[#2A2A2A] print:hidden">
+            <div className="flex items-start gap-2 text-xs text-white/60">
               <span className="text-base">💡</span>
               <p className="font-medium leading-relaxed">
-                <strong className="text-slate-900">Les prix changent souvent ?</strong> Édite-les directement dans le tableau ci-dessus.
-                Tes prix sont sauvegardés dans ce navigateur et utilisés pour toutes tes prochaines formules.
+                <strong className="text-white">Les prix changent souvent ?</strong> Édite-les directement dans le tableau ci-dessus.
+                Tes prix sont sauvegardés dans ce navigateur.
                 {Object.keys(userPrices).length > 0 && (
-                  <span className="ml-1 text-emerald-700 font-bold">
+                  <span className="ml-1 text-[#FF6800] font-bold">
                     ({Object.keys(userPrices).length} prix personnalisé{Object.keys(userPrices).length > 1 ? 's' : ''})
                   </span>
                 )}
@@ -1047,16 +989,15 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
             {Object.keys(userPrices).length > 0 && (
               <button
                 onClick={resetUserPrices}
-                className="text-[10px] font-black text-slate-500 hover:text-red-600 uppercase tracking-widest flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-red-50 transition-all shrink-0"
+                className="text-[10px] font-black text-white/60 hover:text-red-400 uppercase tracking-widest flex items-center gap-1 px-3 py-2 rounded-lg hover:bg-red-500/10 transition-all shrink-0"
               >
                 <RotateCcw size={11} /> Réinitialiser les prix
               </button>
             )}
           </div>
 
-          {/* Édition libre (ancien IngredientTable) */}
           <details className="mt-6">
-            <summary className="text-xs font-black text-slate-500 uppercase tracking-widest cursor-pointer hover:text-slate-700">
+            <summary className="text-xs font-black text-white/60 uppercase tracking-widest cursor-pointer hover:text-white">
               ✏️ Modifier manuellement les quantités
             </summary>
             <div className="mt-4">
@@ -1071,48 +1012,46 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
     )
   }
 
-  // ── FORMULAIRE ───────────────────────────────────────────────────────────────
+  // ── FORMULAIRE (DARK + ORANGE) ──────────────────────────────────────────────
 
   return (
-    <div className="relative -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-6 rounded-3xl space-y-6 animate-in fade-in duration-500
-                    bg-gradient-to-br from-amber-50 via-orange-50/40 to-white
-                    border border-amber-100/60 print:bg-white print:border-0">
+    <div className="space-y-6 animate-in fade-in duration-500">
 
-      {/* Badge "MODE GÉNÉRATEUR IA" en haut à gauche, sticker discret */}
+      {/* Sticker "MODE GÉNÉRATEUR IA" */}
       <div className="flex items-center gap-2 mb-2 print:hidden">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-md shadow-orange-200">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#FF8533] to-[#FF6800] text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-md shadow-[#FF6800]/30">
           <Sparkles size={12} /> Mode Générateur IA
         </span>
-        <span className="text-[10px] font-bold text-amber-700 uppercase tracking-widest">
+        <span className="text-[10px] font-bold text-[#FF6800] uppercase tracking-widest">
           Optimisation automatique
         </span>
       </div>
 
-      {/* Hero */}
-      <div className="relative bg-slate-900 rounded-3xl p-8 overflow-hidden text-white border border-white/5">
+      {/* Hero — DARK ORANGE GLOW */}
+      <div className="relative bg-gradient-to-br from-[#FF6800] via-[#FF8533] to-[#FF6800] rounded-3xl p-8 overflow-hidden text-white shadow-xl border border-[#FF6800]/30">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 right-0 w-56 h-56 bg-amber-500/8 rounded-full -mr-16 -mt-16 blur-2xl" />
+          <div className="absolute top-0 right-0 w-56 h-56 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
         </div>
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6 text-left">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-amber-500/15 border border-amber-400/20 rounded-2xl flex items-center justify-center">
-              <Wand2 size={24} className="text-amber-400" />
+            <div className="w-12 h-12 bg-white/15 border border-white/30 rounded-2xl flex items-center justify-center backdrop-blur-md">
+              <Wand2 size={24} className="text-white" />
             </div>
             <div>
-              <p className="text-[10px] font-black text-amber-400/60 uppercase tracking-widest mb-1">
+              <p className="text-[10px] font-black text-white/80 uppercase tracking-widest mb-1">
                 Générateur de formules automatiques
               </p>
               <h2 className="text-2xl font-black tracking-tight">Algorithme moindre coût + qualité</h2>
-              <p className="text-white/40 text-sm font-medium mt-0.5">
+              <p className="text-white/80 text-sm font-medium mt-0.5">
                 Optimisation nutritionnelle centrée · Analyse IA intégrée
               </p>
             </div>
           </div>
-          <div className="shrink-0 flex flex-col items-center bg-white/5 border border-white/10 rounded-2xl px-6 py-4">
-            <p className={`text-2xl font-black ${remaining > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+          <div className="shrink-0 flex flex-col items-center bg-white/10 border border-white/20 rounded-2xl px-6 py-4 backdrop-blur-md">
+            <p className={`text-2xl font-black ${remaining > 0 ? 'text-white' : 'text-red-300'}`}>
               {remaining}
             </p>
-            <p className="text-[9px] font-black opacity-30 uppercase tracking-widest">
+            <p className="text-[9px] font-black text-white/70 uppercase tracking-widest">
               {remaining > 1 ? 'Essais restants' : remaining === 1 ? 'Essai restant' : 'Essais épuisés'}
             </p>
           </div>
@@ -1120,12 +1059,12 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
       </div>
 
       {/* Nom de formule + Sélection phase */}
-      <div className="bg-white border border-slate-100 rounded-3xl p-8 shadow-sm space-y-6">
-        <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest">Informations de base</h3>
+      <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-3xl p-8 shadow-sm space-y-6">
+        <h3 className="text-sm font-black text-[#FF6800] uppercase tracking-widest">Informations de base</h3>
 
         <div className="grid md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">
+            <label className="block text-[11px] font-black text-white/40 uppercase tracking-widest mb-2">
               Nom de la formule
             </label>
             <input
@@ -1133,23 +1072,23 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
               value={formulaName}
               onChange={e => setFormulaName(e.target.value)}
               placeholder="Ex: Poulet de chair lot A"
-              className="w-full px-5 py-4 rounded-2xl border border-slate-200 bg-slate-50 font-bold text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent placeholder-slate-300 transition"
+              className="w-full px-5 py-4 rounded-2xl border border-[#2A2A2A] bg-[#0A0A0A] font-bold text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6800] focus:border-[#FF6800] placeholder-white/30 transition"
             />
           </div>
 
           <div>
-            <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest mb-2">
+            <label className="block text-[11px] font-black text-white/40 uppercase tracking-widest mb-2">
               Espèce &amp; Phase
             </label>
             <select
               value={selectedReqId}
               onChange={e => setSelectedReqId(e.target.value)}
-              className="w-full px-5 py-4 rounded-2xl border border-slate-200 bg-slate-50 font-bold text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition appearance-none cursor-pointer"
+              className="w-full px-5 py-4 rounded-2xl border border-[#2A2A2A] bg-[#0A0A0A] font-bold text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6800] focus:border-[#FF6800] transition appearance-none cursor-pointer"
             >
               {Object.entries(speciesGroups).map(([species, reqs]) => (
-                <optgroup key={species} label={species}>
+                <optgroup key={species} label={species} className="bg-[#1A1A1A]">
                   {reqs.map(r => (
-                    <option key={r.id} value={r.id}>
+                    <option key={r.id} value={r.id} className="bg-[#1A1A1A]">
                       {r.stage} · {r.ageRange}
                     </option>
                   ))}
@@ -1157,13 +1096,13 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
               ))}
             </select>
 
-            <div className="mt-3 flex items-start gap-2 px-4 py-2.5 bg-emerald-50 border border-emerald-200 rounded-xl">
-              <CheckCircle2 size={14} className="text-emerald-500 shrink-0 mt-0.5" />
+            <div className="mt-3 flex items-start gap-2 px-4 py-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
+              <CheckCircle2 size={14} className="text-emerald-400 shrink-0 mt-0.5" />
               <div>
-                <p className="text-[11px] font-black text-emerald-800">
+                <p className="text-[11px] font-black text-emerald-300">
                   {selectedReq.species} · {selectedReq.stage}
                 </p>
-                <p className="text-[10px] text-emerald-600 font-medium mt-0.5">
+                <p className="text-[10px] text-emerald-400/70 font-medium mt-0.5">
                   EM {selectedReq.em.min}–{selectedReq.em.max} kcal/kg
                   · PB {selectedReq.pb.min}–{selectedReq.pb.max}%
                   · Ca {selectedReq.ca.min}–{selectedReq.ca.max}%
@@ -1176,33 +1115,33 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
       </div>
 
       {/* Sélection ingrédients */}
-      <div className="bg-white border border-slate-100 rounded-3xl p-8 shadow-sm text-left">
+      <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-3xl p-8 shadow-sm text-left">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest">Ingrédients en stock</h3>
-            <p className="text-[11px] text-slate-400 mt-1">
+            <h3 className="text-sm font-black text-[#FF6800] uppercase tracking-widest">Ingrédients en stock</h3>
+            <p className="text-[11px] text-white/40 mt-1">
               L'algorithme peut compléter automatiquement avec les ingrédients essentiels manquants.
             </p>
           </div>
-          <span className="px-4 py-1.5 bg-emerald-50 text-emerald-700 rounded-xl text-[10px] font-black uppercase">
+          <span className="px-4 py-1.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 rounded-xl text-[10px] font-black uppercase">
             {checkedIds.size} sélectionnés
           </span>
         </div>
 
         {/* Barre de recherche */}
         <div className="relative mb-5">
-          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" />
+          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
           <input
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Rechercher un ingrédient (ex: maïs, tourteau, son…)"
-            className="w-full pl-11 pr-11 py-3 rounded-2xl border border-slate-200 bg-slate-50 text-sm font-medium text-slate-700 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition"
+            className="w-full pl-11 pr-11 py-3 rounded-2xl border border-[#2A2A2A] bg-[#0A0A0A] text-sm font-medium text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#FF6800] focus:border-[#FF6800] transition"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
             >
               <X size={16} />
             </button>
@@ -1210,7 +1149,7 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
         </div>
 
         {filteredIngredients.length === 0 ? (
-          <div className="text-center py-8 text-slate-400 text-sm font-medium">
+          <div className="text-center py-8 text-white/40 text-sm font-medium">
             Aucun ingrédient trouvé pour "<span className="font-black">{searchQuery}</span>"
           </div>
         ) : (
@@ -1223,21 +1162,21 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
                   onClick={() => toggleIngredient(ing.id)}
                   className={`p-4 rounded-2xl border-2 text-left transition-all ${
                     isChecked
-                      ? 'border-emerald-400 bg-emerald-50 ring-4 ring-emerald-50'
-                      : 'border-slate-100 bg-white hover:border-slate-200'
+                      ? 'border-[#FF6800] bg-[#FF6800]/10 ring-4 ring-[#FF6800]/10'
+                      : 'border-[#2A2A2A] bg-[#0A0A0A] hover:border-[#FF6800]/50'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <p className={`font-black text-sm leading-tight ${isChecked ? 'text-slate-900' : 'text-slate-600'}`}>
+                    <p className={`font-black text-sm leading-tight ${isChecked ? 'text-white' : 'text-white/70'}`}>
                       {ing.name}
                     </p>
                     {isChecked && (
-                      <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
+                      <div className="w-5 h-5 rounded-full bg-[#FF6800] flex items-center justify-center shrink-0">
                         <Check size={11} className="text-white" strokeWidth={3} />
                       </div>
                     )}
                   </div>
-                  <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-md border ${CAT[ing.category] ?? 'bg-slate-50 border-slate-200 text-slate-500'}`}>
+                  <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-md border ${CAT[ing.category] ?? 'bg-[#1A1A1A] border-[#2A2A2A] text-white/40'}`}>
                     {ing.category}
                   </span>
                 </button>
@@ -1247,21 +1186,20 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
         )}
       </div>
 
-      {/* Bouton générer — TRÈS visible */}
+      {/* Bouton générer — TRÈS visible (ORANGE) */}
       <div className="relative">
-        {/* Halo lumineux animé derrière le bouton */}
         {canGenerate && remaining > 0 && (
-          <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 via-amber-400 to-orange-500 rounded-3xl blur-lg opacity-60 group-hover:opacity-100 animate-pulse" aria-hidden="true" />
+          <div className="absolute -inset-1 bg-gradient-to-r from-[#FF6800] via-[#FF8533] to-[#FF6800] rounded-3xl blur-lg opacity-60 animate-pulse" aria-hidden="true" />
         )}
         <button
           onClick={handleOptimize}
           disabled={!canGenerate}
           className={`relative w-full py-8 rounded-3xl font-black text-base md:text-lg uppercase tracking-widest transition-all shadow-2xl border-2 ${
             !canGenerate
-              ? 'bg-slate-200 text-slate-400 border-slate-300 cursor-not-allowed'
+              ? 'bg-[#2A2A2A] text-white/30 border-[#2A2A2A] cursor-not-allowed'
               : remaining === 0
                 ? 'bg-gradient-to-r from-red-600 to-red-500 text-white border-red-400 hover:from-red-500 hover:to-red-400 hover:scale-[1.02] shadow-red-500/40 active:scale-95'
-                : 'bg-gradient-to-r from-orange-600 via-amber-500 to-orange-600 text-white border-orange-300 hover:from-orange-500 hover:via-amber-400 hover:to-orange-500 hover:scale-[1.02] shadow-orange-500/50 active:scale-95'
+                : 'bg-gradient-to-r from-[#FF6800] via-[#FF8533] to-[#FF6800] text-white border-[#FF6800] hover:scale-[1.02] shadow-[#FF6800]/50 active:scale-95'
           }`}
         >
           {isOptimizing ? (
@@ -1282,15 +1220,14 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
             </span>
           )}
         </button>
-        {/* Sous-titre informatif sous le bouton */}
         {canGenerate && remaining > 0 && (
-          <p className="text-center text-xs font-bold text-emerald-700 mt-3">
-            ✨ Phase : <span className="text-emerald-900">{selectedReq.stage}</span> ·
+          <p className="text-center text-xs font-bold text-[#FF6800] mt-3">
+            ✨ Phase : <span className="text-white">{selectedReq.stage}</span> ·
             {checkedIds.size} ingrédient{checkedIds.size > 1 ? 's' : ''} sélectionné{checkedIds.size > 1 ? 's' : ''}
           </p>
         )}
         {!canGenerate && checkedIds.size < 2 && (
-          <p className="text-center text-xs font-bold text-amber-700 mt-3 flex items-center justify-center gap-2">
+          <p className="text-center text-xs font-bold text-amber-400 mt-3 flex items-center justify-center gap-2">
             <AlertTriangle size={13} /> Coche au moins 2 ingrédients pour activer le bouton
           </p>
         )}
@@ -1300,13 +1237,13 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
         <div className="flex flex-col sm:flex-row gap-3">
           <Link
             to="/pricing"
-            className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#042818] text-white rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-emerald-900 transition-all text-center"
+            className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#FF6800] text-white rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-[#FF8533] transition-all text-center shadow-lg shadow-[#FF6800]/30"
           >
-            <Star size={14} fill="currentColor" className="text-amber-400" /> Voir les offres Pro
+            <Star size={14} fill="currentColor" /> Voir les offres Pro
           </Link>
           <Link
             to="/dashboard"
-            className="flex-1 flex items-center justify-center gap-2 py-4 bg-purple-50 border border-purple-200 text-purple-700 rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-purple-100 transition-all text-center"
+            className="flex-1 flex items-center justify-center gap-2 py-4 bg-purple-500/10 border border-purple-500/30 text-purple-300 rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-purple-500/20 transition-all text-center"
           >
             <Gift size={14} /> Parrainer pour +1 essai
           </Link>

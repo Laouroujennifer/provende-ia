@@ -5,7 +5,10 @@ import { Home } from './pages/Home'
 import { Login } from './pages/Login'
 import { Register } from './pages/Register'
 import { Dashboard } from './pages/Dashboard'
-import { PricingPage } from './pages/PricingPage' // Vérifie cet import
+import { PricingPage } from './pages/PricingPage'
+import { Services } from './pages/Services'
+import { Formations } from './pages/Formations'
+import { Contact } from './pages/Contact'
 import { Header } from './components/Header'
 import { Footer } from './components/Footer'
 
@@ -26,11 +29,14 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/formations" element={<Formations />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route 
-            path="/dashboard" 
-            element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} 
+          <Route
+            path="/dashboard"
+            element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
           />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

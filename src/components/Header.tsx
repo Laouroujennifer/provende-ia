@@ -18,28 +18,28 @@ export function Header() {
 
   return (
     <div className="fixed top-4 md:top-6 left-0 right-0 z-50 px-3 md:px-6">
-      <header className="max-w-7xl mx-auto bg-slate-950/80 backdrop-blur-xl border border-white/10 p-2 rounded-full flex items-center justify-between shadow-2xl relative">
+      <header className="max-w-7xl mx-auto bg-[#0A0A0A]/80 backdrop-blur-xl border border-[#2A2A2A] p-2 rounded-full flex items-center justify-between shadow-2xl relative">
         
         {/* 1. LOGO AREA */}
         <div className="flex items-center ml-2 md:ml-4">
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-9 h-9 md:w-10 md:h-10 bg-linear-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:rotate-12 transition-transform shrink-0">
-              <Sprout className="text-slate-950" size={20} />
+            <div className="w-9 h-9 md:w-10 md:h-10 bg-gradient-to-br from-[#FF8533] to-[#FF6800] rounded-full flex items-center justify-center shadow-lg shadow-[#FF6800]/30 group-hover:rotate-12 transition-transform shrink-0">
+              <Sprout className="text-white" size={20} />
             </div>
             <span className="text-sm md:text-lg font-black text-white tracking-tighter uppercase">
-              Provende<span className="text-emerald-400 hidden sm:inline">Builder</span>
+              Provende<span className="text-[#FF6800] hidden sm:inline">Builder</span>
             </span>
           </Link>
         </div>
 
-        {/* 2. NAVIGATION DESKTOP (Milieu) */}
+        {/* 2. NAVIGATION DESKTOP */}
         <nav className="hidden md:flex items-center gap-6 lg:gap-10">
           {navLinks.map((link) => (
             <Link 
               key={link.name} 
               to={link.path} 
-              className={`text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:text-emerald-400 ${
-                isActive(link.path) ? 'text-emerald-400' : 'text-white/60'
+              className={`text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:text-[#FF6800] ${
+                isActive(link.path) ? 'text-[#FF6800]' : 'text-white/60'
               }`}
             >
               {link.name}
@@ -47,9 +47,8 @@ export function Header() {
           ))}
         </nav>
 
-        {/* 3. ACTIONS AREA (Droite) */}
+        {/* 3. ACTIONS AREA */}
         <div className="flex items-center gap-2 md:gap-4 pr-1 md:pr-2">
-          {/* Connexion : caché sur mobile, visible dès 'sm' */}
           <Link 
             to="/login" 
             className="hidden sm:block text-white/80 hover:text-white font-black text-[10px] uppercase tracking-widest px-2 transition-all"
@@ -57,19 +56,18 @@ export function Header() {
             Connexion
           </Link>
           
-          {/* Bouton Essai : Texte raccourci sur mobile */}
           <Link 
             to="/register" 
-            className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-4 md:px-6 py-2.5 md:py-3 rounded-full font-black text-[9px] md:text-[10px] uppercase tracking-widest shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95 whitespace-nowrap"
+            className="bg-[#FF6800] hover:bg-[#FF8533] text-white px-4 md:px-6 py-2.5 md:py-3 rounded-full font-black text-[9px] md:text-[10px] uppercase tracking-widest shadow-lg shadow-[#FF6800]/30 transition-all hover:scale-105 active:scale-95 whitespace-nowrap"
           >
             <span className="sm:hidden">Essai</span>
             <span className="hidden sm:inline">Essai gratuit</span>
           </Link>
 
-          {/* Burger Menu Button */}
+          {/* Burger Menu */}
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden w-9 h-9 flex items-center justify-center text-white bg-white/5 rounded-full border border-white/10 active:bg-white/10 transition-colors"
+            className="md:hidden w-9 h-9 flex items-center justify-center text-white bg-white/5 rounded-full border border-[#2A2A2A] active:bg-white/10 transition-colors"
           >
             {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
@@ -82,7 +80,7 @@ export function Header() {
               initial={{ opacity: 0, scale: 0.95, y: -10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: -10 }}
-              className="absolute top-full left-0 right-0 mt-3 mx-2 bg-slate-900 border border-white/10 rounded-[2rem] p-6 shadow-2xl md:hidden z-50"
+              className="absolute top-full left-0 right-0 mt-3 mx-2 bg-[#1A1A1A] border border-[#2A2A2A] rounded-[2rem] p-6 shadow-2xl md:hidden z-50"
             >
               <div className="flex flex-col gap-5">
                 {navLinks.map((link) => (
@@ -91,7 +89,7 @@ export function Header() {
                     to={link.path} 
                     onClick={() => setIsMenuOpen(false)}
                     className={`text-xs font-black uppercase tracking-[0.3em] py-3 px-4 rounded-xl transition-colors ${
-                      isActive(link.path) ? 'bg-emerald-500/10 text-emerald-400' : 'text-white/60 hover:bg-white/5'
+                      isActive(link.path) ? 'bg-[#FF6800]/10 text-[#FF6800]' : 'text-white/60 hover:bg-white/5'
                     }`}
                   >
                     {link.name}

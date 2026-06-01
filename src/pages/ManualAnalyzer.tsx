@@ -161,7 +161,7 @@ function buildLocalAnalysis(
   return txt
 }
 
-// ─── FORMATAGE DE L'ANALYSE EN CARTES COLORÉES ─────────────────────────────
+// ─── FORMATAGE DE L'ANALYSE EN CARTES COLORÉES (DARK) ─────────────────────
 
 function formatAnalysis(text: string) {
   const lines = text.split('\n')
@@ -180,17 +180,17 @@ function formatAnalysis(text: string) {
   if (current) sections.push(current)
 
   const cfg: Record<string, { text: string; bg: string; border: string; icon: string; bullet: string }> = {
-    'Verdict global':              { text: 'text-slate-900',   bg: 'bg-white',         border: 'border-slate-200',   icon: '📋', bullet: 'bg-slate-400'   },
-    'Points forts':                { text: 'text-emerald-900', bg: 'bg-emerald-50/50', border: 'border-emerald-200', icon: '✨', bullet: 'bg-emerald-400' },
-    'Corrections obligatoires':    { text: 'text-red-900',     bg: 'bg-red-50/50',     border: 'border-red-200',     icon: '⚠️', bullet: 'bg-red-400'     },
-    "Suggestions d'amélioration":  { text: 'text-amber-900',   bg: 'bg-amber-50/50',   border: 'border-amber-200',   icon: '💡', bullet: 'bg-amber-400'   },
-    'Conseil pratique terrain':    { text: 'text-blue-900',    bg: 'bg-blue-50/50',    border: 'border-blue-200',    icon: '🌾', bullet: 'bg-blue-400'    },
+    'Verdict global':              { text: 'text-white',         bg: 'bg-[#1A1A1A]',          border: 'border-[#2A2A2A]',          icon: '📋', bullet: 'bg-white/40'        },
+    'Points forts':                { text: 'text-emerald-300',   bg: 'bg-emerald-500/10',      border: 'border-emerald-500/30',     icon: '✨', bullet: 'bg-emerald-400'      },
+    'Corrections obligatoires':    { text: 'text-red-300',       bg: 'bg-red-500/10',          border: 'border-red-500/30',         icon: '⚠️', bullet: 'bg-red-400'          },
+    "Suggestions d'amélioration":  { text: 'text-cyan-300',      bg: 'bg-cyan-500/10',         border: 'border-cyan-500/30',        icon: '💡', bullet: 'bg-cyan-400'         },
+    'Conseil pratique terrain':    { text: 'text-purple-300',    bg: 'bg-purple-500/10',       border: 'border-purple-500/30',      icon: '🌾', bullet: 'bg-purple-400'       },
   }
 
   return (
     <div className="space-y-4">
       {sections.map((sec, idx) => {
-        const c = cfg[sec.title] ?? { text: 'text-slate-900', bg: 'bg-slate-50', border: 'border-slate-200', icon: '•', bullet: 'bg-slate-400' }
+        const c = cfg[sec.title] ?? { text: 'text-white', bg: 'bg-[#1A1A1A]', border: 'border-[#2A2A2A]', icon: '•', bullet: 'bg-white/40' }
         return (
           <div key={idx} className={`rounded-2xl border ${c.border} ${c.bg} p-5`}>
             <div className="flex items-center gap-2 mb-3">
@@ -203,13 +203,13 @@ function formatAnalysis(text: string) {
                 const clean = isBullet ? line.slice(2) : line
                 const parts = clean.split(/(\*\*[^*]+\*\*)/g)
                 return (
-                  <div key={j} className={`text-sm leading-relaxed ${c.text.replace('-900', '-800')} ${isBullet ? 'pl-4 relative' : ''}`}>
+                  <div key={j} className={`text-sm leading-relaxed text-white/80 ${isBullet ? 'pl-4 relative' : ''}`}>
                     {isBullet && (
                       <span className={`absolute left-0 top-2 w-1.5 h-1.5 rounded-full ${c.bullet}`} />
                     )}
                     {parts.map((p, k) => {
                       const boldMatch = p.match(/^\*\*([^*]+)\*\*$/)
-                      if (boldMatch) return <strong key={k} className="font-black">{boldMatch[1]}</strong>
+                      if (boldMatch) return <strong key={k} className="font-black text-white">{boldMatch[1]}</strong>
                       return <span key={k}>{p}</span>
                     })}
                   </div>
@@ -428,36 +428,34 @@ export function ManualAnalyzer() {
 
   const hasData = selectedIngredients.length > 0
 
-  // ─── RENDU ────────────────────────────────────────────────────────────────
-  // NOTE : pas de fond rose ici. Le fond rose vient maintenant du Dashboard.tsx
-  // pour qu'il couvre TOUTE la page (titre + onglets + contenu).
+  // ─── RENDU - VÉRIFICATEUR EN CYAN/BLEU SUR FOND NOIR ──────────────────────
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
 
-      {/* Sticker "MODE VÉRIFICATEUR" */}
+      {/* Sticker "MODE VÉRIFICATEUR" — CYAN */}
       <div className="flex items-center gap-2 mb-2 print:hidden">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-pink-600 to-pink-400 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-md shadow-pink-300">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-cyan-500 to-cyan-400 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-md shadow-cyan-500/30">
           <Scale size={12} /> Mode Vérificateur
         </span>
-        <span className="text-[10px] font-bold text-pink-700 uppercase tracking-widest">
+        <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-widest">
           Analyse de ta formule
         </span>
       </div>
 
-      {/* Hero */}
-      <div className="relative bg-gradient-to-br from-pink-600 via-pink-500 to-rose-500 rounded-3xl p-8 overflow-hidden text-white shadow-xl border border-pink-400/30 print:bg-white print:text-slate-900 print:shadow-none">
+      {/* Hero — DARK + CYAN */}
+      <div className="relative bg-gradient-to-br from-cyan-600 via-cyan-500 to-blue-500 rounded-3xl p-8 overflow-hidden text-white shadow-xl border border-cyan-400/30 print:bg-white print:text-slate-900 print:shadow-none">
         <div className="absolute inset-0 pointer-events-none print:hidden">
-          <div className="absolute top-0 right-0 w-56 h-56 bg-pink-300/20 rounded-full -mr-16 -mt-16 blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-rose-300/20 rounded-full -ml-16 -mb-16 blur-3xl" />
+          <div className="absolute top-0 right-0 w-56 h-56 bg-cyan-300/20 rounded-full -mr-16 -mt-16 blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-300/20 rounded-full -ml-16 -mb-16 blur-3xl" />
         </div>
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-white/15 border border-white/30 rounded-2xl flex items-center justify-center">
-              <Scale size={26} className="text-pink-100 print:text-pink-600" />
+            <div className="w-14 h-14 bg-white/15 border border-white/30 rounded-2xl flex items-center justify-center backdrop-blur-md">
+              <Scale size={26} className="text-cyan-100 print:text-cyan-600" />
             </div>
             <div className="text-left">
-              <p className="text-[10px] font-black text-pink-100/80 uppercase tracking-[0.2em] mb-1 print:text-pink-700">Analyseur de ration</p>
+              <p className="text-[10px] font-black text-cyan-100/80 uppercase tracking-[0.2em] mb-1 print:text-cyan-700">Analyseur de ration</p>
               <h2 className="text-2xl font-black tracking-tight print:text-slate-900">Vérificateur de formule</h2>
               <p className="text-white/70 text-sm font-medium mt-0.5 print:text-slate-600">
                 Saisis ta recette et l'IA la compare aux besoins Goliath
@@ -465,69 +463,69 @@ export function ManualAnalyzer() {
             </div>
           </div>
 
-          <div className="shrink-0 bg-white/10 border border-white/20 rounded-2xl px-6 py-4 text-center backdrop-blur-md print:bg-pink-50 print:border-pink-200">
-            <p className={`text-3xl font-black ${totalWeight > 0 ? 'text-white print:text-pink-700' : 'text-white/40'}`}>
-              {totalWeight.toFixed(1)} <span className="text-sm text-white/50 print:text-pink-400">kg</span>
+          <div className="shrink-0 bg-white/10 border border-white/20 rounded-2xl px-6 py-4 text-center backdrop-blur-md print:bg-cyan-50 print:border-cyan-200">
+            <p className={`text-3xl font-black ${totalWeight > 0 ? 'text-white print:text-cyan-700' : 'text-white/40'}`}>
+              {totalWeight.toFixed(1)} <span className="text-sm text-white/50 print:text-cyan-400">kg</span>
             </p>
             <p className="text-[9px] font-bold uppercase tracking-widest opacity-60 mt-1 print:opacity-80">Poids total saisi</p>
           </div>
         </div>
       </div>
 
-      {/* Configuration : nom + espèce + phase */}
-      <div className="bg-white/80 backdrop-blur-sm border border-pink-200 rounded-3xl p-6 md:p-8 shadow-sm">
-        <h3 className="text-sm font-black text-pink-500 uppercase tracking-widest mb-5">1. Configuration</h3>
+      {/* Configuration — DARK CARDS */}
+      <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-3xl p-6 md:p-8 shadow-sm">
+        <h3 className="text-sm font-black text-cyan-400 uppercase tracking-widest mb-5">1. Configuration</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-[10px] font-black text-pink-500 uppercase tracking-widest mb-2">Nom de la formule</label>
+            <label className="block text-[10px] font-black text-white/40 uppercase tracking-widest mb-2">Nom de la formule</label>
             <input
               type="text"
               value={formulaName}
               onChange={e => setFormulaName(e.target.value)}
               placeholder="Ex: Lot janvier"
-              className="w-full px-4 py-3 rounded-2xl border border-pink-200 bg-pink-50/60 font-bold text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent placeholder-pink-300 transition"
+              className="w-full px-4 py-3 rounded-2xl border border-[#2A2A2A] bg-[#0A0A0A] font-bold text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 placeholder-white/20 transition"
             />
           </div>
           <div>
-            <label className="block text-[10px] font-black text-pink-500 uppercase tracking-widest mb-2">Type de volaille</label>
+            <label className="block text-[10px] font-black text-white/40 uppercase tracking-widest mb-2">Type de volaille</label>
             <select
               value={currentSpecies}
               onChange={e => handleSpeciesChange(e.target.value)}
-              className="w-full px-4 py-3 rounded-2xl border border-pink-200 bg-pink-50/60 font-bold text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent appearance-none cursor-pointer transition"
+              className="w-full px-4 py-3 rounded-2xl border border-[#2A2A2A] bg-[#0A0A0A] font-bold text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 appearance-none cursor-pointer transition"
             >
-              {speciesList.map(s => <option key={s} value={s}>{s}</option>)}
+              {speciesList.map(s => <option key={s} value={s} className="bg-[#1A1A1A]">{s}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-[10px] font-black text-pink-500 uppercase tracking-widest mb-2">Phase d'élevage</label>
+            <label className="block text-[10px] font-black text-white/40 uppercase tracking-widest mb-2">Phase d'élevage</label>
             <select
               value={selectedReqId}
               onChange={e => setSelectedReqId(e.target.value)}
-              className="w-full px-4 py-3 rounded-2xl border border-pink-200 bg-pink-50/60 font-bold text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent appearance-none cursor-pointer transition"
+              className="w-full px-4 py-3 rounded-2xl border border-[#2A2A2A] bg-[#0A0A0A] font-bold text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 appearance-none cursor-pointer transition"
             >
-              {filteredStages.map(r => <option key={r.id} value={r.id}>{r.stage}</option>)}
+              {filteredStages.map(r => <option key={r.id} value={r.id} className="bg-[#1A1A1A]">{r.stage}</option>)}
             </select>
           </div>
         </div>
       </div>
 
-      {/* Saisie ingrédients */}
-      <div className="bg-white/80 backdrop-blur-sm border border-pink-200 rounded-3xl p-6 md:p-8 shadow-sm">
+      {/* Saisie ingrédients — DARK */}
+      <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-3xl p-6 md:p-8 shadow-sm">
         <div className="flex items-center justify-between mb-5">
           <div>
-            <h3 className="text-sm font-black text-pink-500 uppercase tracking-widest">2. Saisis ta recette</h3>
-            <p className="text-[11px] text-pink-400 mt-1">Ajoute tes ingrédients et indique combien de kg de chacun</p>
+            <h3 className="text-sm font-black text-cyan-400 uppercase tracking-widest">2. Saisis ta recette</h3>
+            <p className="text-[11px] text-white/40 mt-1">Ajoute tes ingrédients et indique combien de kg de chacun</p>
           </div>
           {selectedIngredients.length > 0 && (
             <div className="flex items-center gap-3">
               <span className={`text-xs font-black uppercase tracking-wider px-3 py-1.5 rounded-xl ${
-                Math.abs(totalWeight - 100) < 0.5 ? 'bg-emerald-50 text-emerald-700' : 'bg-pink-100 text-pink-700'
+                Math.abs(totalWeight - 100) < 0.5 ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
               }`}>
                 {Math.abs(totalWeight - 100) < 0.5 ? `Total : 100 kg ✓` : `Total : ${totalWeight.toFixed(1)} kg`}
               </span>
               <button
                 onClick={() => setSelectedIngredients([])}
-                className="text-[10px] font-black text-pink-400 hover:text-red-500 uppercase flex items-center gap-1 transition-colors"
+                className="text-[10px] font-black text-white/40 hover:text-red-400 uppercase flex items-center gap-1 transition-colors"
               >
                 <RotateCcw size={11} /> Vider
               </button>
@@ -540,11 +538,11 @@ export function ManualAnalyzer() {
           <div className="overflow-x-auto mb-4">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-pink-200 text-left">
-                  <th className="py-2 px-3 font-black text-[10px] text-pink-500 uppercase tracking-widest">Matière première</th>
-                  <th className="py-2 px-3 font-black text-[10px] text-pink-500 uppercase tracking-widest text-right">Quantité (kg)</th>
-                  <th className="py-2 px-3 font-black text-[10px] text-pink-500 uppercase tracking-widest text-right print:hidden">Prix (F/kg) ✏️</th>
-                  <th className="py-2 px-3 font-black text-[10px] text-pink-500 uppercase tracking-widest text-right">Sous-total</th>
+                <tr className="border-b border-[#2A2A2A] text-left">
+                  <th className="py-2 px-3 font-black text-[10px] text-cyan-400 uppercase tracking-widest">Matière première</th>
+                  <th className="py-2 px-3 font-black text-[10px] text-cyan-400 uppercase tracking-widest text-right">Quantité (kg)</th>
+                  <th className="py-2 px-3 font-black text-[10px] text-cyan-400 uppercase tracking-widest text-right print:hidden">Prix (F/kg) ✏️</th>
+                  <th className="py-2 px-3 font-black text-[10px] text-cyan-400 uppercase tracking-widest text-right">Sous-total</th>
                   <th className="py-2 px-3 print:hidden"></th>
                 </tr>
               </thead>
@@ -554,8 +552,8 @@ export function ManualAnalyzer() {
                   const sub = ing.quantity * price
                   const isUserPrice = userPrices[ing.id] !== undefined
                   return (
-                    <tr key={ing.id} className="border-b border-pink-100 hover:bg-pink-50/50">
-                      <td className="py-3 px-3 font-bold text-slate-700">{ing.name}</td>
+                    <tr key={ing.id} className="border-b border-[#2A2A2A] hover:bg-cyan-500/5">
+                      <td className="py-3 px-3 font-bold text-white">{ing.name}</td>
                       <td className="py-3 px-3 text-right">
                         <input
                           type="number"
@@ -564,7 +562,7 @@ export function ManualAnalyzer() {
                           placeholder="0"
                           value={ing.quantity || ''}
                           onChange={e => handleUpdateQuantity(index, parseFloat(e.target.value) || 0)}
-                          className="w-24 px-3 py-1.5 text-right text-sm font-black rounded-lg border border-pink-200 bg-pink-50/60 focus:outline-none focus:ring-2 focus:ring-pink-400 transition"
+                          className="w-24 px-3 py-1.5 text-right text-sm font-black rounded-lg border border-[#2A2A2A] bg-[#0A0A0A] text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition"
                         />
                       </td>
                       <td className="py-3 px-3 text-right print:hidden">
@@ -575,21 +573,21 @@ export function ManualAnalyzer() {
                             step="10"
                             value={price}
                             onChange={e => updateUserPrice(ing.id, parseFloat(e.target.value) || 0)}
-                            className={`w-20 px-2 py-1.5 text-right text-xs font-bold rounded-lg border outline-none focus:ring-2 focus:ring-pink-400 transition ${
-                              isUserPrice ? 'border-pink-300 bg-pink-50 text-pink-800' : 'border-pink-200 bg-pink-50/60 text-slate-600'
+                            className={`w-20 px-2 py-1.5 text-right text-xs font-bold rounded-lg border outline-none focus:ring-2 focus:ring-cyan-500 transition ${
+                              isUserPrice ? 'border-cyan-500/40 bg-cyan-500/10 text-cyan-300' : 'border-[#2A2A2A] bg-[#0A0A0A] text-white/60'
                             }`}
                             title={isUserPrice ? 'Prix personnalisé' : 'Prix par défaut — clique pour modifier'}
                           />
-                          <span className="text-[10px] text-pink-400 font-medium">F</span>
+                          <span className="text-[10px] text-white/40 font-medium">F</span>
                         </div>
                       </td>
-                      <td className="py-3 px-3 text-right font-bold text-pink-700 text-xs">
+                      <td className="py-3 px-3 text-right font-bold text-cyan-400 text-xs">
                         {sub.toLocaleString('fr-FR', { maximumFractionDigits: 0 })} F
                       </td>
                       <td className="py-3 px-3 print:hidden">
                         <button
                           onClick={() => handleRemoveIngredient(index)}
-                          className="p-1.5 text-pink-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                          className="p-1.5 text-white/30 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
                         >
                           <Trash2 size={14} />
                         </button>
@@ -599,11 +597,11 @@ export function ManualAnalyzer() {
                 })}
               </tbody>
               <tfoot>
-                <tr className="bg-pink-100/60">
-                  <td className="py-3 px-3 font-black text-slate-900 text-sm">TOTAL</td>
-                  <td className="py-3 px-3 text-right font-black text-slate-900">{totalWeight.toFixed(2)} kg</td>
+                <tr className="bg-cyan-500/10 border-t-2 border-cyan-500/30">
+                  <td className="py-3 px-3 font-black text-white text-sm">TOTAL</td>
+                  <td className="py-3 px-3 text-right font-black text-white">{totalWeight.toFixed(2)} kg</td>
                   <td className="py-3 px-3 print:hidden"></td>
-                  <td className="py-3 px-3 text-right font-black text-pink-700 text-sm">
+                  <td className="py-3 px-3 text-right font-black text-cyan-400 text-sm">
                     {selectedIngredients.reduce((acc, i) => acc + (i.quantity * (userPrices[i.id] ?? i.price ?? 0)), 0).toLocaleString('fr-FR', { maximumFractionDigits: 0 })} F
                   </td>
                   <td className="py-3 px-3 print:hidden"></td>
@@ -612,10 +610,10 @@ export function ManualAnalyzer() {
             </table>
           </div>
         ) : (
-          <div className="text-center py-12 px-6 bg-pink-50/60 border border-dashed border-pink-300 rounded-2xl mb-4">
-            <Scale size={32} className="mx-auto text-pink-300 mb-3" />
-            <p className="text-sm font-bold text-pink-500">Ta recette est vide</p>
-            <p className="text-xs text-pink-400 mt-1">Ajoute ton premier ingrédient ci-dessous</p>
+          <div className="text-center py-12 px-6 bg-[#0A0A0A] border border-dashed border-cyan-500/30 rounded-2xl mb-4">
+            <Scale size={32} className="mx-auto text-cyan-500/50 mb-3" />
+            <p className="text-sm font-bold text-cyan-400">Ta recette est vide</p>
+            <p className="text-xs text-white/40 mt-1">Ajoute ton premier ingrédient ci-dessous</p>
           </div>
         )}
 
@@ -624,17 +622,17 @@ export function ManualAnalyzer() {
           <select
             value={selectedToAdd}
             onChange={e => setSelectedToAdd(e.target.value)}
-            className="flex-1 px-4 py-3 rounded-2xl border border-pink-200 bg-pink-50/60 font-bold text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-pink-400 transition appearance-none cursor-pointer"
+            className="flex-1 px-4 py-3 rounded-2xl border border-[#2A2A2A] bg-[#0A0A0A] font-bold text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition appearance-none cursor-pointer"
           >
-            <option value="">Sélectionner un ingrédient (A-Z)…</option>
+            <option value="" className="bg-[#1A1A1A]">Sélectionner un ingrédient (A-Z)…</option>
             {availableIngredients.map(i => (
-              <option key={i.id} value={i.id}>{i.name}</option>
+              <option key={i.id} value={i.id} className="bg-[#1A1A1A]">{i.name}</option>
             ))}
           </select>
           <button
             onClick={handleAddIngredient}
             disabled={!selectedToAdd}
-            className="flex items-center gap-2 bg-gradient-to-r from-pink-600 to-pink-400 text-white px-6 py-3 rounded-2xl hover:from-pink-500 hover:to-pink-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-black text-[10px] uppercase tracking-widest shadow-lg shadow-pink-400/30"
+            className="flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-cyan-400 text-white px-6 py-3 rounded-2xl hover:from-cyan-400 hover:to-cyan-300 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-black text-[10px] uppercase tracking-widest shadow-lg shadow-cyan-500/30"
           >
             <Plus size={14} /> Ajouter
           </button>
@@ -645,10 +643,10 @@ export function ManualAnalyzer() {
       {hasData && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Score */}
-          <div className={`relative rounded-3xl p-6 overflow-hidden ${
-            score >= 85 ? 'bg-gradient-to-br from-emerald-500 to-emerald-700 border border-emerald-400/30' :
-            score >= 70 ? 'bg-gradient-to-br from-amber-500 to-orange-600 border border-amber-400/30' :
-                          'bg-gradient-to-br from-red-500 to-red-700 border border-red-400/30'
+          <div className={`relative rounded-3xl p-6 overflow-hidden border ${
+            score >= 85 ? 'bg-gradient-to-br from-emerald-600 to-emerald-800 border-emerald-500/30 shadow-emerald-500/20' :
+            score >= 70 ? 'bg-gradient-to-br from-amber-600 to-orange-700 border-amber-500/30 shadow-amber-500/20' :
+                          'bg-gradient-to-br from-red-600 to-red-800 border-red-500/30 shadow-red-500/20'
           } text-white shadow-lg`}>
             <div className="flex items-center justify-between">
               <div>
@@ -666,8 +664,8 @@ export function ManualAnalyzer() {
             </div>
           </div>
 
-          {/* Coût */}
-          <div className="relative rounded-3xl p-6 overflow-hidden bg-gradient-to-br from-pink-500 to-rose-500 border border-pink-400/30 text-white shadow-lg">
+          {/* Coût — CYAN */}
+          <div className="relative rounded-3xl p-6 overflow-hidden bg-gradient-to-br from-cyan-600 to-blue-700 border border-cyan-500/30 text-white shadow-lg shadow-cyan-500/20">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-1">Coût pour 100 kg</p>
@@ -681,18 +679,18 @@ export function ManualAnalyzer() {
         </div>
       )}
 
-      {/* Bilan nutritionnel */}
+      {/* Bilan nutritionnel — DARK */}
       {hasData && (
-        <div className="bg-white/80 backdrop-blur-sm border border-pink-200 rounded-3xl p-6 md:p-8 shadow-sm">
-          <h3 className="text-sm font-black text-pink-500 uppercase tracking-widest mb-5">3. Bilan nutritionnel</h3>
+        <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-3xl p-6 md:p-8 shadow-sm">
+          <h3 className="text-sm font-black text-cyan-400 uppercase tracking-widest mb-5">3. Bilan nutritionnel</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {nutrientList.map(n => {
               const status = nutStatus(n)
               const styles =
-                status === 'optimal'    ? { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-900', sub: 'text-emerald-600', icon: <Check size={14} className="text-emerald-500" /> } :
-                status === 'acceptable' ? { bg: 'bg-amber-50',   border: 'border-amber-200',   text: 'text-amber-900',   sub: 'text-amber-600',   icon: n.value > (n.min + n.max) / 2 ? <ArrowUp size={14} className="text-amber-500" /> : <ArrowDown size={14} className="text-amber-500" /> } :
-                status === 'low'        ? { bg: 'bg-red-50',     border: 'border-red-200',     text: 'text-red-900',     sub: 'text-red-600',     icon: <ArrowDown size={14} className="text-red-500" /> } :
-                                          { bg: 'bg-red-50',     border: 'border-red-200',     text: 'text-red-900',     sub: 'text-red-600',     icon: <ArrowUp size={14} className="text-red-500" /> }
+                status === 'optimal'    ? { bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', text: 'text-emerald-300', sub: 'text-emerald-400/70', icon: <Check size={14} className="text-emerald-400" /> } :
+                status === 'acceptable' ? { bg: 'bg-amber-500/10',   border: 'border-amber-500/30',   text: 'text-amber-300',   sub: 'text-amber-400/70',   icon: n.value > (n.min + n.max) / 2 ? <ArrowUp size={14} className="text-amber-400" /> : <ArrowDown size={14} className="text-amber-400" /> } :
+                status === 'low'        ? { bg: 'bg-red-500/10',     border: 'border-red-500/30',     text: 'text-red-300',     sub: 'text-red-400/70',     icon: <ArrowDown size={14} className="text-red-400" /> } :
+                                          { bg: 'bg-red-500/10',     border: 'border-red-500/30',     text: 'text-red-300',     sub: 'text-red-400/70',     icon: <ArrowUp size={14} className="text-red-400" /> }
 
               return (
                 <div key={n.key} className={`rounded-2xl border p-4 ${styles.bg} ${styles.border}`}>
@@ -714,7 +712,7 @@ export function ManualAnalyzer() {
             })}
           </div>
 
-          <div className="flex flex-wrap items-center gap-4 mt-5 pt-4 border-t border-pink-100 text-[10px] font-bold text-pink-500">
+          <div className="flex flex-wrap items-center gap-4 mt-5 pt-4 border-t border-[#2A2A2A] text-[10px] font-bold text-white/40">
             <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-400" /> Optimal (centré)</span>
             <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-amber-400" /> Acceptable (proche borne)</span>
             <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-red-400" /> Hors plage</span>
@@ -722,24 +720,24 @@ export function ManualAnalyzer() {
         </div>
       )}
 
-      {/* Analyse IA */}
+      {/* Analyse IA — VIOLET DARK */}
       {hasData && (
-        <div className="bg-gradient-to-br from-violet-50 via-purple-50/40 to-pink-50 border border-violet-200 rounded-3xl p-6 md:p-8 shadow-sm print:bg-white print:border-slate-200">
+        <div className="bg-gradient-to-br from-purple-950/40 via-[#1A1A1A] to-violet-950/40 border border-purple-500/30 rounded-3xl p-6 md:p-8 shadow-sm print:bg-white print:border-slate-200">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-md shadow-violet-200">
+              <div className="w-11 h-11 bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl flex items-center justify-center shadow-md shadow-purple-500/30">
                 <Sparkles size={20} className="text-white" />
               </div>
               <div>
-                <h3 className="text-sm font-black text-violet-900 uppercase tracking-widest">4. Analyse IA personnalisée</h3>
-                <p className="text-xs text-violet-600/80 font-medium mt-0.5">Diagnostic nutritionnel détaillé</p>
+                <h3 className="text-sm font-black text-purple-300 uppercase tracking-widest">4. Analyse IA personnalisée</h3>
+                <p className="text-xs text-purple-400/70 font-medium mt-0.5">Diagnostic nutritionnel détaillé</p>
               </div>
             </div>
             {!aiText && !aiLoading && (
               <button
                 onClick={handleAIAnalyze}
                 disabled={!hasData || totalWeight === 0}
-                className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white px-5 py-3 rounded-2xl hover:from-violet-500 hover:to-purple-500 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-black text-[10px] uppercase tracking-widest shadow-lg shadow-violet-500/30 print:hidden"
+                className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-violet-600 text-white px-5 py-3 rounded-2xl hover:from-purple-500 hover:to-violet-500 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-black text-[10px] uppercase tracking-widest shadow-lg shadow-purple-500/30 print:hidden"
               >
                 <Sparkles size={14} /> Analyser ma formule
               </button>
@@ -747,7 +745,7 @@ export function ManualAnalyzer() {
             {aiText && !aiLoading && (
               <button
                 onClick={handleAIAnalyze}
-                className="text-[10px] font-black text-violet-500 hover:text-violet-700 uppercase tracking-widest flex items-center gap-1 transition-colors print:hidden"
+                className="text-[10px] font-black text-purple-300 hover:text-purple-200 uppercase tracking-widest flex items-center gap-1 transition-colors print:hidden"
               >
                 <RotateCcw size={11} /> Relancer
               </button>
@@ -756,11 +754,11 @@ export function ManualAnalyzer() {
 
           {!aiText && !aiLoading && (
             <div className="text-center py-8 px-4">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-100 to-purple-100 mb-3">
-                <Sparkles size={28} className="text-violet-500" />
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-purple-500/20 border border-purple-500/30 mb-3">
+                <Sparkles size={28} className="text-purple-400" />
               </div>
-              <p className="text-sm font-bold text-violet-900 mb-1">Analyse IA disponible</p>
-              <p className="text-xs text-violet-600/80 max-w-md mx-auto">
+              <p className="text-sm font-bold text-purple-300 mb-1">Analyse IA disponible</p>
+              <p className="text-xs text-purple-400/70 max-w-md mx-auto">
                 Clique sur "Analyser ma formule" pour obtenir un verdict, les points forts, les corrections obligatoires et des conseils terrain personnalisés.
               </p>
             </div>
@@ -769,28 +767,28 @@ export function ManualAnalyzer() {
           {aiLoading && !aiText && (
             <div className="flex flex-col items-center justify-center py-12">
               <div className="relative mb-3">
-                <div className="w-14 h-14 bg-white rounded-2xl shadow-lg flex items-center justify-center">
-                  <Sparkles size={24} className="text-violet-600 animate-pulse" />
+                <div className="w-14 h-14 bg-[#1A1A1A] rounded-2xl shadow-lg flex items-center justify-center border border-purple-500/30">
+                  <Sparkles size={24} className="text-purple-400 animate-pulse" />
                 </div>
-                <div className="absolute -inset-1 bg-violet-400/20 rounded-2xl animate-ping" />
+                <div className="absolute -inset-1 bg-purple-400/20 rounded-2xl animate-ping" />
               </div>
-              <span className="font-black text-sm text-violet-700 uppercase tracking-widest">L'IA analyse votre formule</span>
+              <span className="font-black text-sm text-purple-300 uppercase tracking-widest">L'IA analyse votre formule</span>
             </div>
           )}
 
           {aiText && formatAnalysis(aiText)}
 
           {aiLoading && aiText && (
-            <div className="flex items-center gap-2 text-violet-500 text-xs font-bold mt-2">
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse [animation-delay:200ms]" />
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse [animation-delay:400ms]" />
+            <div className="flex items-center gap-2 text-purple-400 text-xs font-bold mt-2">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse [animation-delay:200ms]" />
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse [animation-delay:400ms]" />
             </div>
           )}
 
           {aiDone && (
-            <div className="mt-4 pt-4 border-t border-violet-200 flex items-center gap-2 text-[10px] text-violet-500 font-bold">
-              <CheckCircle2 size={12} className="text-emerald-500" />
+            <div className="mt-4 pt-4 border-t border-purple-500/20 flex items-center gap-2 text-[10px] text-purple-400/70 font-bold">
+              <CheckCircle2 size={12} className="text-emerald-400" />
               Analyse générée à partir des plages Goliath — vérifiez avec un nutritionniste pour des décisions critiques.
             </div>
           )}
@@ -805,8 +803,8 @@ export function ManualAnalyzer() {
             disabled={isSaving || selectedIngredients.length === 0}
             className={`flex-1 flex items-center justify-center gap-2 py-5 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all shadow-lg ${
               savedOk ? 'bg-emerald-500 text-white shadow-emerald-500/30' :
-              isSaving ? 'bg-pink-200 text-pink-400 cursor-wait' :
-              'bg-gradient-to-r from-pink-600 to-pink-400 text-white hover:from-pink-500 hover:to-pink-300 shadow-pink-500/30 active:scale-95'
+              isSaving ? 'bg-[#2A2A2A] text-white/40 cursor-wait' :
+              'bg-gradient-to-r from-cyan-500 to-cyan-400 text-white hover:from-cyan-400 hover:to-cyan-300 shadow-cyan-500/30 active:scale-95'
             }`}
           >
             {isSaving ? <RotateCcw className="animate-spin" size={16} /> :
@@ -816,13 +814,13 @@ export function ManualAnalyzer() {
           </button>
           <button
             onClick={handlePrint}
-            className="flex items-center justify-center gap-2 py-5 px-6 rounded-2xl font-black text-[11px] uppercase tracking-widest bg-white border border-pink-200 text-pink-700 hover:bg-pink-50 transition-all"
+            className="flex items-center justify-center gap-2 py-5 px-6 rounded-2xl font-black text-[11px] uppercase tracking-widest bg-[#1A1A1A] border border-[#2A2A2A] text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500/50 transition-all"
           >
             <Printer size={14} /> Imprimer
           </button>
           <button
             onClick={handleCopy}
-            className="flex items-center justify-center gap-2 py-5 px-6 rounded-2xl font-black text-[11px] uppercase tracking-widest bg-white border border-pink-200 text-pink-700 hover:bg-pink-50 transition-all"
+            className="flex items-center justify-center gap-2 py-5 px-6 rounded-2xl font-black text-[11px] uppercase tracking-widest bg-[#1A1A1A] border border-[#2A2A2A] text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500/50 transition-all"
           >
             {copiedOk ? <Check size={14} /> : <Copy size={14} />}
             {copiedOk ? 'Copié !' : 'Copier'}
@@ -831,7 +829,7 @@ export function ManualAnalyzer() {
       )}
 
       {saveError && (
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-4 flex items-center gap-2 text-sm text-red-700 font-bold print:hidden">
+        <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-4 flex items-center gap-2 text-sm text-red-300 font-bold print:hidden">
           <AlertTriangle size={16} /> {saveError}
         </div>
       )}

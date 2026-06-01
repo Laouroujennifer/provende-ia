@@ -43,28 +43,31 @@ export function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 relative overflow-hidden text-white">
+    <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center p-4 relative overflow-hidden text-white">
+      {/* Glow orange en arrière-plan */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[400px] bg-[#FF6800]/10 blur-[120px] rounded-full pointer-events-none" />
+
       {/* Retour */}
-      <Link to="/" className="absolute top-10 left-10 text-white/40 hover:text-white flex items-center gap-2 font-black text-[10px] uppercase tracking-widest transition-all">
+      <Link to="/" className="absolute top-10 left-10 text-white/40 hover:text-[#FF6800] flex items-center gap-2 font-black text-[10px] uppercase tracking-widest transition-all z-20">
         <ArrowLeft size={14} /> Accueil
       </Link>
 
       {/* Logo Section */}
       <div className="mb-10 flex flex-col items-center gap-4 relative z-10">
-        <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-2xl shadow-emerald-500/20">
-          <Sprout className="text-slate-950" size={28} />
+        <div className="w-12 h-12 bg-[#FF6800] rounded-2xl flex items-center justify-center shadow-2xl shadow-[#FF6800]/30">
+          <Sprout className="text-white" size={28} />
         </div>
         <span className="text-xl font-black uppercase tracking-tighter">
-          PROVENDE<span className="text-emerald-400">BUILDER</span>
+          PROVENDE<span className="text-[#FF6800]">BUILDER</span>
         </span>
       </div>
 
-      {/* Card Inscription */}
-      <div className="w-full max-w-md bg-white rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative z-10 text-slate-900 border border-white/5">
+      {/* Card Inscription — fond gris foncé */}
+      <div className="w-full max-w-md bg-[#1A1A1A] rounded-[2rem] p-8 md:p-12 shadow-2xl relative z-10 text-white border border-[#2A2A2A]">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-black tracking-tight">Inscription</h2>
           {referralCode && (
-            <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full font-bold text-[10px] uppercase tracking-widest">
+            <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 bg-[#FF6800]/10 text-[#FF6800] rounded-full font-bold text-[10px] uppercase tracking-widest border border-[#FF6800]/30">
               <Gift size={12} /> Bonus Parrainage Activé
             </div>
           )}
@@ -74,19 +77,19 @@ export function Register() {
           {/* Prénom / Nom */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Prénom</label>
+                <label className="text-[9px] font-black text-white/40 uppercase tracking-widest ml-1">Prénom</label>
                 <input 
                 type="text" required placeholder="Jean" 
-                className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-emerald-500 transition-all text-sm font-medium" 
+                className="w-full p-4 bg-[#0A0A0A] border border-[#2A2A2A] rounded-2xl outline-none focus:border-[#FF6800] transition-all text-sm font-medium text-white placeholder:text-white/20" 
                 value={firstName} 
                 onChange={(e) => setFirstName(e.target.value)} 
                 />
             </div>
             <div className="space-y-1">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Nom</label>
+                <label className="text-[9px] font-black text-white/40 uppercase tracking-widest ml-1">Nom</label>
                 <input 
                 type="text" required placeholder="Koffi" 
-                className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-emerald-500 transition-all text-sm font-medium" 
+                className="w-full p-4 bg-[#0A0A0A] border border-[#2A2A2A] rounded-2xl outline-none focus:border-[#FF6800] transition-all text-sm font-medium text-white placeholder:text-white/20" 
                 value={lastName} 
                 onChange={(e) => setLastName(e.target.value)} 
                 />
@@ -95,10 +98,10 @@ export function Register() {
 
           {/* Email */}
           <div className="space-y-1">
-            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Email</label>
+            <label className="text-[9px] font-black text-white/40 uppercase tracking-widest ml-1">Email</label>
             <input 
               type="email" required placeholder="nom@exemple.com" 
-              className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-emerald-500 transition-all text-sm font-medium" 
+              className="w-full p-4 bg-[#0A0A0A] border border-[#2A2A2A] rounded-2xl outline-none focus:border-[#FF6800] transition-all text-sm font-medium text-white placeholder:text-white/20" 
               value={email} 
               onChange={(e) => setEmail(e.target.value)} 
             />
@@ -106,20 +109,20 @@ export function Register() {
 
           {/* Mot de passe + Eye Icon */}
           <div className="space-y-1">
-            <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Mot de passe</label>
+            <label className="text-[9px] font-black text-white/40 uppercase tracking-widest ml-1">Mot de passe</label>
             <div className="relative">
               <input 
                 type={showPassword ? "text" : "password"} 
                 required 
                 placeholder="••••••••" 
-                className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:border-emerald-500 transition-all text-sm font-medium" 
+                className="w-full p-4 bg-[#0A0A0A] border border-[#2A2A2A] rounded-2xl outline-none focus:border-[#FF6800] transition-all text-sm font-medium text-white placeholder:text-white/20" 
                 value={password} 
                 onChange={(e) => setPassword(e.target.value)} 
               />
               <button 
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-500"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-[#FF6800] transition-colors"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -128,13 +131,13 @@ export function Register() {
           
           {/* Parrainage */}
           <div className="space-y-1 pt-2">
-            <label className="text-[9px] font-black text-emerald-600 uppercase tracking-widest ml-1 flex items-center gap-1">
+            <label className="text-[9px] font-black text-[#FF6800] uppercase tracking-widest ml-1 flex items-center gap-1">
                 <Ticket size={10} /> Code Parrainage (Optionnel)
             </label>
             <input 
               type="text" 
               placeholder="EX: PB-KOFFI-2024" 
-              className="w-full p-4 bg-emerald-50 border border-emerald-100 rounded-2xl outline-none text-emerald-700 font-bold uppercase placeholder:text-emerald-200 text-sm" 
+              className="w-full p-4 bg-[#FF6800]/5 border border-[#FF6800]/30 rounded-2xl outline-none text-[#FF6800] font-bold uppercase placeholder:text-[#FF6800]/30 text-sm focus:border-[#FF6800]" 
               value={referralCode} 
               onChange={(e) => setReferralCode(e.target.value.toUpperCase())} 
             />
@@ -143,14 +146,14 @@ export function Register() {
           <button 
             type="submit" 
             disabled={isLoading} 
-            className="w-full py-5 bg-emerald-500 text-slate-950 rounded-2xl font-black uppercase tracking-widest transition-all flex items-center justify-center gap-3 group shadow-xl shadow-emerald-500/20"
+            className="w-full py-5 bg-[#FF6800] text-white rounded-2xl font-black uppercase tracking-widest transition-all flex items-center justify-center gap-3 group shadow-xl shadow-[#FF6800]/30 hover:bg-[#FF8533] disabled:opacity-50"
           >
             {isLoading ? <Loader2 className="animate-spin" size={20} /> : <>CRÉER MON COMPTE <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></>}
           </button>
         </form>
 
-        <p className="text-center mt-8 text-slate-500 font-medium text-sm">
-          Déjà inscrit ? <Link to="/login" className="text-emerald-600 font-black border-b-2 border-emerald-50 hover:border-emerald-500 transition-all ml-1">Se connecter</Link>
+        <p className="text-center mt-8 text-white/50 font-medium text-sm">
+          Déjà inscrit ? <Link to="/login" className="text-[#FF6800] font-black border-b-2 border-[#FF6800]/20 hover:border-[#FF6800] transition-all ml-1">Se connecter</Link>
         </p>
       </div>
     </div>
