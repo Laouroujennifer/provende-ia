@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Sprout, ArrowLeft, ArrowRight, Loader2, Gift, Ticket, Eye, EyeOff } from 'lucide-react';
+import { Sprout, ArrowLeft, ArrowRight, Loader2, Gift, Ticket, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { translateAuthError } from '../utils/authErrors';
 import type { AuthError } from '@supabase/supabase-js';
 
 export function Register() {
@@ -9,6 +10,7 @@ export function Register() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   // États du formulaire
   const [email, setEmail] = useState('');
@@ -21,6 +23,7 @@ export function Register() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMessage('');
 
     try {
       const { data, error } = await signUp(email, password, {
@@ -36,7 +39,7 @@ export function Register() {
       }
     } catch (err) {
       const error = err as AuthError;
-      alert(error.message);
+      setErrorMessage(translateAuthError(error.message));
     } finally {
       setIsLoading(false);
     }
@@ -74,6 +77,14 @@ export function Register() {
         </div>
 
         <form className="space-y-4" onSubmit={handleRegister}>
+          {/* Message d'erreur en français */}
+          {errorMessage && (
+            <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/30 rounded-2xl px-4 py-3.5">
+              <AlertCircle size={16} className="text-red-400 shrink-0 mt-0.5" />
+              <p className="text-[13px] font-bold text-red-300 leading-snug">{errorMessage}</p>
+            </div>
+          )}
+
           {/* Prénom / Nom */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">

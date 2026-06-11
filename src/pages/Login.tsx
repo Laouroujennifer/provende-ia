@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Sprout, Loader2, ArrowRight, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { Sprout, Loader2, ArrowRight, ArrowLeft, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { translateAuthError } from '../utils/authErrors';
 import type { AuthError } from '@supabase/supabase-js';
 
 export function Login() {
@@ -11,10 +12,12 @@ export function Login() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMessage('');
 
     try {
       const { error } = await signIn(email, password);
@@ -22,7 +25,7 @@ export function Login() {
       navigate('/dashboard');
     } catch (err) {
       const error = err as AuthError;
-      alert(error.message);
+      setErrorMessage(translateAuthError(error.message));
     } finally {
       setIsLoading(false);
     }
@@ -56,6 +59,14 @@ export function Login() {
         </div>
 
         <form className="space-y-6" onSubmit={handleLogin}>
+          {/* Message d'erreur en français */}
+          {errorMessage && (
+            <div className="flex items-start gap-3 bg-red-500/10 border border-red-500/30 rounded-2xl px-4 py-3.5">
+              <AlertCircle size={16} className="text-red-400 shrink-0 mt-0.5" />
+              <p className="text-[13px] font-bold text-red-300 leading-snug">{errorMessage}</p>
+            </div>
+          )}
+
           {/* Email */}
           <div className="space-y-2">
             <label className="text-[10px] font-black text-white/40 uppercase tracking-widest ml-1">Adresse Mail</label>

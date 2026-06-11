@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   LayoutGrid, LogOut, Menu, Gift, FlaskConical,
   TrendingUp, ArrowUpRight, Wheat, ChevronRight, Sparkles,
-  Zap, X, Star, Lock
+  Zap, X, Star, Lock, CreditCard, Plus
 } from 'lucide-react'
 import { ManualAnalyzer } from './ManualAnalyzer'
 import { AutomaticGenerator } from './AutomaticGenerator'
@@ -40,114 +40,134 @@ function KpiCard({ label, value, sub, icon, colorClass, bgClass, borderClass }: 
   )
 }
 
-interface FreeTrialCardProps {
-  used: number
-  total: number
-  bonus: number
-  onUse: () => void
-  onDismiss: () => void
+// ─── CREDIT PILL ────────────────────────────────────────────────────────────
+
+function CreditPill({ credits, onClick }: { credits: number; onClick: () => void }) {
+  const isEmpty = credits === 0
+  return (
+    <button
+      onClick={onClick}
+      className={`flex items-center gap-2 border rounded-full px-3.5 py-2 transition-all hover:shadow-sm group ${
+        isEmpty
+          ? 'bg-red-500/10 hover:bg-red-500/20 border-red-500/30'
+          : 'bg-[#FF6800]/10 hover:bg-[#FF6800]/20 border-[#FF6800]/30'
+      }`}
+    >
+      {isEmpty ? (
+        <span className="relative flex h-2 w-2 shrink-0">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-60" />
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+        </span>
+      ) : (
+        <span className="relative flex h-2 w-2 shrink-0">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6800] opacity-60" />
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FF6800]" />
+        </span>
+      )}
+      <span className={`text-[11px] font-black tracking-wide hidden sm:inline ${isEmpty ? 'text-red-400' : 'text-[#FF6800]'}`}>
+        Crédits
+      </span>
+      <span className={`text-[11px] font-black px-2 py-0.5 rounded-full ${isEmpty ? 'bg-red-500 text-white' : 'bg-[#FF6800] text-white'}`}>
+        {credits}
+      </span>
+    </button>
+  )
 }
 
-function FreeTrialCard({ used, total, bonus, onUse, onDismiss }: FreeTrialCardProps) {
-  const remaining = total - used
-  const pct = Math.round((used / total) * 100)
+// ─── CREDIT CARD WIDGET ──────────────────────────────────────────────────────
+
+function CreditCard_({ credits, onRecharge, onDismiss }: {
+  credits: number
+  onRecharge: () => void
+  onDismiss: () => void
+}) {
+  const isEmpty = credits === 0
 
   return (
-    <div className="relative bg-gradient-to-br from-[#FF6800]/10 to-[#FF6800]/5 border border-[#FF6800]/30 rounded-2xl p-6 md:p-8 overflow-hidden">
+    <div className={`relative rounded-2xl p-6 md:p-8 overflow-hidden border ${
+      isEmpty
+        ? 'bg-gradient-to-br from-red-500/10 to-red-500/5 border-red-500/30'
+        : 'bg-gradient-to-br from-[#FF6800]/10 to-[#FF6800]/5 border-[#FF6800]/30'
+    }`}>
       <button
         onClick={onDismiss}
-        className="absolute top-4 right-4 p-1.5 text-[#FF6800]/40 hover:text-[#FF6800] hover:bg-[#FF6800]/10 rounded-lg transition-colors"
-        aria-label="Masquer"
+        className="absolute top-4 right-4 p-1.5 text-white/30 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
       >
         <X size={14} />
       </button>
-      <div className="absolute top-0 right-0 w-48 h-48 bg-[#FF6800]/10 rounded-full -mr-16 -mt-16 pointer-events-none blur-2xl" />
+      <div className={`absolute top-0 right-0 w-48 h-48 rounded-full -mr-16 -mt-16 pointer-events-none blur-2xl ${isEmpty ? 'bg-red-500/10' : 'bg-[#FF6800]/10'}`} />
+
       <div className="flex flex-col md:flex-row md:items-center gap-6">
-        <div className="w-14 h-14 shrink-0 bg-gradient-to-br from-[#FF8533] to-[#FF6800] rounded-2xl flex items-center justify-center shadow-lg shadow-[#FF6800]/30">
-          <Zap size={24} className="text-white" fill="currentColor" />
+        <div className={`w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center shadow-lg ${
+          isEmpty
+            ? 'bg-gradient-to-br from-red-500 to-red-600 shadow-red-500/30'
+            : 'bg-gradient-to-br from-[#FF8533] to-[#FF6800] shadow-[#FF6800]/30'
+        }`}>
+          <CreditCard size={24} className="text-white" />
         </div>
+
         <div className="flex-1 min-w-0">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#FF6800]/10 border border-[#FF6800]/30 rounded-full text-[9px] font-black uppercase tracking-widest text-[#FF6800] mb-3">
-            ✦ Offre de départ
+          <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest mb-3 border ${
+            isEmpty
+              ? 'bg-red-500/10 border-red-500/30 text-red-400'
+              : 'bg-[#FF6800]/10 border-[#FF6800]/30 text-[#FF6800]'
+          }`}>
+            ✦ Solde de crédits
           </div>
+
           <h3 className="font-black text-white text-lg md:text-xl mb-1 tracking-tight">
-            Votre essai gratuit est disponible !
+            {isEmpty ? 'Plus de crédits disponibles' : `Vous avez ${credits} crédit${credits > 1 ? 's' : ''}`}
           </h3>
           <p className="text-sm text-white/50 font-medium mb-4">
-            Générez une formule optimisée automatiquement. Aucune carte bancaire requise.
+            {isEmpty
+              ? 'Rechargez pour continuer à générer des formules et lancer des analyses.'
+              : '1 crédit = 1 formule générée ou 1 analyse détaillée. Les formules manuelles sont toujours gratuites.'}
           </p>
-          <div className="flex items-center gap-3 mb-3">
-            <div className="flex-1 h-2 bg-[#2A2A2A] rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-[#FF8533] to-[#FF6800] rounded-full transition-all duration-700"
-                style={{ width: `${pct}%` }}
-              />
-            </div>
-            <span className="text-[11px] font-black text-[#FF6800] shrink-0">{used}/{total} utilisé</span>
-          </div>
+
+          {/* Visualisation des crédits */}
           <div className="flex flex-wrap gap-2">
-            {Array.from({ length: Math.min(total, 5) }).map((_, i) => (
+            {Array.from({ length: Math.max(credits, 0) }).slice(0, 12).map((_, i) => (
               <div
                 key={i}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-[11px] font-black ${
-                  i < used
-                    ? 'bg-[#FF6800]/10 border-[#FF6800]/30 text-[#FF6800]/50'
-                    : 'bg-[#1A1A1A] border-emerald-500/30 text-emerald-400'
+                  isEmpty
+                    ? 'bg-[#1A1A1A] border-[#2A2A2A] text-white/20'
+                    : 'bg-[#1A1A1A] border-[#FF6800]/30 text-[#FF6800]'
                 }`}
               >
-                <FlaskConical size={11} />
-                Essai {i + 1}
-                {i < used ? ' · Utilisé' : ' · Dispo'}
+                <Zap size={11} />
+                Crédit {i + 1}
               </div>
             ))}
-            {bonus > 0 && (
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border bg-purple-500/10 border-purple-500/30 text-purple-400 text-[11px] font-black">
-                <Gift size={11} /> +{bonus} bonus parrainage
+            {isEmpty && (
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border bg-red-500/10 border-red-500/30 text-red-400 text-[11px] font-black">
+                <Lock size={11} /> Épuisé
               </div>
             )}
           </div>
         </div>
+
         <div className="flex flex-col gap-2 shrink-0">
-          {remaining > 0 ? (
-            <>
-              <button
-                onClick={onUse}
-                className="flex items-center justify-center gap-2 px-6 py-3.5 bg-[#FF6800] hover:bg-[#FF8533] text-white rounded-xl font-black text-[11px] uppercase tracking-widest shadow-lg shadow-[#FF6800]/30 hover:scale-[1.02] transition-all whitespace-nowrap"
-              >
-                Utiliser mon essai <ArrowUpRight size={14} />
-              </button>
-              <p className="text-center text-[10px] text-[#FF6800] font-bold">{remaining} essai{remaining > 1 ? 's' : ''} restant{remaining > 1 ? 's' : ''}</p>
-            </>
-          ) : (
-            <>
-              <button className="flex items-center justify-center gap-2 px-6 py-3.5 bg-[#FF6800] hover:bg-[#FF8533] text-white rounded-xl font-black text-[11px] uppercase tracking-widest shadow-lg shadow-[#FF6800]/30 hover:scale-[1.02] transition-all whitespace-nowrap">
-                Passer Pro <ChevronRight size={14} />
-              </button>
-              <p className="text-center text-[10px] text-white/40 font-bold">Essai gratuit épuisé</p>
-            </>
-          )}
+          <button
+            onClick={onRecharge}
+            className={`flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-lg transition-all hover:scale-[1.02] whitespace-nowrap ${
+              isEmpty
+                ? 'bg-red-500 hover:bg-red-400 text-white shadow-red-500/30'
+                : 'bg-[#FF6800] hover:bg-[#FF8533] text-white shadow-[#FF6800]/30'
+            }`}
+          >
+            <Plus size={14} /> Recharger
+          </button>
+          <p className={`text-center text-[10px] font-bold ${isEmpty ? 'text-red-400' : 'text-[#FF6800]'}`}>
+            {isEmpty ? 'Aucun crédit restant' : `${credits} crédit${credits > 1 ? 's' : ''} restant${credits > 1 ? 's' : ''}`}
+          </p>
         </div>
       </div>
     </div>
   )
 }
 
-function TrialPill({ used, total, onClick }: { used: number; total: number; onClick: () => void }) {
-  const remaining = total - used
-  return (
-    <button
-      onClick={onClick}
-      className="flex items-center gap-2 bg-[#FF6800]/10 hover:bg-[#FF6800]/20 border border-[#FF6800]/30 rounded-full px-3.5 py-2 transition-all hover:shadow-sm group"
-    >
-      <span className="relative flex h-2 w-2 shrink-0">
-        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6800] opacity-60" />
-        <span className="relative inline-flex rounded-full h-2 w-2 bg-[#FF6800]" />
-      </span>
-      <span className="text-[11px] font-black text-[#FF6800] tracking-wide hidden sm:inline">Essai gratuit</span>
-      <span className="text-[11px] font-black bg-[#FF6800] text-white px-2 py-0.5 rounded-full">{remaining}/{total}</span>
-    </button>
-  )
-}
+// ─── UPGRADE MODAL ───────────────────────────────────────────────────────────
 
 function UpgradeModal({ onClose, onGoReferral, onGoPricing }: {
   onClose: () => void
@@ -166,16 +186,16 @@ function UpgradeModal({ onClose, onGoReferral, onGoPricing }: {
             <X size={16} />
           </button>
           <div className="w-16 h-16 bg-red-500/20 border border-red-400/30 rounded-2xl flex items-center justify-center mb-5">
-            <Lock size={28} className="text-red-400" />
+            <CreditCard size={28} className="text-red-400" />
           </div>
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-red-500/20 border border-red-400/20 rounded-full text-[10px] font-black text-red-400 uppercase tracking-widest mb-4">
-            Essai gratuit épuisé
+            Crédits épuisés
           </div>
           <h2 className="text-2xl font-black text-white tracking-tight mb-2">
-            Votre essai est terminé.
+            Plus de crédits disponibles.
           </h2>
           <p className="text-white/70 text-sm font-medium leading-relaxed">
-            Vous avez utilisé vos essais gratuits. Choisissez comment continuer.
+            Rechargez votre solde pour continuer à générer des formules et lancer des analyses IA.
           </p>
         </div>
 
@@ -185,12 +205,12 @@ function UpgradeModal({ onClose, onGoReferral, onGoPricing }: {
             className="w-full flex items-center gap-4 bg-[#FF6800] hover:bg-[#FF8533] text-white rounded-2xl px-6 py-5 text-left transition-all hover:scale-[1.01] shadow-lg shadow-[#FF6800]/30"
           >
             <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
-              <Star size={18} fill="currentColor" />
+              <Zap size={18} fill="currentColor" />
             </div>
             <div className="flex-1">
-              <p className="font-black text-[13px]">Passer Pro</p>
+              <p className="font-black text-[13px]">Recharger des crédits</p>
               <p className="text-white/80 text-[11px] font-medium mt-0.5">
-                Générations illimitées · Export PDF · Support
+                Packs à partir de 600 F · 1 crédit = 1 génération ou analyse
               </p>
             </div>
             <ChevronRight size={16} className="shrink-0 opacity-70" />
@@ -206,20 +226,22 @@ function UpgradeModal({ onClose, onGoReferral, onGoPricing }: {
             <div className="flex-1">
               <p className="font-black text-[13px]">Parrainer un ami</p>
               <p className="text-purple-300 text-[11px] font-medium mt-0.5">
-                Gagnez <strong>+1 essai bonus</strong> par ami invité
+                Gagnez <strong>+1 crédit bonus</strong> par ami invité
               </p>
             </div>
             <ChevronRight size={16} className="shrink-0 opacity-40" />
           </button>
 
           <p className="text-center text-[10px] text-white/40 font-bold pt-1">
-            Plan PRO à partir de 5 000 FCFA / mois
+            Pack Starter à 600 F · Pack Éleveur à 800 F · Pack Pro à 2 400 F
           </p>
         </div>
       </div>
     </div>
   )
 }
+
+// ─── DASHBOARD ───────────────────────────────────────────────────────────────
 
 export function Dashboard() {
   const { user, signOut } = useAuth()
@@ -228,17 +250,14 @@ export function Dashboard() {
   const [activeView, setActiveView] = useState<View>('home')
   const [mode, setMode] = useState<'manual' | 'auto'>('manual')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [showTrialCard, setShowTrialCard] = useState(true)
+  const [showCreditCard, setShowCreditCard] = useState(true)
   const [showUpgradeModal, setShowUpgradeModal] = useState(false)
 
   const userName = user?.user_metadata?.first_name || 'Éleveur'
   const userInitials = userName.substring(0, 2).toUpperCase()
 
-  // MODE TEST : nombre d'essais quasi-illimité (revert à 5 pour la prod)
-  const totalFreeTrials = 9999
-  const usedTrials = subscription.autoFormulasCount ?? 0
+  const credits = subscription.credits ?? 0
   const bonusTrials = subscription.bonusCalculations ?? 0
-  const grandTotal = totalFreeTrials + bonusTrials
 
   const navItems = [
     { id: 'home' as View, label: 'Accueil', icon: <LayoutGrid size={17} /> },
@@ -254,20 +273,12 @@ export function Dashboard() {
     referral: { t: 'Programme Ambassadeur', s: 'Invitez des amis et gagnez des bonus' },
   }
 
-  const handleUseTrialClick = () => {
-    setActiveView('calculator')
-    setIsSidebarOpen(false)
+  const handleRecharge = () => {
+    navigate('/pricing')
   }
 
   return (
-    // FOND DYNAMIQUE : noir par défaut, rose/ambre sur calculator selon le mode
-    <div className={`min-h-screen flex overflow-hidden text-white font-sans transition-colors duration-500 ${
-      activeView === 'calculator'
-        ? (mode === 'manual'
-            ? 'bg-gradient-to-br from-pink-950/40 via-[#0A0A0A] to-rose-950/40'
-            : 'bg-gradient-to-br from-amber-950/40 via-[#0A0A0A] to-orange-950/40')
-        : 'bg-[#0A0A0A]'
-    }`}>
+    <div className="min-h-screen flex overflow-hidden text-white font-sans bg-[#0A0A0A]">
 
       {isSidebarOpen && (
         <div
@@ -346,21 +357,33 @@ export function Dashboard() {
           ))}
         </nav>
 
-        {/* Trial widget */}
-        <div className="mx-4 mb-4 bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[9px] font-black text-[#FF6800] uppercase tracking-widest">Essai gratuit</span>
-            <span className="text-[10px] font-black text-white/80">{usedTrials}/{grandTotal}</span>
+        {/* Credits widget in sidebar */}
+        <div className="mx-4 mb-2">
+          <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className={`text-[9px] font-black uppercase tracking-widest ${credits === 0 ? 'text-red-400' : 'text-[#FF6800]'}`}>
+                Crédits
+              </span>
+              <span className={`text-lg font-black ${credits === 0 ? 'text-red-400' : 'text-white'}`}>
+                {credits}
+              </span>
+            </div>
+            <div className="flex gap-1 mb-2">
+              {Array.from({ length: Math.min(Math.max(credits, 0), 12) }).map((_, i) => (
+                <div key={i} className="h-1.5 flex-1 bg-[#FF6800] rounded-full" />
+              ))}
+              {credits === 0 && <div className="h-1.5 flex-1 bg-[#2A2A2A] rounded-full" />}
+            </div>
+            <p className="text-[10px] text-white/60 font-medium mb-3">
+              {credits === 0 ? 'Aucun crédit — rechargez' : `${credits} crédit${credits > 1 ? 's' : ''} disponible${credits > 1 ? 's' : ''}`}
+            </p>
+            <button
+              onClick={handleRecharge}
+              className="w-full flex items-center justify-center gap-1.5 py-2 bg-[#FF6800] hover:bg-[#FF8533] text-white rounded-lg font-black text-[9px] uppercase tracking-widest transition-all"
+            >
+              <Plus size={11} /> Recharger
+            </button>
           </div>
-          <div className="h-1.5 bg-[#0A0A0A] rounded-full overflow-hidden mb-2">
-            <div
-              className="h-full bg-gradient-to-r from-[#FF8533] to-[#FF6800] rounded-full transition-all"
-              style={{ width: `${Math.min((usedTrials / grandTotal) * 100, 100)}%` }}
-            />
-          </div>
-          <p className="text-[10px] text-white/60 font-medium">
-            {grandTotal - usedTrials > 0 ? `${grandTotal - usedTrials} essai${grandTotal - usedTrials > 1 ? 's' : ''} restant${grandTotal - usedTrials > 1 ? 's' : ''}` : 'Essai épuisé'}
-          </p>
         </div>
 
         {/* Logout */}
@@ -391,7 +414,7 @@ export function Dashboard() {
           </button>
           <span className="font-black uppercase text-sm tracking-tighter text-white">Provende<span className="text-[#FF6800]">Builder</span></span>
           <div className="flex items-center gap-2">
-            <TrialPill used={usedTrials} total={grandTotal} onClick={() => setActiveView('home')} />
+            <CreditPill credits={credits} onClick={() => setActiveView('home')} />
             <div className="w-8 h-8 bg-[#FF6800] rounded-xl flex items-center justify-center font-black text-xs text-white">
               {userInitials}
             </div>
@@ -409,7 +432,13 @@ export function Dashboard() {
             <p className="text-[12px] text-white/50 font-medium mt-0.5">{viewTitles[activeView].s}</p>
           </div>
           <div className="flex items-center gap-3">
-            <TrialPill used={usedTrials} total={grandTotal} onClick={() => setActiveView('home')} />
+            <CreditPill credits={credits} onClick={() => setActiveView('home')} />
+            <button
+              onClick={handleRecharge}
+              className="flex items-center gap-2 px-4 py-2 bg-[#FF6800] hover:bg-[#FF8533] text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-[#FF6800]/30"
+            >
+              <Plus size={13} /> Recharger
+            </button>
             <div className="flex items-center gap-3 bg-[#1A1A1A] border border-[#2A2A2A] px-3 py-2 rounded-xl">
               <div className="w-7 h-7 bg-[#FF6800] rounded-lg flex items-center justify-center font-black text-xs text-white">
                 {userInitials}
@@ -447,13 +476,12 @@ export function Dashboard() {
                 </div>
               </div>
 
-              {showTrialCard && (
-                <FreeTrialCard
-                  used={usedTrials}
-                  total={grandTotal}
-                  bonus={bonusTrials}
-                  onUse={handleUseTrialClick}
-                  onDismiss={() => setShowTrialCard(false)}
+              {/* Credit card widget */}
+              {showCreditCard && (
+                <CreditCard_
+                  credits={credits}
+                  onRecharge={handleRecharge}
+                  onDismiss={() => setShowCreditCard(false)}
                 />
               )}
 
@@ -469,13 +497,13 @@ export function Dashboard() {
                   borderClass="border-[#2A2A2A]"
                 />
                 <KpiCard
-                  label="Essai"
-                  value={`${usedTrials}/${grandTotal}`}
-                  sub="Utilisé / Total"
-                  icon={<TrendingUp size={17} />}
-                  colorClass="text-[#FF6800]"
-                  bgClass="bg-[#FF6800]/10"
-                  borderClass={usedTrials >= grandTotal ? 'border-red-500/30' : 'border-[#2A2A2A]'}
+                  label="Crédits"
+                  value={credits}
+                  sub="Disponibles"
+                  icon={<Zap size={17} />}
+                  colorClass={credits === 0 ? 'text-red-400' : 'text-[#FF6800]'}
+                  bgClass={credits === 0 ? 'bg-red-500/10' : 'bg-[#FF6800]/10'}
+                  borderClass={credits === 0 ? 'border-red-500/30' : 'border-[#2A2A2A]'}
                 />
                 <KpiCard
                   label="Bonus"
@@ -514,49 +542,74 @@ export function Dashboard() {
                     </div>
                     <h3 className="text-xl font-black text-white mb-2 tracking-tight">Calculateur de Provende</h3>
                     <p className="text-white/50 text-sm font-medium mb-5 leading-relaxed">
-                      Vérifiez vos formules ou générez automatiquement vos formules optimisées.
+                      Vérifiez vos formules ou générez automatiquement des formules optimisées.
                     </p>
                     <div className="flex items-center gap-2 text-[#FF6800] font-black text-[10px] uppercase tracking-widest">
                       Ouvrir l'outil <ChevronRight size={13} className="group-hover:translate-x-1 transition-transform" />
                     </div>
                   </button>
 
+                  {/* Recharge button card */}
                   <button
-                    onClick={() => setActiveView('history')}
+                    onClick={handleRecharge}
                     className="group relative bg-[#1A1A1A] p-7 rounded-2xl text-left border border-[#2A2A2A] hover:border-[#FF6800]/50 hover:shadow-lg hover:shadow-[#FF6800]/10 transition-all overflow-hidden"
                   >
                     <div className="w-11 h-11 bg-[#0A0A0A] border border-[#2A2A2A] rounded-xl flex items-center justify-center text-white/40 mb-5 group-hover:bg-[#FF6800]/10 group-hover:text-[#FF6800] group-hover:border-[#FF6800]/30 transition-colors">
-                      <Wheat size={20} />
+                      <CreditCard size={20} />
                     </div>
-                    <h3 className="text-xl font-black text-white mb-2 tracking-tight">Historique des Recettes</h3>
-                    <p className="text-white/50 text-sm font-medium mb-5 leading-relaxed">
-                      Retrouvez toutes vos formulations sauvegardées et vos résultats.
+                    <h3 className="text-xl font-black text-white mb-2 tracking-tight">Recharger des crédits</h3>
+                    <p className="text-white/50 text-sm font-medium mb-3 leading-relaxed">
+                      Achetez des crédits pour générer des formules IA et lancer des analyses.
                     </p>
+                    <div className="flex flex-wrap gap-2 mb-5">
+                      {['3 crédits — 600 F', '4 crédits — 800 F', '12 crédits — 2 400 F'].map(pack => (
+                        <span key={pack} className="text-[10px] font-black px-2.5 py-1 bg-[#FF6800]/10 border border-[#FF6800]/20 text-[#FF6800] rounded-lg">
+                          {pack}
+                        </span>
+                      ))}
+                    </div>
                     <div className="flex items-center gap-2 text-[#FF6800] font-black text-[10px] uppercase tracking-widest">
-                      Voir mes archives <ChevronRight size={13} className="group-hover:translate-x-1 transition-transform" />
+                      Voir les packs <ChevronRight size={13} className="group-hover:translate-x-1 transition-transform" />
                     </div>
                   </button>
                 </div>
               </div>
 
+              {/* Historique */}
+              <button
+                onClick={() => setActiveView('history')}
+                className="w-full flex items-center gap-5 bg-[#1A1A1A] border border-[#2A2A2A] hover:border-emerald-500/30 hover:bg-emerald-500/5 rounded-2xl px-6 py-5 transition-all group text-left"
+              >
+                <div className="w-10 h-10 shrink-0 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center justify-center text-emerald-400">
+                  <Wheat size={18} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-black text-sm text-white">Historique des Recettes</p>
+                  <p className="text-[12px] text-white/50 font-medium mt-0.5">
+                    Retrouvez toutes vos formulations sauvegardées
+                  </p>
+                </div>
+                <ChevronRight size={16} className="text-white/30 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+              </button>
+
               {/* Programme ambassadeur */}
               <button
                 onClick={() => setActiveView('referral')}
-                className="w-full flex items-center gap-5 bg-[#1A1A1A] border border-[#2A2A2A] hover:border-purple-500/50 hover:bg-purple-500/5 rounded-2xl px-6 py-5 transition-all group text-left"
+                className="w-full flex items-center gap-5 bg-[#1A1A1A] border border-[#2A2A2A] hover:border-[#FF6800]/50 hover:bg-[#FF6800]/5 rounded-2xl px-6 py-5 transition-all group text-left"
               >
-                <div className="w-10 h-10 shrink-0 bg-purple-500/10 border border-purple-500/30 rounded-xl flex items-center justify-center text-purple-400 group-hover:bg-purple-500/20 transition-colors">
+                <div className="w-10 h-10 shrink-0 bg-[#FF6800]/10 border border-[#FF6800]/30 rounded-xl flex items-center justify-center text-[#FF6800] group-hover:bg-[#FF6800]/20 transition-colors">
                   <Gift size={18} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-black text-sm text-white">Programme Ambassadeur</p>
                   <p className="text-[12px] text-white/50 font-medium mt-0.5">
                     Parrainez un ami et gagnez chacun{' '}
-                    <strong className="text-purple-400 font-black">+1 essai bonus</strong>
+                    <strong className="text-[#FF6800] font-black">+1 crédit bonus</strong>
                   </p>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
                   {[...Array(3)].map((_, i) => (
-                    <Star key={i} size={11} className="text-purple-400" fill="currentColor" />
+                    <Star key={i} size={11} className="text-[#FF6800]" fill="currentColor" />
                   ))}
                 </div>
                 <ChevronRight size={16} className="text-white/30 group-hover:text-purple-400 group-hover:translate-x-0.5 transition-all shrink-0" />
@@ -575,7 +628,7 @@ export function Dashboard() {
                   onClick={() => setMode('manual')}
                   className={`flex-1 flex items-center justify-center gap-3 px-8 py-6 rounded-xl font-black text-base uppercase tracking-widest transition-all ${
                     mode === 'manual'
-                      ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/30 scale-[1.01]'
+                      ? 'bg-[#FF6800] text-white shadow-lg shadow-[#FF6800]/30 scale-[1.01]'
                       : 'text-white/40 hover:text-white hover:bg-[#0A0A0A]'
                   }`}
                 >
@@ -595,47 +648,62 @@ export function Dashboard() {
                 </button>
               </div>
 
-              {/* Banner : essais restants */}
-              {mode === 'auto' && grandTotal - usedTrials > 0 && (
-                <div className="flex items-center gap-3 bg-[#FF6800]/10 border border-[#FF6800]/30 rounded-xl px-5 py-3.5">
-                  <Zap size={15} className="text-[#FF6800] shrink-0" fill="currentColor" />
-                  <p className="text-[13px] font-bold text-[#FF6800]">
-                    Il vous reste{' '}
-                    <strong className="font-black">{grandTotal - usedTrials} essai{grandTotal - usedTrials > 1 ? 's' : ''} gratuit{grandTotal - usedTrials > 1 ? 's' : ''}</strong>.
-                    La génération automatique en consomme un.
-                  </p>
+              {/* Banner crédits */}
+              {credits > 0 ? (
+                <div className="flex items-center justify-between gap-3 bg-[#FF6800]/10 border border-[#FF6800]/30 rounded-xl px-5 py-3.5">
+                  <div className="flex items-center gap-3">
+                    <Zap size={15} className="text-[#FF6800] shrink-0" fill="currentColor" />
+                    <p className="text-[13px] font-bold text-[#FF6800]">
+                      Solde :{' '}
+                      <strong className="font-black">{credits} crédit{credits > 1 ? 's' : ''}</strong>.
+                      {mode === 'manual'
+                        ? ' La vérification est gratuite — l\'analyse détaillée consomme 1 crédit.'
+                        : ' La génération automatique consomme 1 crédit.'}
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleRecharge}
+                    className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-[#FF6800] hover:bg-[#FF8533] text-white rounded-lg font-black text-[10px] uppercase tracking-widest transition-all"
+                  >
+                    <Plus size={11} /> Recharger
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between gap-3 bg-red-500/10 border border-red-500/30 rounded-xl px-5 py-3.5">
+                  <div className="flex items-center gap-3">
+                    <Zap size={15} className="text-red-400 shrink-0" />
+                    <p className="text-[13px] font-bold text-red-300">
+                      Aucun crédit disponible.{' '}
+                      <button
+                        onClick={() => setShowUpgradeModal(true)}
+                        className="underline font-black text-red-200 hover:text-white"
+                      >
+                        Rechargez
+                      </button>{' '}
+                      ou{' '}
+                      <button
+                        onClick={() => setActiveView('referral')}
+                        className="underline font-black text-red-200 hover:text-white"
+                      >
+                        parrainez un ami
+                      </button>{' '}
+                      pour continuer.
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleRecharge}
+                    className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-red-500 hover:bg-red-400 text-white rounded-lg font-black text-[10px] uppercase tracking-widest transition-all"
+                  >
+                    <Plus size={11} /> Recharger
+                  </button>
                 </div>
               )}
 
-              {/* Banner : essai épuisé */}
-              {mode === 'auto' && grandTotal - usedTrials === 0 && (
-                <div className="flex items-center gap-3 bg-red-500/10 border border-red-500/30 rounded-xl px-5 py-3.5">
-                  <Zap size={15} className="text-red-400 shrink-0" />
-                  <p className="text-[13px] font-bold text-red-300">
-                    Votre essai gratuit a été utilisé.{' '}
-                    <button
-                      onClick={() => setShowUpgradeModal(true)}
-                      className="underline font-black text-red-200 hover:text-white"
-                    >
-                      Passez Pro
-                    </button>{' '}
-                    ou{' '}
-                    <button
-                      onClick={() => setActiveView('referral')}
-                      className="underline font-black text-red-200 hover:text-white"
-                    >
-                      parrainez un ami
-                    </button>{' '}
-                    pour continuer.
-                  </p>
-                </div>
-              )}
-
-              {/* Description du mode sélectionné */}
+              {/* Description du mode */}
               <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-2xl px-6 py-4 flex items-start gap-4 shadow-sm">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
                   mode === 'manual'
-                    ? 'bg-pink-500/10 text-pink-400 border border-pink-500/30'
+                    ? 'bg-[#FF6800]/10 text-[#FF6800] border border-[#FF6800]/30'
                     : 'bg-[#FF6800]/10 text-[#FF6800] border border-[#FF6800]/30'
                 }`}>
                   {mode === 'manual' ? <FlaskConical size={18} /> : <Zap size={18} />}
@@ -643,20 +711,20 @@ export function Dashboard() {
                 <div>
                   <p className="font-black text-white text-sm">
                     {mode === 'manual'
-                      ? 'Vérificateur de formules — Analysez et validez vos rations'
-                      : 'Générateur de formules automatiques — Optimisation par IA'}
+                      ? 'Vérificateur de formules — Gratuit · Analyse détaillée = 1 crédit'
+                      : 'Générateur de formules automatiques — 1 crédit par génération'}
                   </p>
                   <p className="text-[12px] text-white/50 font-medium mt-0.5">
                     {mode === 'manual'
-                      ? 'Entrez vos matières premières, proportions et objectifs nutritionnels pour vérifier votre formule.'
-                      : "Laissez l'IA formuler la ration la plus économique selon vos critères."}
+                      ? 'Entrez vos matières premières et proportions pour vérifier votre formule. L\'analyse détaillée consomme 1 crédit.'
+                      : "La ration la plus économique est calculée automatiquement selon vos critères. 1 crédit par génération."}
                   </p>
                 </div>
               </div>
 
               <div>
                 {mode === 'manual'
-                  ? <ManualAnalyzer />
+                  ? <ManualAnalyzer onNoCredits={() => setShowUpgradeModal(true)} />
                   : <AutomaticGenerator onTrialExhausted={() => setShowUpgradeModal(true)} />
                 }
               </div>

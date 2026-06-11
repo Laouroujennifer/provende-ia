@@ -60,8 +60,8 @@ export function Header() {
             to="/register" 
             className="bg-[#FF6800] hover:bg-[#FF8533] text-white px-4 md:px-6 py-2.5 md:py-3 rounded-full font-black text-[9px] md:text-[10px] uppercase tracking-widest shadow-lg shadow-[#FF6800]/30 transition-all hover:scale-105 active:scale-95 whitespace-nowrap"
           >
-            <span className="sm:hidden">Essai</span>
-            <span className="hidden sm:inline">Essai gratuit</span>
+            <span className="sm:hidden">Essai gratuit</span>
+            <span className="hidden sm:inline">Démarrer l&apos;essai gratuit</span>
           </Link>
 
           {/* Burger Menu */}

@@ -64,7 +64,7 @@ export function ReferralSection() {
           </h1>
           
           <p className="text-white/40 text-lg mb-10 max-w-lg font-medium">
-            Invitez des collègues éleveurs. Pour chaque inscription, vous recevez <span className="text-emerald-400 font-black">+10 calculs IA</span> sur votre compte.
+            Invitez des collègues éleveurs. Pour chaque inscription, vous recevez <span className="text-emerald-400 font-black">+10 formules offertes</span> sur votre compte.
           </p>
           
           <div className="grid md:grid-cols-2 gap-4 max-w-2xl">

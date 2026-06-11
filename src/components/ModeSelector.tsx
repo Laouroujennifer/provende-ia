@@ -1,4 +1,3 @@
-
 import { Calculator, Zap, Check, Infinity } from 'lucide-react'
 
 interface ModeSelectorProps {
@@ -48,11 +47,6 @@ export function ModeSelector({ currentMode, onModeChange }: ModeSelectorProps) {
             : 'border-amber-300 bg-amber-50 hover:border-amber-500'
         }`}
       >
-        {/* Halo qui pulse quand non sélectionné */}
-        {currentMode !== 'auto' && (
-          <span className="absolute inset-0 rounded-2xl border-[2.5px] border-amber-400 animate-ping opacity-30 pointer-events-none" />
-        )}
-
         {currentMode === 'auto' && (
           <span className="absolute top-4 right-4 w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center">
             <Check size={13} className="text-white" strokeWidth={3} />
@@ -63,9 +57,9 @@ export function ModeSelector({ currentMode, onModeChange }: ModeSelectorProps) {
           <Zap size={26} className="text-white" fill="currentColor" />
         </div>
 
-        <p className="text-xl font-black text-amber-900 mb-2">Automatique IA</p>
+        <p className="text-xl font-black text-amber-900 mb-2">Automatique</p>
         <p className="text-[13px] text-amber-700 font-medium leading-relaxed">
-          L'IA génère et optimise votre formule selon vos objectifs nutritionnels.
+          Votre formule est calculée et optimisée automatiquement selon vos objectifs.
         </p>
 
         <div className="flex items-center gap-1.5 mt-4 bg-amber-500 text-amber-50 text-[11px] font-black px-3 py-1.5 rounded-full">

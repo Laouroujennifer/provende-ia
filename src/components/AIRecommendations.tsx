@@ -22,7 +22,7 @@ export function AIRecommendations({ recommendations }: AIRecommendationsProps) {
       <div className="flex items-center gap-2 mb-4">
         <BrainCircuit className="w-6 h-6 text-teal-600" />
         <h2 className="text-lg font-bold text-gray-900">
-          Analyse IA & Recommandations
+          Analyse & Recommandations
         </h2>
       </div>
 

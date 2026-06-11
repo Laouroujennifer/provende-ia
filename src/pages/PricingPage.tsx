@@ -1,158 +1,110 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Check, Loader2, Sparkles, Zap, Package, Crown } from 'lucide-react'
-import { useSubscription } from '../contexts/SubscriptionContext'
-import { formatPrice } from '../utils/geolocation'
+import { Check, Sparkles, Zap, Package, Crown } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
-interface KkiapayConfig {
-  amount: number;
-  api_key: string;
-  sandbox: boolean;
-  phone?: string;
-  name?: string;
-  email?: string;
-  callback?: string;
-  data?: string;
-  theme?: string;
-}
-
-interface KkiapayResponse {
-  transactionId: string;
-  flwRef?: string;
-  status?: string;
-}
-
-declare global {
-  interface Window {
-    openKkiapayWidget: (config: KkiapayConfig) => void;
-    addKkiapayListener: (event: string, callback: (response: KkiapayResponse) => void) => void;
-    removeKkiapayListener: (event: string) => void;
-  }
-}
-
-type PackID = 'credit_1' | 'credit_4' | 'credit_12'
+const STORE_DOMAIN = 'mqxwvxlx.mychariow.online'
 
 const PACKS = [
   {
-    id: 'credit_1' as PackID,
-    name: 'Starter',
-    credits: 1,
-    price: 200,
-    pricePerCredit: 200,
+    id: 'credit_3',
+    productId: 'prd_bu1cotto',
+    name: 'Pack Starter',
+    credits: 3,
+    price: '600 F',
+    pricePerCredit: '200 F / crédit',
     icon: Zap,
     highlight: false,
-    badge: null,
-    features: [
-      '1 génération IA complète',
-      'Résultat instantané',
-      'Formule optimisée Goliath',
-      'Sans engagement',
-    ],
-    buttonText: 'Acheter 1 crédit',
+    badge: null as string | null,
     color: 'emerald',
+    accentColor: '#10b981',
+    features: [
+      '3 formules automatiques complètes',
+      'Crédits stockés sur votre compte',
+      'Utilisez quand vous voulez',
+      'Formules optimisées Goliath',
+    ],
   },
   {
-    id: 'credit_4' as PackID,
+    id: 'credit_4',
+    productId: 'prd_7052atop',
     name: 'Pack Éleveur',
     credits: 4,
-    price: 800,
-    pricePerCredit: 200,
+    price: '800 F',
+    pricePerCredit: '200 F / crédit',
     icon: Package,
     highlight: true,
-    badge: 'Le plus populaire',
+    badge: '⭐ Le plus populaire' as string | null,
+    color: 'orange',
+    accentColor: '#FF6800',
     features: [
-      '4 générations IA complètes',
+      '4 formules automatiques complètes',
       'Crédits stockés sur votre compte',
       'Utilisez quand vous voulez',
       'Formules optimisées Goliath',
       'Support WhatsApp inclus',
     ],
-    buttonText: 'Acheter 4 crédits',
-    color: 'orange',
   },
   {
-    id: 'credit_12' as PackID,
+    id: 'credit_12',
+    productId: 'prd_5rtthm01',
     name: 'Pack Pro',
     credits: 12,
-    price: 2400,
-    pricePerCredit: 200,
+    price: '2 400 F',
+    pricePerCredit: '200 F / crédit',
     icon: Crown,
     highlight: false,
-    badge: 'Meilleure valeur',
+    badge: '👑 Meilleure valeur' as string | null,
+    color: 'violet',
+    accentColor: '#8b5cf6',
     features: [
-      '12 générations IA complètes',
+      '12 formules automatiques complètes',
       'Crédits stockés sur votre compte',
       'Utilisez quand vous voulez',
       'Formules optimisées Goliath',
       'Support WhatsApp prioritaire',
       'Accès aux futurs outils',
     ],
-    buttonText: 'Acheter 12 crédits',
-    color: 'violet',
   },
 ]
 
 export function PricingPage() {
-  const { currency, addCredits } = useSubscription()
   const { user, isAuthenticated } = useAuth()
   const navigate = useNavigate()
-  const [loadingPack, setLoadingPack] = useState<PackID | null>(null)
-  const [successPack, setSuccessPack] = useState<PackID | null>(null)
+  const [searchParams] = useSearchParams()
 
-  const handlePaymentSuccess = async (packId: PackID, credits: number) => {
-    try {
-      await addCredits(credits)
-      setSuccessPack(packId)
-      setTimeout(() => {
-        setSuccessPack(null)
-        navigate('/dashboard')
-      }, 2500)
-    } catch (error) {
-      console.error('Erreur activation:', error)
-      alert("Erreur lors de l'activation. Contactez-nous sur WhatsApp.")
-    } finally {
-      setLoadingPack(null)
+  // Détection retour paiement réussi
+  useEffect(() => {
+    if (searchParams.get('status') === 'success') {
+      alert("Paiement réussi ! Vos crédits seront ajoutés dans quelques secondes.")
+      navigate('/pricing', { replace: true })
     }
-  }
+  }, [searchParams, navigate])
 
-  const handleBuyPack = (packId: PackID, amount: number, credits: number) => {
-    if (!isAuthenticated) {
-      navigate('/register')
-      return
+  // Charge script + CSS Chariow une seule fois
+  useEffect(() => {
+    if (!document.getElementById('chariow-script')) {
+      const script = document.createElement('script')
+      script.id = 'chariow-script'
+      script.src = 'https://js.chariowcdn.com/v1/widget.min.js'
+      script.async = true
+      document.head.appendChild(script)
     }
-
-    setLoadingPack(packId)
-
-    window.removeKkiapayListener('payment_success')
-    window.removeKkiapayListener('payment_cancelled')
-
-    window.openKkiapayWidget({
-      amount,
-      api_key: import.meta.env.VITE_KKIAPAY_PUBLIC_KEY,
-      sandbox: true,
-      name: user?.user_metadata?.first_name || 'Éleveur',
-      email: user?.email || '',
-      data: packId,
-      theme: '#FF6800',
-    })
-
-    window.addKkiapayListener('payment_success', () => {
-      handlePaymentSuccess(packId, credits)
-    })
-
-    window.addKkiapayListener('payment_cancelled', () => {
-      setLoadingPack(null)
-    })
-  }
+    if (!document.getElementById('chariow-style')) {
+      const link = document.createElement('link')
+      link.id = 'chariow-style'
+      link.rel = 'stylesheet'
+      link.href = 'https://js.chariowcdn.com/v1/widget.min.css'
+      document.head.appendChild(link)
+    }
+  }, [])
 
   return (
     <div className="bg-[#0A0A0A] min-h-screen pb-24 text-white">
 
       {/* HERO */}
-      <section className="bg-[#0A0A0A] pt-32 pb-64 relative overflow-hidden text-white text-center border-b border-[#2A2A2A]">
-        {/* Grille pattern */}
+      <section className="bg-[#0A0A0A] pt-32 pb-64 relative overflow-hidden text-center border-b border-[#2A2A2A]">
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
           <svg className="w-full h-full" viewBox="0 0 100 100">
             <pattern id="grid-p" width="10" height="10" patternUnits="userSpaceOnUse">
@@ -161,8 +113,6 @@ export function PricingPage() {
             <rect width="100%" height="100%" fill="url(#grid-p)" />
           </svg>
         </div>
-
-        {/* Glows */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#FF6800]/10 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-violet-500/8 rounded-full blur-[100px] pointer-events-none" />
 
@@ -181,22 +131,18 @@ export function PricingPage() {
           <p className="text-white/60 text-lg md:text-xl font-medium max-w-2xl mx-auto">
             Achetez des crédits, stockez-les sur votre compte et générez vos formules quand vous en avez besoin.
           </p>
-
-          {/* Explication crédits */}
           <div className="mt-10 inline-flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white/70">
             <Zap size={16} className="text-[#FF6800]" />
-            <span>1 crédit = 1 formule IA générée et optimisée</span>
+            <span>1 crédit = 1 formule générée et optimisée</span>
           </div>
         </motion.div>
       </section>
 
-      {/* CARTES — chevauchent le hero */}
+      {/* CARTES */}
       <section className="max-w-6xl mx-auto px-6 -mt-44 relative z-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {PACKS.map((pack, i) => {
             const Icon = pack.icon
-            const isLoading = loadingPack === pack.id
-            const isSuccess = successPack === pack.id
 
             const borderClass =
               pack.highlight
@@ -206,32 +152,24 @@ export function PricingPage() {
                 : 'border border-[#2A2A2A] hover:border-[#FF6800]/30'
 
             const iconBg =
-              pack.color === 'orange'
-                ? 'bg-[#FF6800]/15 text-[#FF6800]'
-                : pack.color === 'violet'
-                ? 'bg-violet-500/15 text-violet-400'
-                : 'bg-emerald-500/15 text-emerald-400'
+              pack.color === 'orange' ? 'bg-[#FF6800]/15 text-[#FF6800]'
+              : pack.color === 'violet' ? 'bg-violet-500/15 text-violet-400'
+              : 'bg-emerald-500/15 text-emerald-400'
 
-            const btnClass =
-              pack.highlight
-                ? 'bg-gradient-to-r from-[#FF6800] to-[#FF8533] text-white hover:from-[#FF8533] hover:to-[#FF6800] shadow-[#FF6800]/30 hover:scale-[1.02] active:scale-95'
-                : pack.color === 'violet'
-                ? 'bg-gradient-to-r from-violet-600 to-violet-500 text-white hover:from-violet-500 hover:to-violet-400 shadow-violet-500/20 hover:scale-[1.02] active:scale-95'
-                : 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-white hover:from-emerald-500 hover:to-emerald-400 shadow-emerald-500/20 hover:scale-[1.02] active:scale-95'
-
-            const checkColor =
-              pack.color === 'orange'
-                ? 'text-[#FF6800]'
-                : pack.color === 'violet'
-                ? 'text-violet-400'
-                : 'text-emerald-400'
+            const accentClass =
+              pack.color === 'orange' ? 'text-[#FF6800]'
+              : pack.color === 'violet' ? 'text-violet-400'
+              : 'text-emerald-400'
 
             const checkBorder =
-              pack.color === 'orange'
-                ? 'bg-[#FF6800]/10 border-[#FF6800]/30'
-                : pack.color === 'violet'
-                ? 'bg-violet-500/10 border-violet-500/30'
-                : 'bg-emerald-500/10 border-emerald-500/30'
+              pack.color === 'orange' ? 'bg-[#FF6800]/10 border-[#FF6800]/30'
+              : pack.color === 'violet' ? 'bg-violet-500/10 border-violet-500/30'
+              : 'bg-emerald-500/10 border-emerald-500/30'
+
+            const barColor =
+              pack.color === 'orange' ? 'bg-[#FF6800]'
+              : pack.color === 'violet' ? 'bg-violet-500'
+              : 'bg-emerald-500'
 
             return (
               <motion.div
@@ -243,16 +181,15 @@ export function PricingPage() {
               >
                 {/* Badge */}
                 {pack.badge && (
-                  <div className={`absolute -top-4 left-1/2 -translate-x-1/2 px-5 py-1.5 rounded-full font-black text-[10px] uppercase tracking-widest whitespace-nowrap shadow-lg flex items-center gap-1.5 ${
+                  <div className={`absolute -top-4 left-1/2 -translate-x-1/2 px-5 py-1.5 rounded-full font-black text-[10px] uppercase tracking-widest whitespace-nowrap shadow-lg ${
                     pack.highlight
                       ? 'bg-[#FF6800] text-white shadow-[#FF6800]/40'
                       : 'bg-violet-600 text-white shadow-violet-500/40'
                   }`}>
-                    {pack.highlight ? '⭐' : '👑'} {pack.badge}
+                    {pack.badge}
                   </div>
                 )}
 
-                {/* Glow bg pour highlight */}
                 {pack.highlight && (
                   <div className="absolute -inset-1 bg-gradient-to-br from-[#FF6800]/15 via-transparent to-[#FF6800]/8 rounded-[2.5rem] blur-xl -z-10 opacity-60" />
                 )}
@@ -263,38 +200,27 @@ export function PricingPage() {
                     <Icon size={22} />
                   </div>
                   <div>
-                    <p className={`text-[10px] font-black uppercase tracking-widest ${
-                      pack.color === 'orange' ? 'text-[#FF6800]' :
-                      pack.color === 'violet' ? 'text-violet-400' : 'text-emerald-400'
-                    }`}>{pack.name}</p>
+                    <p className={`font-black text-[10px] uppercase tracking-widest ${accentClass}`}>{pack.name}</p>
                     <p className="text-white/40 text-xs font-bold">{pack.credits} crédit{pack.credits > 1 ? 's' : ''}</p>
                   </div>
                 </div>
 
                 {/* Prix */}
-                <div className="mb-6">
-                  <div className="flex items-end gap-2">
-                    <span className="text-5xl font-black text-white tracking-tighter">
-                      {formatPrice(pack.price, currency)}
-                    </span>
-                  </div>
-                  <p className="text-white/30 text-xs font-bold mt-1 uppercase tracking-wide">
-                    {pack.pricePerCredit} F / crédit
-                  </p>
+                <div className="mb-4">
+                  <span className="text-5xl font-black text-white tracking-tighter">{pack.price}</span>
+                  <p className="text-white/30 text-xs font-bold mt-1 uppercase tracking-wide">{pack.pricePerCredit}</p>
                 </div>
 
-                {/* Visuel crédits */}
-                <div className="flex gap-2 mb-6">
-                  {Array.from({ length: pack.credits }).map((_, j) => (
-                    <div
-                      key={j}
-                      className={`flex-1 h-2 rounded-full ${
-                        pack.color === 'orange' ? 'bg-[#FF6800]' :
-                        pack.color === 'violet' ? 'bg-violet-500' : 'bg-emerald-500'
-                      }`}
-                      style={{ maxWidth: pack.credits > 6 ? '100%' : undefined }}
-                    />
+                {/* Barre crédits */}
+                <div className="flex gap-1.5 mb-6">
+                  {Array.from({ length: Math.min(pack.credits, 8) }).map((_, j) => (
+                    <div key={j} className={`h-1.5 flex-1 rounded-full ${barColor}`} />
                   ))}
+                  {pack.credits > 8 && (
+                    <div className={`h-1.5 px-2 rounded-full ${barColor} flex items-center justify-center`}>
+                      <span className="text-white text-[8px] font-black">+{pack.credits - 8}</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Features */}
@@ -302,31 +228,36 @@ export function PricingPage() {
                   {pack.features.map(f => (
                     <li key={f} className="flex items-center gap-3 text-white/60 font-bold text-xs">
                       <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 border ${checkBorder}`}>
-                        <Check className={checkColor} size={11} strokeWidth={3} />
+                        <Check className={accentClass} size={11} strokeWidth={3} />
                       </div>
                       {f}
                     </li>
                   ))}
                 </ul>
 
-                {/* Bouton */}
-                <button
-                  onClick={() => handleBuyPack(pack.id, pack.price, pack.credits)}
-                  disabled={loadingPack !== null}
-                  className={`w-full py-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.15em] transition-all flex items-center justify-center gap-2 shadow-xl disabled:opacity-50 disabled:cursor-not-allowed ${
-                    isSuccess
-                      ? 'bg-emerald-500 text-white'
-                      : btnClass
-                  }`}
-                >
-                  {isSuccess ? (
-                    <><Check size={16} strokeWidth={3} /> Crédits ajoutés !</>
-                  ) : isLoading ? (
-                    <><Loader2 className="animate-spin" size={16} /> Ouverture paiement…</>
-                  ) : (
-                    <><Zap size={14} /> {pack.buttonText}</>
-                  )}
-                </button>
+                {/* Widget Chariow Snap ou bouton connexion */}
+                {isAuthenticated ? (
+                  <div
+                    id="chariow-widget"
+                    data-product-id={pack.productId}
+                    data-store-domain={STORE_DOMAIN}
+                    data-style="tap"
+                    data-border-style="rounded"
+                    data-cta-width="full"
+                    data-background-color="#1A1A1A"
+                    data-cta-animation="shine"
+                    data-locale="fr"
+                    data-primary-color={pack.accentColor}
+                    data-metadata={JSON.stringify({ user_id: user?.id })}
+                  />
+                ) : (
+                  <button
+                    onClick={() => navigate('/register')}
+                    className="w-full py-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.15em] transition-all flex items-center justify-center gap-2 bg-white/10 border border-white/20 text-white hover:bg-white/20"
+                  >
+                    <Zap size={14} /> Créer un compte pour acheter
+                  </button>
+                )}
               </motion.div>
             )
           })}
@@ -343,19 +274,19 @@ export function PricingPage() {
                 step: '01',
                 icon: '💳',
                 title: 'Achetez un pack',
-                desc: 'Choisissez le nombre de crédits dont vous avez besoin. Paiement sécurisé via Kkiapay (Mobile Money).',
+                desc: 'Choisissez votre pack. Paiement sécurisé via Chariow — Mobile Money (MTN, Moov, Wave) ou carte bancaire.',
               },
               {
                 step: '02',
                 icon: '🏦',
                 title: 'Crédits stockés',
-                desc: 'Vos crédits sont ajoutés à votre compte immédiatement et ne expirent jamais.',
+                desc: "Vos crédits sont ajoutés immédiatement à votre compte et n'expirent jamais.",
               },
               {
                 step: '03',
                 icon: '⚡',
                 title: 'Générez vos formules',
-                desc: 'Chaque génération IA consomme 1 crédit. Le vérificateur manuel reste toujours gratuit.',
+                desc: 'Chaque formule générée consomme 1 crédit. Le vérificateur manuel reste toujours gratuit.',
               },
             ].map(item => (
               <div key={item.step} className="text-center">
@@ -371,21 +302,13 @@ export function PricingPage() {
         {/* Réassurance */}
         <div className="mt-12 text-center">
           <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] mb-5">
-            Paiement 100% sécurisé via Kkiapay
+            Paiement 100% sécurisé via Chariow
           </p>
           <div className="flex flex-wrap items-center justify-center gap-6 text-white/40 text-xs font-medium">
-            <span className="flex items-center gap-1.5">
-              <Check size={12} className="text-emerald-400" /> Crédits sans expiration
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Check size={12} className="text-emerald-400" /> Mobile Money accepté
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Check size={12} className="text-emerald-400" /> Vérificateur toujours gratuit
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Check size={12} className="text-emerald-400" /> Support WhatsApp inclus
-            </span>
+            <span className="flex items-center gap-1.5"><Check size={12} className="text-emerald-400" /> Crédits sans expiration</span>
+            <span className="flex items-center gap-1.5"><Check size={12} className="text-emerald-400" /> Mobile Money accepté</span>
+            <span className="flex items-center gap-1.5"><Check size={12} className="text-emerald-400" /> Vérificateur toujours gratuit</span>
+            <span className="flex items-center gap-1.5"><Check size={12} className="text-emerald-400" /> Support WhatsApp inclus</span>
           </div>
         </div>
       </section>

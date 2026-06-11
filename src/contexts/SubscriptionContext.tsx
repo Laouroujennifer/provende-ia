@@ -12,7 +12,7 @@ export interface UserSubscription {
   formulasCount: number
   autoFormulasCount: number
   bonusCalculations: number
-  credits: number  // ✅ NOUVEAU : solde de crédits IA
+  credits: number
 }
 
 interface SubscriptionContextType {
@@ -20,13 +20,13 @@ interface SubscriptionContextType {
   currency: Currency
   setCurrency: (c: Currency) => void
   upgradeSubscription: (planId: 'monthly' | 'annual') => Promise<void>
-  addCredits: (amount: number) => Promise<void>   // ✅ NOUVEAU : après paiement
-  useCredit: () => Promise<boolean>               // ✅ NOUVEAU : consommer 1 crédit
+  addCredits: (amount: number) => Promise<void>
+  useCredit: () => Promise<boolean>
   incrementAutoCount: () => Promise<void>
   incrementFormulaCount: () => Promise<void>
   canAccessMode2: boolean
   canSaveFormula: boolean
-  hasCredits: boolean   // ✅ NOUVEAU : raccourci pour savoir si l'utilisateur a des crédits
+  hasCredits: boolean
 }
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined)
@@ -70,7 +70,8 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
             formulasCount: data.manual_formulas_count || 0,
             autoFormulasCount: data.auto_formulas_count || 0,
             bonusCalculations: data.bonus_calculations || 0,
-            credits: data.credits ?? 3, // ✅ 3 crédits offerts si nouveau compte
+            // 2 crédits offerts au départ (DEFAULT 2 dans la DB)
+            credits: data.credits ?? 2,
           })
         }
       } catch (err) {
@@ -78,6 +79,32 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
       }
     }
     loadProfile()
+
+    // Écoute les changements en temps réel (ex: après achat Chariow via webhook)
+    if (!user) return
+    const channel = supabase
+      .channel(`profile-credits-${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${user.id}`,
+        },
+        (payload) => {
+          const updated = payload.new as Record<string, unknown>
+          setSubscription(prev => ({
+            ...prev,
+            credits: (updated.credits as number) ?? prev.credits,
+            formulasCount: (updated.manual_formulas_count as number) ?? prev.formulasCount,
+            autoFormulasCount: (updated.auto_formulas_count as number) ?? prev.autoFormulasCount,
+          }))
+        }
+      )
+      .subscribe()
+
+    return () => { supabase.removeChannel(channel) }
   }, [user])
 
   // ─── UPGRADE ABONNEMENT (conservé pour compatibilité) ───────────────────
@@ -90,7 +117,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     if (!error) setSubscription(prev => ({ ...prev, status: 'active', planId }))
   }
 
-  // ─── AJOUTER DES CRÉDITS (après paiement Kkiapay) ───────────────────────
+  // ─── AJOUTER DES CRÉDITS (après paiement Chariow) ───────────────────────
   const addCredits = async (amount: number) => {
     if (!user) return
     const newCredits = (subscription.credits || 0) + amount
@@ -102,12 +129,13 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
       setSubscription(prev => ({ ...prev, credits: newCredits }))
     } else {
       console.error('Erreur ajout crédits:', error)
-      throw new Error('Erreur lors de l\'ajout des crédits')
+      throw new Error("Erreur lors de l'ajout des crédits")
     }
   }
 
-  // ─── CONSOMMER 1 CRÉDIT (avant une génération IA) ───────────────────────
-  // Retourne true si le crédit a été consommé, false si solde insuffisant
+  // ─── CONSOMMER 1 CRÉDIT ──────────────────────────────────────────────────
+  // 1 crédit = 1 génération IA OU 1 analyse IA
+  // Retourne true si consommé, false si solde insuffisant
   const useCredit = async (): Promise<boolean> => {
     if (!user) return false
     if ((subscription.credits || 0) <= 0) return false
@@ -150,8 +178,8 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
 
   // ─── PERMISSIONS ────────────────────────────────────────────────────────
   const hasCredits = (subscription.credits || 0) > 0
-  const canAccessMode2 = hasCredits  // ✅ Génération IA = nécessite un crédit
-  const canSaveFormula = true        // Vérificateur manuel toujours gratuit
+  const canAccessMode2 = hasCredits
+  const canSaveFormula = true // La sauvegarde est toujours gratuite
 
   return (
     <SubscriptionContext.Provider value={{

@@ -171,7 +171,7 @@ export function RecipeBuilder() {
 
               <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-100">
                 <h3 className="text-sm font-bold text-blue-800 mb-2">
-                  Conseils IA
+                  Conseils
                 </h3>
                 <ul className="text-xs text-blue-700 space-y-1 list-disc list-inside">
                   <li>Visez 18-22% de Protéines pour une croissance optimale.</li>

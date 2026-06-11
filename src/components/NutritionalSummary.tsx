@@ -7,12 +7,12 @@ export function NutritionalSummary({ totals, requirement }: { totals: FormulaTot
   const final = getFinalValues(totals)
 
   const metrics = [
-    { label: 'Énergie', value: final.em, target: requirement.em, unit: 'kcal', color: 'bg-orange-500' },
-    { label: 'Protéines', value: final.pb, target: requirement.pb, unit: '%', color: 'bg-blue-500' },
-    { label: 'Lysine', value: final.lys, target: requirement.lys, unit: '%', color: 'bg-purple-500' },
-    { label: 'Méthionine', value: final.met, target: requirement.met, unit: '%', color: 'bg-pink-500' },
-    { label: 'Calcium', value: final.ca, target: requirement.ca, unit: '%', color: 'bg-emerald-500' },
-    { label: 'Phosphore', value: final.p, target: requirement.p, unit: '%', color: 'bg-cyan-500' },
+    { label: 'Énergie', value: final.em, target: requirement.em, unit: 'kcal' },
+    { label: 'Protéines', value: final.pb, target: requirement.pb, unit: '%' },
+    { label: 'Lysine', value: final.lys, target: requirement.lys, unit: '%' },
+    { label: 'Méthionine', value: final.met, target: requirement.met, unit: '%' },
+    { label: 'Calcium', value: final.ca, target: requirement.ca, unit: '%' },
+    { label: 'Phosphore', value: final.p, target: requirement.p, unit: '%' },
   ]
 
   return (
@@ -42,7 +42,7 @@ export function NutritionalSummary({ totals, requirement }: { totals: FormulaTot
             {/* Barre de progression moderne */}
             <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
               <div 
-                className={`h-full transition-all duration-1000 ${isLow ? 'bg-amber-400' : isHigh ? 'bg-red-400' : m.color}`} 
+                className={`h-full transition-all duration-1000 ${isLow ? 'bg-amber-400' : isHigh ? 'bg-red-400' : 'bg-emerald-400'}`} 
                 style={{ width: `${percentage}%` }}
               />
             </div>

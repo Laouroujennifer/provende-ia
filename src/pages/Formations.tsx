@@ -142,7 +142,7 @@ export function Formations() {
             style={{ background: '#e5e5e5' }}>
             {[
               { icon: <BookOpen size={22} />,      t: 'Matières Premières',   d: 'Identifiez et sourcez les meilleurs ingrédients locaux au meilleur prix.' },
-              { icon: <Zap size={22} />,            t: 'Formulation IA',       d: 'Utilisez notre outil pour calculer des rations précises en 3 clics.' },
+              { icon: <Zap size={22} />,            t: 'Formulation automatique', d: 'Utilisez notre outil pour calculer des rations précises en 3 clics.' },
               { icon: <CheckCircle2 size={22} />,   t: 'Gestion des Stocks',   d: 'Optimisez vos achats, réduisez les pertes et maîtrisez vos marges.' },
               { icon: <GraduationCap size={22} />,  t: 'Croissance Rapide',    d: 'Les secrets pour atteindre le poids cible en un minimum de temps.' },
             ].map((s, i) => (

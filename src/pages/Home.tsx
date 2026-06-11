@@ -17,7 +17,7 @@ export function Home() {
       {/* ══════════════════════════════════
           1. HERO
       ══════════════════════════════════ */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-4 sm:px-6 pt-20 sm:pt-24 pb-16 sm:pb-20 overflow-hidden">
+      <section className="relative flex flex-col items-center justify-center text-center px-4 sm:px-6 pt-28 sm:pt-32 pb-14 sm:pb-16 overflow-hidden">
 
         {/* Lignes décoratives latérales — masquées sur mobile */}
         <div className="hidden sm:block absolute left-0 top-0 bottom-0 w-px opacity-20"
@@ -28,13 +28,13 @@ export function Home() {
         {/* Lettres PB en fond */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
           <span className="font-black tracking-tighter leading-none select-none"
-            style={{ fontSize: 'clamp(8rem, 30vw, 30vw)', color: 'rgba(255,104,0,0.03)' }}>PB</span>
+            style={{ fontSize: 'clamp(5rem, 18vw, 14rem)', color: 'rgba(255,104,0,0.03)' }}>PB</span>
         </div>
 
         <motion.div {...fadeUp(0)} className="relative z-10 max-w-5xl w-full flex flex-col items-center">
 
           {/* ── BADGE ESSAI GRATUIT ── */}
-          <motion.div {...fadeUp(0.05)} className="mb-10 sm:mb-14 max-w-full">
+          <motion.div {...fadeUp(0.05)} className="mb-7 sm:mb-9 max-w-full">
             <Link
               to="/register"
               className="flex items-center gap-0 transition-opacity hover:opacity-75"
@@ -81,36 +81,26 @@ export function Home() {
             </Link>
           </motion.div>
 
-          {/* Chapeau */}
-          <motion.p {...fadeUp(0.15)}
-            className="text-[0.6rem] font-black uppercase tracking-[0.3em] sm:tracking-[0.4em] mb-6 sm:mb-8 px-2"
-            style={{ color: 'rgba(255,255,255,0.35)' }}>
-            Pour toutes les personnes qui souhaitent&nbsp;...
-          </motion.p>
-
           {/* TITRE MASSIF */}
           <motion.h1 {...fadeUp(0.2)}
-            className="font-black uppercase leading-[0.92] tracking-tighter px-2"
-            style={{ fontSize: 'clamp(2.6rem, 12vw, 8rem)' }}>
-            <span style={{ color: '#fff' }}>Lancez et </span>
-            <span style={{ color: O }}>Rentabilisez</span>
+            className="font-black uppercase leading-[1.05] tracking-tight px-2"
+            style={{ fontSize: 'clamp(1.8rem, 6vw, 4rem)' }}>
+            <span style={{ color: '#fff' }}>Trouvez votre</span>
             <br />
-            <span style={{ color: O }}>Votre Elevage</span>
+            <span style={{ color: '#fff' }}>Formule d&apos;aliment</span>
             <br />
-            <span style={{ color: '#fff' }}>Sans Perdre</span>
-            <br />
-            <span style={{ color: '#fff' }}>De l&apos;Argent.</span>
+            <span style={{ color: O }}>En un clic.</span>
           </motion.h1>
 
           {/* CTA PRINCIPAL */}
-          <motion.div {...fadeUp(0.28)} className="flex flex-col items-center gap-4 mt-10 sm:mt-12 w-full px-4">
+          <motion.div {...fadeUp(0.28)} className="flex flex-col items-center gap-4 mt-8 sm:mt-9 w-full px-4">
             <Link to="/register"
               className="group w-full sm:w-auto flex items-center justify-center gap-3 font-black text-sm uppercase tracking-[0.15em] text-white transition-all duration-300 hover:gap-4"
               style={{ background: O, padding: '1.1rem 2.5rem', borderRadius: '999px', maxWidth: '360px' }}
               onMouseEnter={e => (e.currentTarget.style.background = '#FF8533')}
               onMouseLeave={e => (e.currentTarget.style.background = O)}>
               <Zap size={15} fill="currentColor" />
-              Demarrer l&apos;essai gratuit
+              Démarrer l&apos;essai gratuit
               <ArrowRight size={15} className="transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
 
@@ -284,7 +274,7 @@ export function Home() {
             {[
               { n: '01', t: 'Entrez vos matieres',      d: 'Renseignez les ingredients disponibles dans votre region et leur prix du marche actuel.' },
               { n: '02', t: 'Definissez vos objectifs', d: 'Choisissez votre animal, le stade de production et les criteres nutritionnels cibles.' },
-              { n: '03', t: 'Obtenez votre formule',    d: "L'IA calcule en secondes la ration la plus economique qui respecte tous vos besoins." },
+              { n: '03', t: 'Obtenez votre formule',    d: "Votre ration la plus economique est calculee en quelques secondes, en respectant tous vos besoins." },
             ].map((step, i) => (
               <div key={i} className="p-7 sm:p-8 md:p-12"
                 style={{
@@ -360,7 +350,7 @@ export function Home() {
             style={{ background: 'rgba(255,255,255,0.06)' }}>
             {[
               { icon: <Shield size={22} />,      t: 'Audit & Diagnostic',   d: 'Identifiez les pertes avant de lancer.' },
-              { icon: <Zap size={22} />,          t: 'Formulation IA',       d: 'Ration optimale en 3 clics.' },
+              { icon: <Zap size={22} />,          t: 'Formulation automatique', d: 'Ration optimale en 3 clics.' },
               { icon: <Users size={22} />,        t: 'Mentorat & Coaching',  d: 'Accompagnement quotidien par des experts.' },
               { icon: <TrendingDown size={22} />, t: 'Maitrise Rentabilite', d: 'Gerez marges, stocks et ventes.' },
             ].map((s, i) => (
