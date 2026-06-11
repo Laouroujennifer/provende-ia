@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   LayoutGrid, LogOut, Menu, Gift, FlaskConical,
-  TrendingUp, ArrowUpRight, Wheat, ChevronRight, Sparkles,
+  ArrowUpRight, Wheat, ChevronRight, Sparkles,
   Zap, X, Star, Lock, CreditCard, Plus
 } from 'lucide-react'
 import { ManualAnalyzer } from './ManualAnalyzer'

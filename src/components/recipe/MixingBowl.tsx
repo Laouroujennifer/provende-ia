@@ -73,8 +73,7 @@ export function MixingBowl({ items, onRemove }: MixingBowlProps) {
             ))}
           </Pie>
           <Tooltip
-            // CORRECTION : On remplace 'any' par une union de types autorisés
-            formatter={(value: number | string | undefined) => (value ? `${value} kg` : '0 kg')}
+            formatter={(value) => (value ? `${value} kg` : '0 kg')}
             contentStyle={{
               borderRadius: '8px',
               border: 'none',
@@ -97,4 +96,4 @@ export function MixingBowl({ items, onRemove }: MixingBowlProps) {
       </div>
     </div>
   )
-} 
+}
