@@ -4,15 +4,18 @@ import { Check, Sparkles, Zap, Package, Crown } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
-const STORE_DOMAIN = 'mqxwvxlx.mychariow.online'
+// ⬇️⬇️ À REMPLACER par le domaine du store Chariow de ton client
+const STORE_DOMAIN = 'VOTRE-STORE.mychariow.online'
 
+// ⬇️⬇️ IMPORTANT : les `productId` ci-dessous doivent être EXACTEMENT les mêmes
+//      que ceux du webhook (supabase/functions/chariow-webhook/index.ts).
 const PACKS = [
   {
-    id: 'credit_3',
-    productId: 'prd_bu1cotto',
-    name: 'Pack Starter',
-    credits: 3,
-    price: '600 F',
+    id: 'credit_12',
+    productId: 'prd_REMPLACER_2400', // ⬅️ ID du produit "Pack 2 400 F" sur Chariow
+    name: 'Pack Éleveur',
+    credits: 12,
+    price: '2 400 F',
     pricePerCredit: '200 F / crédit',
     icon: Zap,
     highlight: false,
@@ -20,18 +23,18 @@ const PACKS = [
     color: 'emerald',
     accentColor: '#10b981',
     features: [
-      '3 formules automatiques complètes',
-      'Crédits stockés sur votre compte',
-      'Utilisez quand vous voulez',
+      '12 crédits stockés sur votre compte',
+      'Jusqu’à 6 générations ou 12 vérifications',
+      'Crédits sans expiration',
       'Formules optimisées Goliath',
     ],
   },
   {
-    id: 'credit_4',
-    productId: 'prd_7052atop',
-    name: 'Pack Éleveur',
-    credits: 4,
-    price: '800 F',
+    id: 'credit_25',
+    productId: 'prd_REMPLACER_5000', // ⬅️ ID du produit "Pack 5 000 F" sur Chariow
+    name: 'Pack Pro',
+    credits: 25,
+    price: '5 000 F',
     pricePerCredit: '200 F / crédit',
     icon: Package,
     highlight: true,
@@ -39,19 +42,19 @@ const PACKS = [
     color: 'orange',
     accentColor: '#FF6800',
     features: [
-      '4 formules automatiques complètes',
-      'Crédits stockés sur votre compte',
-      'Utilisez quand vous voulez',
+      '25 crédits stockés sur votre compte',
+      'Jusqu’à 12 générations ou 25 vérifications',
+      'Crédits sans expiration',
       'Formules optimisées Goliath',
       'Support WhatsApp inclus',
     ],
   },
   {
-    id: 'credit_12',
-    productId: 'prd_5rtthm01',
-    name: 'Pack Pro',
-    credits: 12,
-    price: '2 400 F',
+    id: 'credit_35',
+    productId: 'prd_REMPLACER_7000', // ⬅️ ID du produit "Pack 7 000 F" sur Chariow
+    name: 'Pack Expert',
+    credits: 35,
+    price: '7 000 F',
     pricePerCredit: '200 F / crédit',
     icon: Crown,
     highlight: false,
@@ -59,9 +62,9 @@ const PACKS = [
     color: 'violet',
     accentColor: '#8b5cf6',
     features: [
-      '12 formules automatiques complètes',
-      'Crédits stockés sur votre compte',
-      'Utilisez quand vous voulez',
+      '35 crédits stockés sur votre compte',
+      'Jusqu’à 17 générations ou 35 vérifications',
+      'Crédits sans expiration',
       'Formules optimisées Goliath',
       'Support WhatsApp prioritaire',
       'Accès aux futurs outils',
@@ -129,11 +132,14 @@ export function PricingPage() {
             <span className="text-[#FF6800] italic">pas un abonnement.</span>
           </h1>
           <p className="text-white/60 text-lg md:text-xl font-medium max-w-2xl mx-auto">
-            Achetez des crédits, stockez-les sur votre compte et générez vos formules quand vous en avez besoin.
+            Achetez des crédits, stockez-les sur votre compte et utilisez-les quand vous en avez besoin.
+            <span className="text-white/80 font-bold"> 3 crédits offerts dès l’inscription.</span>
           </p>
-          <div className="mt-10 inline-flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white/70">
+          <div className="mt-10 inline-flex flex-wrap items-center justify-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-sm font-bold text-white/70">
             <Zap size={16} className="text-[#FF6800]" />
-            <span>1 crédit = 1 formule générée et optimisée</span>
+            <span>Vérifier une formule = 1 crédit</span>
+            <span className="text-white/20">·</span>
+            <span>Générer une formule = 2 crédits</span>
           </div>
         </motion.div>
       </section>
@@ -272,21 +278,21 @@ export function PricingPage() {
             {[
               {
                 step: '01',
-                icon: '💳',
-                title: 'Achetez un pack',
-                desc: 'Choisissez votre pack. Paiement sécurisé via Chariow — Mobile Money (MTN, Moov, Wave) ou carte bancaire.',
+                icon: '🎁',
+                title: '3 crédits offerts',
+                desc: 'À l’inscription, vous recevez 3 crédits gratuits : de quoi vérifier une formule (1 crédit) et en générer une (2 crédits).',
               },
               {
                 step: '02',
-                icon: '🏦',
-                title: 'Crédits stockés',
-                desc: "Vos crédits sont ajoutés immédiatement à votre compte et n'expirent jamais.",
+                icon: '💳',
+                title: 'Achetez un pack',
+                desc: 'Rechargez quand vous voulez. Paiement sécurisé via Chariow — Mobile Money (MTN, Moov, Wave) ou carte bancaire.',
               },
               {
                 step: '03',
                 icon: '⚡',
-                title: 'Générez vos formules',
-                desc: 'Chaque formule générée consomme 1 crédit. Le vérificateur manuel reste toujours gratuit.',
+                title: 'Utilisez vos crédits',
+                desc: 'Vérifier une formule consomme 1 crédit · Générer une formule consomme 2 crédits. Vos crédits n’expirent jamais.',
               },
             ].map(item => (
               <div key={item.step} className="text-center">
@@ -307,7 +313,7 @@ export function PricingPage() {
           <div className="flex flex-wrap items-center justify-center gap-6 text-white/40 text-xs font-medium">
             <span className="flex items-center gap-1.5"><Check size={12} className="text-emerald-400" /> Crédits sans expiration</span>
             <span className="flex items-center gap-1.5"><Check size={12} className="text-emerald-400" /> Mobile Money accepté</span>
-            <span className="flex items-center gap-1.5"><Check size={12} className="text-emerald-400" /> Vérificateur toujours gratuit</span>
+            <span className="flex items-center gap-1.5"><Check size={12} className="text-emerald-400" /> 3 crédits offerts à l’inscription</span>
             <span className="flex items-center gap-1.5"><Check size={12} className="text-emerald-400" /> Support WhatsApp inclus</span>
           </div>
         </div>

@@ -79,9 +79,9 @@ export function Formations() {
             style={{ fontSize: 'clamp(2.6rem, 11vw, 7.5rem)' }}>
             <span style={{ color: '#fff' }}>Maîtrisez</span>
             <br />
-            <span style={{ color: O }}>la Nutrition</span>
+            <span style={{ color: O }}>votre Élevage</span>
             <br />
-            <span style={{ color: '#fff' }}>Animale.</span>
+            <span style={{ color: '#fff' }}>de A à Z.</span>
           </motion.h1>
 
           {/* CTA */}

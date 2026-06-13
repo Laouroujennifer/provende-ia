@@ -21,7 +21,7 @@ interface SubscriptionContextType {
   setCurrency: (c: Currency) => void
   upgradeSubscription: (planId: 'monthly' | 'annual') => Promise<void>
   addCredits: (amount: number) => Promise<void>
-  useCredit: () => Promise<boolean>
+  spendCredits: (amount?: number) => Promise<boolean>
   incrementAutoCount: () => Promise<void>
   incrementFormulaCount: () => Promise<void>
   canAccessMode2: boolean
@@ -50,7 +50,25 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
   // ─── CHARGEMENT DU PROFIL ───────────────────────────────────────────────
   useEffect(() => {
     async function loadProfile() {
-      if (!user) return
+      // Déconnexion / changement d'utilisateur : on repart d'un état propre
+      if (!user) { setSubscription(INITIAL_SUB); return }
+
+      const applyData = (data: Record<string, unknown> | null) => {
+        const isPro = data?.subscription_status === 'pro'
+        const createdAt = (data?.created_at as string) || new Date().toISOString()
+        setSubscription({
+          status: isPro ? 'active' : 'trial',
+          planId: isPro ? 'monthly' : 'free',
+          startDate: createdAt,
+          endDate: new Date(new Date(createdAt).getTime() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          formulasCount: (data?.manual_formulas_count as number) || 0,
+          autoFormulasCount: (data?.auto_formulas_count as number) || 0,
+          bonusCalculations: (data?.bonus_calculations as number) || 0,
+          // 3 crédits offerts au départ
+          credits: (data?.credits as number) ?? 3,
+        })
+      }
+
       try {
         const { data, error } = await supabase
           .from('profiles')
@@ -59,23 +77,22 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
           .maybeSingle()
 
         if (data && !error) {
-          const isPro = data.subscription_status === 'pro'
-          setSubscription({
-            status: isPro ? 'active' : 'trial',
-            planId: isPro ? 'monthly' : 'free',
-            startDate: data.created_at,
-            endDate: new Date(
-              new Date(data.created_at).getTime() + 30 * 24 * 60 * 60 * 1000
-            ).toISOString(),
-            formulasCount: data.manual_formulas_count || 0,
-            autoFormulasCount: data.auto_formulas_count || 0,
-            bonusCalculations: data.bonus_calculations || 0,
-            // 2 crédits offerts au départ (DEFAULT 2 dans la DB)
-            credits: data.credits ?? 2,
-          })
+          applyData(data as Record<string, unknown>)
+          return
         }
+
+        // Pas de profil trouvé → AUTO-RÉPARATION : on le crée avec 3 crédits offerts
+        const { data: created } = await supabase
+          .from('profiles')
+          .upsert({ id: user.id, credits: 3 }, { onConflict: 'id' })
+          .select('*')
+          .maybeSingle()
+
+        applyData((created as Record<string, unknown>) ?? { credits: 3, subscription_status: 'free' })
       } catch (err) {
         console.error('Erreur chargement profil:', err)
+        // Dernier recours : on n'affiche pas 0, le nouveau venu a droit à ses 3 crédits
+        setSubscription(prev => ({ ...prev, credits: prev.credits || 3 }))
       }
     }
     loadProfile()
@@ -133,14 +150,15 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // ─── CONSOMMER 1 CRÉDIT ──────────────────────────────────────────────────
-  // 1 crédit = 1 génération IA OU 1 analyse IA
+  // ─── CONSOMMER DES CRÉDITS ───────────────────────────────────────────────
+  // Vérifier une formule  = 1 crédit  → spendCredits(1) ou spendCredits()
+  // Générer une formule   = 2 crédits → spendCredits(2)
   // Retourne true si consommé, false si solde insuffisant
-  const useCredit = async (): Promise<boolean> => {
+  const spendCredits = async (amount = 1): Promise<boolean> => {
     if (!user) return false
-    if ((subscription.credits || 0) <= 0) return false
+    if ((subscription.credits || 0) < amount) return false
 
-    const newCredits = subscription.credits - 1
+    const newCredits = subscription.credits - amount
     const { error } = await supabase
       .from('profiles')
       .update({ credits: newCredits })
@@ -188,7 +206,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
       setCurrency,
       upgradeSubscription,
       addCredits,
-      useCredit,
+      spendCredits,
       incrementAutoCount,
       incrementFormulaCount,
       canAccessMode2,

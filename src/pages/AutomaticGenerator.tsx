@@ -127,7 +127,7 @@ interface AIAnalysisProps {
 }
 
 function AIAnalysisPanel({ result, req, score, onNoCredits }: AIAnalysisProps) {
-  const { useCredit, subscription } = useSubscription()
+  const { spendCredits, subscription } = useSubscription()
   const [analysis, setAnalysis] = useState<string>('')
   const [loading, setLoading]   = useState(false)
   const [done, setDone]         = useState(false)
@@ -251,7 +251,7 @@ function AIAnalysisPanel({ result, req, score, onNoCredits }: AIAnalysisProps) {
   }
 
   const runAnalysis = async () => {
-    const ok = await useCredit()
+    const ok = await spendCredits()
     if (!ok) {
       onNoCredits()
       return
@@ -452,7 +452,7 @@ interface AutomaticGeneratorProps {
 // ─── COMPOSANT PRINCIPAL ──────────────────────────────────────────────────────
 
 export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps) {
-  const { subscription, useCredit, incrementAutoCount } = useSubscription()
+  const { subscription, spendCredits, incrementAutoCount, incrementFormulaCount } = useSubscription()
   const { user } = useAuth()
 
   const [formulaName, setFormulaName]         = useState('')
@@ -519,10 +519,10 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
   }
 
   const handleOptimize = async () => {
-    if (credits <= 0) { onTrialExhausted(); return }
+    if (credits < 2) { onTrialExhausted(); return }
     if (checkedIds.size < 2) return
 
-    const ok = await useCredit()
+    const ok = await spendCredits(2)
     if (!ok) { onTrialExhausted(); return }
 
     setIsOptimizing(true)
@@ -573,6 +573,7 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
       setSaveError("Erreur lors de l'enregistrement.")
       setTimeout(() => setSaveError(null), 4000)
     } else {
+      incrementFormulaCount()
       setSavedOk(true)
       setTimeout(() => setSavedOk(false), 3000)
     }
@@ -808,9 +809,6 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#FF6800] text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-md shadow-[#FF6800]/30">
           <Sparkles size={12} /> Mode Générateur
         </span>
-        <span className="text-[10px] font-bold text-[#FF6800] uppercase tracking-widest">
-          1 crédit par génération
-        </span>
       </div>
 
       {/* Hero */}
@@ -826,7 +824,7 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
             <div>
               <p className="text-[10px] font-black text-[#FF6800] uppercase tracking-[0.2em] mb-1">Générateur automatique</p>
               <h2 className="text-2xl font-black tracking-tight">La meilleure formule au meilleur coût</h2>
-              <p className="text-white/80 text-sm font-medium mt-0.5">Qualité nutritionnelle respectée · Analyse détaillée incluse</p>
+              <p className="text-white/80 text-sm font-medium mt-0.5">Générez vos formules en toute confiance</p>
             </div>
           </div>
           <div className="shrink-0 flex flex-col items-center bg-[#FF6800]/10 border border-[#FF6800]/20 rounded-2xl px-6 py-4">
@@ -834,7 +832,7 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
             <p className="text-[9px] font-black text-white/40 uppercase tracking-widest">
               {credits > 1 ? 'Crédits restants' : credits === 1 ? 'Crédit restant' : 'Crédits épuisés'}
             </p>
-            {credits === 0 && (
+            {credits < 2 && (
               <Link to="/pricing" className="mt-2 text-[10px] font-black text-[#FF6800] underline hover:text-[#FF8533]">
                 + Recharger
               </Link>
@@ -924,7 +922,7 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
 
       {/* Bouton générer */}
       <div className="relative">
-        {canGenerate && credits > 0 && (
+        {canGenerate && credits >= 2 && (
           <div className="absolute -inset-1 bg-gradient-to-r from-[#FF6800] via-[#FF8533] to-[#FF6800] rounded-3xl blur-lg opacity-60 animate-pulse" aria-hidden="true" />
         )}
         <button
@@ -932,13 +930,13 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
           disabled={!canGenerate}
           className={`relative w-full py-8 rounded-3xl font-black text-base md:text-lg uppercase tracking-widest transition-all shadow-2xl border-2 ${
             !canGenerate ? 'bg-[#2A2A2A] text-white/30 border-[#2A2A2A] cursor-not-allowed' :
-            credits === 0 ? 'bg-gradient-to-r from-red-600 to-red-500 text-white border-red-400 hover:from-red-500 hover:to-red-400 hover:scale-[1.02] shadow-red-500/40 active:scale-95' :
+            credits < 2 ? 'bg-gradient-to-r from-red-600 to-red-500 text-white border-red-400 hover:from-red-500 hover:to-red-400 hover:scale-[1.02] shadow-red-500/40 active:scale-95' :
             'bg-gradient-to-r from-[#FF6800] via-[#FF8533] to-[#FF6800] text-white border-[#FF6800] hover:scale-[1.02] shadow-[#FF6800]/50 active:scale-95'
           }`}
         >
           {isOptimizing ? (
             <span className="flex items-center justify-center gap-3"><RotateCcw className="animate-spin" size={24} /> Optimisation en cours…</span>
-          ) : credits === 0 ? (
+          ) : credits < 2 ? (
             <span className="flex items-center justify-center gap-3"><CreditCard size={22} /> Recharger pour continuer →</span>
           ) : (
             <span className="flex items-center justify-center gap-3">
@@ -948,9 +946,9 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
             </span>
           )}
         </button>
-        {canGenerate && credits > 0 && (
+        {canGenerate && credits >= 2 && (
           <p className="text-center text-xs font-bold text-[#FF6800] mt-3">
-            ✨ Phase : <span className="text-white">{selectedReq.stage}</span> · {checkedIds.size} ingrédient{checkedIds.size > 1 ? 's' : ''} · <strong>1 crédit sera consommé</strong>
+            ✨ Phase : <span className="text-white">{selectedReq.stage}</span> · {checkedIds.size} ingrédient{checkedIds.size > 1 ? 's' : ''}
           </p>
         )}
         {!canGenerate && checkedIds.size < 2 && (
@@ -960,7 +958,7 @@ export function AutomaticGenerator({ onTrialExhausted }: AutomaticGeneratorProps
         )}
       </div>
 
-      {credits === 0 && (
+      {credits < 2 && (
         <div className="flex flex-col sm:flex-row gap-3">
           <Link to="/pricing" className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#FF6800] text-white rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-[#FF8533] transition-all text-center shadow-lg shadow-[#FF6800]/30">
             <Star size={14} fill="currentColor" /> Recharger des crédits

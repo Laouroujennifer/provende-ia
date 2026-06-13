@@ -330,7 +330,7 @@ function buildAndSolveLP(
   for (const spec of specs) {
     const range = spec.max - spec.min
     // Marge de 5% du range vers l'intérieur, mais pas plus de 5% de la valeur
-    const margin = Math.min(range * 0.05, Math.max(spec.min * 0.02, 0.01))
+    const margin = Math.min(range * 0.01, 0.05)
     constraints[spec.key] = {
       min: spec.min + margin,
       max: spec.max - margin,
@@ -456,6 +456,24 @@ function buildAndSolveMinViolation(
   }
 }
 
+// ─── VÉRIFICATION STRICTE DES PLAGES ────────────────────────────────────────
+// Le solveur LP peut, dans de rares cas, renvoyer « faisable » une solution
+// qui ne respecte pas réellement les plages. On revérifie nous-mêmes.
+function quantitiesInRange(
+  quantities: Record<string, number>,
+  formula: SelectedIngredient[],
+  specs: NutrientSpec[]
+): boolean {
+  for (const spec of specs) {
+    let sum = 0
+    for (const ing of formula) sum += getNutrientValue(ing, spec.key) * (quantities[ing.id] || 0)
+    const value = sum / 100
+    const eps = Math.max((spec.max - spec.min) * 0.01, 0.01)
+    if (value < spec.min - eps || value > spec.max + eps) return false
+  }
+  return true
+}
+
 // ─── FONCTION PRINCIPALE ──────────────────────────────────────────────────────
 
 export function optimizeFormula(
@@ -470,11 +488,14 @@ export function optimizeFormula(
   // 1. Auto-complétion
   let formula = autoCompletePool(selected, phase)
 
+  // Une solution n'est acceptée que si elle est faisable ET réellement dans les plages
+  const ok = (r: LPResult) => r.feasible && quantitiesInRange(r.quantities, formula, specs)
+
   // 2. Tentative LP sans relaxation
   let result = buildAndSolveLP(formula, specs, phase, {})
 
-  // 3. Si infaisable, relaxation cascadée
-  if (!result.feasible) {
+  // 3. Si pas dans les plages, relaxation cascadée
+  if (!ok(result)) {
     const relaxationLevels = [
       { protein: 5, cereal: 0, calcium: 2, phosphate: 1, other: 5 },
       { protein: 15, cereal: 5, calcium: 5, phosphate: 2, other: 10 },
@@ -496,12 +517,12 @@ export function optimizeFormula(
       }
 
       result = buildAndSolveLP(formula, specs, phase, boundsRelaxation)
-      if (result.feasible) break
+      if (ok(result)) break
     }
   }
 
-  // 4. Si toujours infaisable, fallback : minimisation des violations
-  if (!result.feasible) {
+  // 4. Si toujours pas dans les plages, fallback : minimisation des violations
+  if (!ok(result)) {
     const maxRelaxation: Record<string, number> = {}
     for (const ing of formula) {
       const cat = getRelaxationCategory(ing.id)
@@ -530,15 +551,14 @@ export function optimizeFormula(
     ing.quantity = Math.round(ing.quantity * 100) / 100
   }
 
-  // Ajustement pour Σ = 100
+  // Normalisation Σ = 100 : mise à l'échelle proportionnelle.
+  // Comme une concentration = Σ(val·q)/Σq, un simple facteur d'échelle ne
+  // déséquilibre AUCUN nutriment (contrairement à l'ancien report sur 1 ingrédient).
   const totalQty = formula.reduce((s, i) => s + i.quantity, 0)
-  if (Math.abs(totalQty - 100) > 0.01 && formula.length > 0) {
-    const diff = 100 - totalQty
-    let maxI = 0
-    for (let i = 1; i < formula.length; i++) {
-      if (formula[i].quantity > formula[maxI].quantity) maxI = i
+  if (totalQty > 0 && Math.abs(totalQty - 100) > 0.001) {
+    for (const ing of formula) {
+      ing.quantity = Math.round((ing.quantity * 100 / totalQty) * 100) / 100
     }
-    formula[maxI].quantity = Math.round((formula[maxI].quantity + diff) * 100) / 100
   }
 
   return formula

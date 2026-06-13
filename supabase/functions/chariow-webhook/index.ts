@@ -2,10 +2,11 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 // ─── Map product_id Chariow → crédits à ajouter ─────────────────────────────
+// ⚠️ Ces product_id DOIVENT être IDENTIQUES à ceux de src/pages/PricingPage.tsx
 const PRODUCT_CREDITS: Record<string, number> = {
-  'prd_5rtthm01': 3,   // Pack Starter  — 600 F
-  'prd_7052atop': 4,   // Pack Éleveur  — 800 F
-  'prd_bu1cotto': 12,  // Pack Pro      — 2400 F
+  'prd_REMPLACER_2400': 12,  // Pack Éleveur — 2 400 F
+  'prd_REMPLACER_5000': 25,  // Pack Pro     — 5 000 F
+  'prd_REMPLACER_7000': 35,  // Pack Expert  — 7 000 F
 }
 
 // ─── CORS headers ────────────────────────────────────────────────────────────

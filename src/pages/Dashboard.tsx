@@ -120,8 +120,8 @@ function CreditCard_({ credits, onRecharge, onDismiss }: {
           </h3>
           <p className="text-sm text-white/50 font-medium mb-4">
             {isEmpty
-              ? 'Rechargez pour continuer à générer des formules et lancer des analyses.'
-              : '1 crédit = 1 formule générée ou 1 analyse détaillée. Les formules manuelles sont toujours gratuites.'}
+              ? 'Rechargez pour continuer à vérifier et générer vos formules.'
+              : 'Vérifier une formule = 1 crédit · Générer une formule = 2 crédits.'}
           </p>
 
           {/* Visualisation des crédits */}
@@ -210,7 +210,7 @@ function UpgradeModal({ onClose, onGoReferral, onGoPricing }: {
             <div className="flex-1">
               <p className="font-black text-[13px]">Recharger des crédits</p>
               <p className="text-white/80 text-[11px] font-medium mt-0.5">
-                Packs à partir de 600 F · 1 crédit = 1 génération ou analyse
+                Packs à partir de 2 400 F · Vérifier = 1 crédit · Générer = 2 crédits
               </p>
             </div>
             <ChevronRight size={16} className="shrink-0 opacity-70" />
@@ -233,7 +233,7 @@ function UpgradeModal({ onClose, onGoReferral, onGoPricing }: {
           </button>
 
           <p className="text-center text-[10px] text-white/40 font-bold pt-1">
-            Pack Starter à 600 F · Pack Éleveur à 800 F · Pack Pro à 2 400 F
+            Pack Éleveur à 2 400 F · Pack Pro à 5 000 F · Pack Expert à 7 000 F
           </p>
         </div>
       </div>
@@ -307,15 +307,19 @@ export function Dashboard() {
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0 lg:static lg:w-64`}
       >
-        {/* Logo */}
-        <div className="p-7 flex items-center gap-3 border-b border-[#2A2A2A]">
+        {/* Logo → retour accueil */}
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          className="w-full p-7 flex items-center gap-3 border-b border-[#2A2A2A] text-left hover:opacity-80 transition-opacity"
+        >
           <div className="w-9 h-9 bg-[#FF6800] rounded-xl flex items-center justify-center text-white font-black text-sm shadow-lg shadow-[#FF6800]/30">
             PB
           </div>
           <span className="font-black uppercase tracking-tighter text-base text-white">
             Provende<span className="text-[#FF6800]">Builder</span>
           </span>
-        </div>
+        </button>
 
         {/* User block */}
         <div className="mx-4 mt-4 flex items-center gap-3 bg-[#1A1A1A] border border-[#2A2A2A] rounded-xl px-4 py-3">
@@ -412,7 +416,10 @@ export function Dashboard() {
           >
             <Menu size={19} />
           </button>
-          <span className="font-black uppercase text-sm tracking-tighter text-white">Provende<span className="text-[#FF6800]">Builder</span></span>
+          <span
+            onClick={() => navigate('/')}
+            className="font-black uppercase text-sm tracking-tighter text-white cursor-pointer"
+          >Provende<span className="text-[#FF6800]">Builder</span></span>
           <div className="flex items-center gap-2">
             <CreditPill credits={credits} onClick={() => setActiveView('home')} />
             <div className="w-8 h-8 bg-[#FF6800] rounded-xl flex items-center justify-center font-black text-xs text-white">
@@ -488,7 +495,7 @@ export function Dashboard() {
               {/* KPI Cards */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <KpiCard
-                  label="Recettes"
+                  label="Formules"
                   value={subscription.formulasCount ?? 0}
                   sub="Sauvegardées"
                   icon={<FlaskConical size={17} />}
@@ -562,7 +569,7 @@ export function Dashboard() {
                       Achetez des crédits pour générer des formules IA et lancer des analyses.
                     </p>
                     <div className="flex flex-wrap gap-2 mb-5">
-                      {['3 crédits — 600 F', '4 crédits — 800 F', '12 crédits — 2 400 F'].map(pack => (
+                      {['12 crédits — 2 400 F', '25 crédits — 5 000 F', '35 crédits — 7 000 F'].map(pack => (
                         <span key={pack} className="text-[10px] font-black px-2.5 py-1 bg-[#FF6800]/10 border border-[#FF6800]/20 text-[#FF6800] rounded-lg">
                           {pack}
                         </span>
@@ -648,27 +655,8 @@ export function Dashboard() {
                 </button>
               </div>
 
-              {/* Banner crédits */}
-              {credits > 0 ? (
-                <div className="flex items-center justify-between gap-3 bg-[#FF6800]/10 border border-[#FF6800]/30 rounded-xl px-5 py-3.5">
-                  <div className="flex items-center gap-3">
-                    <Zap size={15} className="text-[#FF6800] shrink-0" fill="currentColor" />
-                    <p className="text-[13px] font-bold text-[#FF6800]">
-                      Solde :{' '}
-                      <strong className="font-black">{credits} crédit{credits > 1 ? 's' : ''}</strong>.
-                      {mode === 'manual'
-                        ? ' La vérification est gratuite — l\'analyse détaillée consomme 1 crédit.'
-                        : ' La génération automatique consomme 1 crédit.'}
-                    </p>
-                  </div>
-                  <button
-                    onClick={handleRecharge}
-                    className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-[#FF6800] hover:bg-[#FF8533] text-white rounded-lg font-black text-[10px] uppercase tracking-widest transition-all"
-                  >
-                    <Plus size={11} /> Recharger
-                  </button>
-                </div>
-              ) : (
+              {/* Alerte affichée uniquement quand le solde est épuisé */}
+              {credits === 0 && (
                 <div className="flex items-center justify-between gap-3 bg-red-500/10 border border-red-500/30 rounded-xl px-5 py-3.5">
                   <div className="flex items-center gap-3">
                     <Zap size={15} className="text-red-400 shrink-0" />
@@ -698,29 +686,6 @@ export function Dashboard() {
                   </button>
                 </div>
               )}
-
-              {/* Description du mode */}
-              <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-2xl px-6 py-4 flex items-start gap-4 shadow-sm">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                  mode === 'manual'
-                    ? 'bg-[#FF6800]/10 text-[#FF6800] border border-[#FF6800]/30'
-                    : 'bg-[#FF6800]/10 text-[#FF6800] border border-[#FF6800]/30'
-                }`}>
-                  {mode === 'manual' ? <FlaskConical size={18} /> : <Zap size={18} />}
-                </div>
-                <div>
-                  <p className="font-black text-white text-sm">
-                    {mode === 'manual'
-                      ? 'Vérificateur de formules — Gratuit · Analyse détaillée = 1 crédit'
-                      : 'Générateur de formules automatiques — 1 crédit par génération'}
-                  </p>
-                  <p className="text-[12px] text-white/50 font-medium mt-0.5">
-                    {mode === 'manual'
-                      ? 'Entrez vos matières premières et proportions pour vérifier votre formule. L\'analyse détaillée consomme 1 crédit.'
-                      : "La ration la plus économique est calculée automatiquement selon vos critères. 1 crédit par génération."}
-                  </p>
-                </div>
-              </div>
 
               <div>
                 {mode === 'manual'

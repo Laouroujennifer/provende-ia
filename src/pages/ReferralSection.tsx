@@ -43,7 +43,7 @@ export function ReferralSection() {
 
   const shareWhatsApp = () => {
     const message = encodeURIComponent(
-      `🐔 Salut ! J'utilise ProvendeBuilder pour réduire mes coûts d'aliment volaille. Inscris-toi avec mon lien pour gagner des calculs gratuits : ${referralLink}`
+      `🐔 Salut ! J'utilise ProvendeBuilder pour réduire mes coûts d'aliment volaille. Inscris-toi avec mon lien pour gagner des crédits gratuits : ${referralLink}`
     )
     window.open(`https://wa.me/?text=${message}`, '_blank')
   }
@@ -64,7 +64,7 @@ export function ReferralSection() {
           </h1>
           
           <p className="text-white/40 text-lg mb-10 max-w-lg font-medium">
-            Invitez des collègues éleveurs. Pour chaque inscription, vous recevez <span className="text-emerald-400 font-black">+10 formules offertes</span> sur votre compte.
+            Invitez des collègues éleveurs. Pour chaque inscription, vous recevez <span className="text-emerald-400 font-black">+1 vérification offerte (1 crédit)</span> sur votre compte.
           </p>
           
           <div className="grid md:grid-cols-2 gap-4 max-w-2xl">

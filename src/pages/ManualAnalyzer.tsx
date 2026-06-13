@@ -211,7 +211,7 @@ interface ManualAnalyzerProps {
 
 export function ManualAnalyzer({ onNoCredits }: ManualAnalyzerProps) {
   const { user } = useAuth()
-  const { canSaveFormula, incrementFormulaCount, subscription, useCredit } = useSubscription()
+  const { canSaveFormula, incrementFormulaCount, subscription, spendCredits } = useSubscription()
 
   const [formulaName, setFormulaName] = useState('')
   const [selectedReqId, setSelectedReqId] = useState(animalRequirements[0].id)
@@ -372,7 +372,7 @@ export function ManualAnalyzer({ onNoCredits }: ManualAnalyzerProps) {
   const handleAIAnalyze = async () => {
     if (selectedIngredients.length === 0 || totalWeight === 0) return
 
-    const ok = await useCredit()
+    const ok = await spendCredits()
     if (!ok) {
       onNoCredits?.()
       return
@@ -410,9 +410,6 @@ export function ManualAnalyzer({ onNoCredits }: ManualAnalyzerProps) {
         <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#FF6800] text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-md shadow-[#FF6800]/30">
           <Scale size={12} /> Mode Vérificateur
         </span>
-        <span className="text-[10px] font-bold text-[#FF6800] uppercase tracking-widest">
-          Gratuit · Analyse détaillée = 1 crédit
-        </span>
       </div>
 
       {/* Hero */}
@@ -426,10 +423,10 @@ export function ManualAnalyzer({ onNoCredits }: ManualAnalyzerProps) {
               <Scale size={26} className="text-[#FF6800] print:text-orange-600" />
             </div>
             <div className="text-left">
-              <p className="text-[10px] font-black text-[#FF6800] uppercase tracking-[0.2em] mb-1 print:text-orange-700">Analyseur de ration — Gratuit</p>
+              <p className="text-[10px] font-black text-[#FF6800] uppercase tracking-[0.2em] mb-1 print:text-orange-700">Analyseur de ration</p>
               <h2 className="text-2xl font-black tracking-tight print:text-slate-900">Vérificateur de formule</h2>
               <p className="text-white/60 text-sm font-medium mt-0.5 print:text-slate-600">
-                La vérification est gratuite · L'analyse détaillée consomme 1 crédit
+                Vérifiez vos formules en toute confiance
               </p>
             </div>
           </div>
